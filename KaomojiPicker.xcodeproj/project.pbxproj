@@ -1,0 +1,357 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3B895B712A065679006442A2 /* KaomojiPickerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B702A065679006442A2 /* KaomojiPickerApp.swift */; };
+		3B895B732A065679006442A2 /* KaomojiPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B722A065679006442A2 /* KaomojiPickerViewController.swift */; };
+		3B895B752A06567D006442A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B742A06567D006442A2 /* Assets.xcassets */; };
+		3B895B802A065699006442A2 /* NSViewPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B7F2A065699006442A2 /* NSViewPreview.swift */; };
+		3B895B822A0673D3006442A2 /* Kaomoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B812A0673D3006442A2 /* Kaomoji.swift */; };
+		3B895B842A068BB5006442A2 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B832A068BB5006442A2 /* MainMenu.xib */; };
+		3B895BBB2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */; };
+		3B895BBD2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBC2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift */; };
+		3B895BBF2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBE2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3B895B6D2A065679006442A2 /* Kaomoji Picker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kaomoji Picker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B895B702A065679006442A2 /* KaomojiPickerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerApp.swift; sourceTree = "<group>"; };
+		3B895B722A065679006442A2 /* KaomojiPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerViewController.swift; sourceTree = "<group>"; };
+		3B895B742A06567D006442A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3B895B7F2A065699006442A2 /* NSViewPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSViewPreview.swift; sourceTree = "<group>"; };
+		3B895B812A0673D3006442A2 /* Kaomoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kaomoji.swift; sourceTree = "<group>"; };
+		3B895B832A068BB5006442A2 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		3B895BB82A06EAA3006442A2 /* KaomojiPicker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = KaomojiPicker.png; sourceTree = "<group>"; };
+		3B895BB92A06EAAB006442A2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerPreferencePane.swift; sourceTree = "<group>"; };
+		3B895BBC2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerCollectionViewHeader.swift; sourceTree = "<group>"; };
+		3B895BBE2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerCollectionViewItem.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3B895B6A2A065679006442A2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3B895B642A065679006442A2 = {
+			isa = PBXGroup;
+			children = (
+				3B895BB92A06EAAB006442A2 /* README.md */,
+				3B895BB82A06EAA3006442A2 /* KaomojiPicker.png */,
+				3B895B6F2A065679006442A2 /* KaomojiPicker */,
+				3B895B6E2A065679006442A2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3B895B6E2A065679006442A2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3B895B6D2A065679006442A2 /* Kaomoji Picker.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3B895B6F2A065679006442A2 /* KaomojiPicker */ = {
+			isa = PBXGroup;
+			children = (
+				3B895B812A0673D3006442A2 /* Kaomoji.swift */,
+				3B895B702A065679006442A2 /* KaomojiPickerApp.swift */,
+				3B895BBC2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift */,
+				3B895BBE2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift */,
+				3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */,
+				3B895B722A065679006442A2 /* KaomojiPickerViewController.swift */,
+				3B895B7F2A065699006442A2 /* NSViewPreview.swift */,
+				3B895B742A06567D006442A2 /* Assets.xcassets */,
+				3B895B832A068BB5006442A2 /* MainMenu.xib */,
+			);
+			path = KaomojiPicker;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3B895B6C2A065679006442A2 /* KaomojiPicker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B895B7C2A06567D006442A2 /* Build configuration list for PBXNativeTarget "KaomojiPicker" */;
+			buildPhases = (
+				3B895B692A065679006442A2 /* Sources */,
+				3B895B6A2A065679006442A2 /* Frameworks */,
+				3B895B6B2A065679006442A2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KaomojiPicker;
+			productName = KaomojiPicker;
+			productReference = 3B895B6D2A065679006442A2 /* Kaomoji Picker.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3B895B652A065679006442A2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					3B895B6C2A065679006442A2 = {
+						CreatedOnToolsVersion = 14.3;
+					};
+				};
+			};
+			buildConfigurationList = 3B895B682A065679006442A2 /* Build configuration list for PBXProject "KaomojiPicker" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3B895B642A065679006442A2;
+			productRefGroup = 3B895B6E2A065679006442A2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3B895B6C2A065679006442A2 /* KaomojiPicker */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3B895B6B2A065679006442A2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B895B752A06567D006442A2 /* Assets.xcassets in Resources */,
+				3B895B842A068BB5006442A2 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3B895B692A065679006442A2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B895B802A065699006442A2 /* NSViewPreview.swift in Sources */,
+				3B895B732A065679006442A2 /* KaomojiPickerViewController.swift in Sources */,
+				3B895BBB2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift in Sources */,
+				3B895BBF2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift in Sources */,
+				3B895B712A065679006442A2 /* KaomojiPickerApp.swift in Sources */,
+				3B895B822A0673D3006442A2 /* Kaomoji.swift in Sources */,
+				3B895BBD2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3B895B7A2A06567D006442A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3B895B7B2A06567D006442A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		3B895B7D2A06567D006442A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.KaomojiPicker;
+				PRODUCT_MODULE_NAME = KaomojiPicker;
+				PRODUCT_NAME = "Kaomoji Picker";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3B895B7E2A06567D006442A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.KaomojiPicker;
+				PRODUCT_MODULE_NAME = KaomojiPicker;
+				PRODUCT_NAME = "Kaomoji Picker";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3B895B682A065679006442A2 /* Build configuration list for PBXProject "KaomojiPicker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B895B7A2A06567D006442A2 /* Debug */,
+				3B895B7B2A06567D006442A2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B895B7C2A06567D006442A2 /* Build configuration list for PBXNativeTarget "KaomojiPicker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B895B7D2A06567D006442A2 /* Debug */,
+				3B895B7E2A06567D006442A2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3B895B652A065679006442A2 /* Project object */;
+}

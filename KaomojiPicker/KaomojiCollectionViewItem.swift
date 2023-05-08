@@ -1,12 +1,15 @@
 import AppKit
 
-class KaomojiPickerCollectionViewItem: NSCollectionViewItem {
+class KaomojiCollectionViewItem: NSCollectionViewItem {
   var titleTextField: NSTextField!
+  var settingsMode = false
 
   override func loadView() {
     titleTextField = KaomoijPickerCollectionViewItemTextField(labelWithString: "")
     titleTextField.translatesAutoresizingMaskIntoConstraints = false
     titleTextField.alignment = .center
+    titleTextField.lineBreakMode = .byTruncatingTail
+    //titleTextField.isEditable = true
     textField = titleTextField
 
     view = NSView()
@@ -24,7 +27,24 @@ class KaomojiPickerCollectionViewItem: NSCollectionViewItem {
 
   override var isSelected: Bool {
     didSet {
-      view.layer?.backgroundColor = isSelected ? NSColor.selectedContentBackgroundColor.cgColor : NSColor.clear.cgColor
+      view.layer?.backgroundColor = isSelected
+      ? NSColor.controlAccentColor.withAlphaComponent(0.5).cgColor
+      : NSColor.clear.cgColor
+    }
+  }
+
+  func insert() {
+    guard !settingsMode, let appDelegate = NSApp.delegate as? AppDelegate else { return }
+
+    if appDelegate.popover?.isDetached == false {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+        appDelegate.popover?.close()
+        //DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+          appDelegate.insertText(titleTextField.stringValue)
+        //}
+      }
+    } else {
+      appDelegate.insertText(titleTextField.stringValue)
     }
   }
 
@@ -48,16 +68,11 @@ class KaomojiPickerCollectionViewItem: NSCollectionViewItem {
     super.mouseUp(with: theEvent)
 
     //guard !wasDragging, let appDelegate = NSApp.delegate as? AppDelegate else { return }
-    guard let appDelegate = NSApp.delegate as? AppDelegate else { return }
+    insert()
+  }
 
-    if appDelegate.popover?.isDetached != true {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
-        appDelegate.popover?.close()
-        appDelegate.insertText(titleTextField.stringValue)
-      }
-    } else {
-      appDelegate.insertText(titleTextField.stringValue)
-    }
+  override func insertNewline(_ sender: Any?) {
+    insert()
   }
 }
 

@@ -7,21 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3B895B712A065679006442A2 /* KaomojiPickerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B702A065679006442A2 /* KaomojiPickerApp.swift */; };
-		3B895B732A065679006442A2 /* KaomojiPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B722A065679006442A2 /* KaomojiPickerViewController.swift */; };
+		3B895B712A065679006442A2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B702A065679006442A2 /* AppDelegate.swift */; };
+		3B895B732A065679006442A2 /* KaomojiCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B722A065679006442A2 /* KaomojiCollectionViewController.swift */; };
 		3B895B752A06567D006442A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B742A06567D006442A2 /* Assets.xcassets */; };
 		3B895B802A065699006442A2 /* NSViewPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B7F2A065699006442A2 /* NSViewPreview.swift */; };
 		3B895B822A0673D3006442A2 /* Kaomoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B812A0673D3006442A2 /* Kaomoji.swift */; };
 		3B895B842A068BB5006442A2 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B832A068BB5006442A2 /* MainMenu.xib */; };
-		3B895BBB2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */; };
-		3B895BBD2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBC2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift */; };
-		3B895BBF2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBE2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift */; };
+		3B895BBD2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBC2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift */; };
+		3B895BBF2A07B477006442A2 /* KaomojiCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBE2A07B477006442A2 /* KaomojiCollectionViewItem.swift */; };
+		3B895BCC2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 3B895BCB2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff */; };
+		3B895BD42A07B56F006442A2 /* KaomojiPickerPreferencePane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */; };
+		3B895BD62A07B5FE006442A2 /* KaomojiPickerPreferencePane.prefPane in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3B895BC52A07B512006442A2 /* KaomojiPickerPreferencePane.prefPane */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3B895BDA2A07B6C9006442A2 /* KaomojiPickerPreferencePane.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3B895BD72A07B6C8006442A2 /* KaomojiPickerPreferencePane.xib */; };
+		3B895BDB2A07B6C9006442A2 /* KaomojiPickerPreferencePane.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B895BD82A07B6C9006442A2 /* KaomojiPickerPreferencePane.h */; };
+		3B895BDC2A07B6C9006442A2 /* KaomojiPickerPreferencePane.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BD92A07B6C9006442A2 /* KaomojiPickerPreferencePane.m */; };
+		3B895BDE2A082C74006442A2 /* KaomojiPickerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BDD2A082C74006442A2 /* KaomojiPickerSettingsView.swift */; };
+		3B895BE02A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BDF2A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3B895BD52A07B5E8006442A2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /Users/freya/Library/PreferencePanes;
+			dstSubfolderSpec = 0;
+			files = (
+				3B895BD62A07B5FE006442A2 /* KaomojiPickerPreferencePane.prefPane in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3B895B6D2A065679006442A2 /* Kaomoji Picker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kaomoji Picker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B895B702A065679006442A2 /* KaomojiPickerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerApp.swift; sourceTree = "<group>"; };
-		3B895B722A065679006442A2 /* KaomojiPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerViewController.swift; sourceTree = "<group>"; };
+		3B895B702A065679006442A2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		3B895B722A065679006442A2 /* KaomojiCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCollectionViewController.swift; sourceTree = "<group>"; };
 		3B895B742A06567D006442A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3B895B7F2A065699006442A2 /* NSViewPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSViewPreview.swift; sourceTree = "<group>"; };
 		3B895B812A0673D3006442A2 /* Kaomoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kaomoji.swift; sourceTree = "<group>"; };
@@ -29,12 +49,27 @@
 		3B895BB82A06EAA3006442A2 /* KaomojiPicker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = KaomojiPicker.png; sourceTree = "<group>"; };
 		3B895BB92A06EAAB006442A2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerPreferencePane.swift; sourceTree = "<group>"; };
-		3B895BBC2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerCollectionViewHeader.swift; sourceTree = "<group>"; };
-		3B895BBE2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerCollectionViewItem.swift; sourceTree = "<group>"; };
+		3B895BBC2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCollectionViewSectionHeader.swift; sourceTree = "<group>"; };
+		3B895BBE2A07B477006442A2 /* KaomojiCollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCollectionViewItem.swift; sourceTree = "<group>"; };
+		3B895BC52A07B512006442A2 /* KaomojiPickerPreferencePane.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KaomojiPickerPreferencePane.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B895BCB2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = KaomojiPickerPreferencePane.tiff; sourceTree = "<group>"; };
+		3B895BD02A07B512006442A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3B895BD72A07B6C8006442A2 /* KaomojiPickerPreferencePane.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KaomojiPickerPreferencePane.xib; sourceTree = "<group>"; };
+		3B895BD82A07B6C9006442A2 /* KaomojiPickerPreferencePane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KaomojiPickerPreferencePane.h; sourceTree = "<group>"; };
+		3B895BD92A07B6C9006442A2 /* KaomojiPickerPreferencePane.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KaomojiPickerPreferencePane.m; sourceTree = "<group>"; };
+		3B895BDD2A082C74006442A2 /* KaomojiPickerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerSettingsView.swift; sourceTree = "<group>"; };
+		3B895BDF2A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KaomojiPickerSettingsView~tables.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		3B895B6A2A065679006442A2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B895BC22A07B512006442A2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -50,6 +85,7 @@
 				3B895BB92A06EAAB006442A2 /* README.md */,
 				3B895BB82A06EAA3006442A2 /* KaomojiPicker.png */,
 				3B895B6F2A065679006442A2 /* KaomojiPicker */,
+				3B895BC62A07B512006442A2 /* KaomojiPickerPreferencePane */,
 				3B895B6E2A065679006442A2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -58,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				3B895B6D2A065679006442A2 /* Kaomoji Picker.app */,
+				3B895BC52A07B512006442A2 /* KaomojiPickerPreferencePane.prefPane */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -65,20 +102,45 @@
 		3B895B6F2A065679006442A2 /* KaomojiPicker */ = {
 			isa = PBXGroup;
 			children = (
-				3B895B812A0673D3006442A2 /* Kaomoji.swift */,
-				3B895B702A065679006442A2 /* KaomojiPickerApp.swift */,
-				3B895BBC2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift */,
-				3B895BBE2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift */,
-				3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */,
-				3B895B722A065679006442A2 /* KaomojiPickerViewController.swift */,
-				3B895B7F2A065699006442A2 /* NSViewPreview.swift */,
+				3B895B702A065679006442A2 /* AppDelegate.swift */,
 				3B895B742A06567D006442A2 /* Assets.xcassets */,
+				3B895B812A0673D3006442A2 /* Kaomoji.swift */,
+				3B895B722A065679006442A2 /* KaomojiCollectionViewController.swift */,
+				3B895BBE2A07B477006442A2 /* KaomojiCollectionViewItem.swift */,
+				3B895BBC2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift */,
+				3B895BDD2A082C74006442A2 /* KaomojiPickerSettingsView.swift */,
+				3B895BDF2A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift */,
 				3B895B832A068BB5006442A2 /* MainMenu.xib */,
+				3B895B7F2A065699006442A2 /* NSViewPreview.swift */,
 			);
 			path = KaomojiPicker;
 			sourceTree = "<group>";
 		};
+		3B895BC62A07B512006442A2 /* KaomojiPickerPreferencePane */ = {
+			isa = PBXGroup;
+			children = (
+				3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */,
+				3B895BCB2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff */,
+				3B895BD82A07B6C9006442A2 /* KaomojiPickerPreferencePane.h */,
+				3B895BD92A07B6C9006442A2 /* KaomojiPickerPreferencePane.m */,
+				3B895BD72A07B6C8006442A2 /* KaomojiPickerPreferencePane.xib */,
+				3B895BD02A07B512006442A2 /* Info.plist */,
+			);
+			path = KaomojiPickerPreferencePane;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3B895BC02A07B512006442A2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B895BDB2A07B6C9006442A2 /* KaomojiPickerPreferencePane.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		3B895B6C2A065679006442A2 /* KaomojiPicker */ = {
@@ -98,6 +160,25 @@
 			productReference = 3B895B6D2A065679006442A2 /* Kaomoji Picker.app */;
 			productType = "com.apple.product-type.application";
 		};
+		3B895BC42A07B512006442A2 /* KaomojiPickerPreferencePane */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B895BD12A07B512006442A2 /* Build configuration list for PBXNativeTarget "KaomojiPickerPreferencePane" */;
+			buildPhases = (
+				3B895BC02A07B512006442A2 /* Headers */,
+				3B895BC12A07B512006442A2 /* Sources */,
+				3B895BC22A07B512006442A2 /* Frameworks */,
+				3B895BC32A07B512006442A2 /* Resources */,
+				3B895BD52A07B5E8006442A2 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KaomojiPickerPreferencePane;
+			productName = KaomojiPickerPreferencePane;
+			productReference = 3B895BC52A07B512006442A2 /* KaomojiPickerPreferencePane.prefPane */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -110,6 +191,10 @@
 				TargetAttributes = {
 					3B895B6C2A065679006442A2 = {
 						CreatedOnToolsVersion = 14.3;
+					};
+					3B895BC42A07B512006442A2 = {
+						CreatedOnToolsVersion = 14.3;
+						LastSwiftMigration = 1430;
 					};
 				};
 			};
@@ -127,6 +212,7 @@
 			projectRoot = "";
 			targets = (
 				3B895B6C2A065679006442A2 /* KaomojiPicker */,
+				3B895BC42A07B512006442A2 /* KaomojiPickerPreferencePane */,
 			);
 		};
 /* End PBXProject section */
@@ -141,6 +227,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3B895BC32A07B512006442A2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B895BCC2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff in Resources */,
+				3B895BDA2A07B6C9006442A2 /* KaomojiPickerPreferencePane.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -149,12 +244,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B895B802A065699006442A2 /* NSViewPreview.swift in Sources */,
-				3B895B732A065679006442A2 /* KaomojiPickerViewController.swift in Sources */,
-				3B895BBB2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift in Sources */,
-				3B895BBF2A07B477006442A2 /* KaomojiPickerCollectionViewItem.swift in Sources */,
-				3B895B712A065679006442A2 /* KaomojiPickerApp.swift in Sources */,
+				3B895B732A065679006442A2 /* KaomojiCollectionViewController.swift in Sources */,
+				3B895BBF2A07B477006442A2 /* KaomojiCollectionViewItem.swift in Sources */,
+				3B895B712A065679006442A2 /* AppDelegate.swift in Sources */,
+				3B895BDE2A082C74006442A2 /* KaomojiPickerSettingsView.swift in Sources */,
 				3B895B822A0673D3006442A2 /* Kaomoji.swift in Sources */,
-				3B895BBD2A07B43E006442A2 /* KaomojiPickerCollectionViewHeader.swift in Sources */,
+				3B895BE02A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift in Sources */,
+				3B895BBD2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B895BC12A07B512006442A2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B895BD42A07B56F006442A2 /* KaomojiPickerPreferencePane.swift in Sources */,
+				3B895BDC2A07B6C9006442A2 /* KaomojiPickerPreferencePane.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,7 +390,7 @@
 				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -313,7 +418,7 @@
 				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -327,6 +432,51 @@
 				PRODUCT_NAME = "Kaomoji Picker";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		3B895BD22A07B512006442A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KaomojiPickerPreferencePane/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
+				INFOPLIST_KEY_NSMainNibFile = KaomojiPickerPreferencePane;
+				INFOPLIST_KEY_NSPrincipalClass = KaomojiPickerPreferencePane;
+				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.KaomojiPickerPreferencePane;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				WRAPPER_EXTENSION = prefPane;
+			};
+			name = Debug;
+		};
+		3B895BD32A07B512006442A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KaomojiPickerPreferencePane/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
+				INFOPLIST_KEY_NSMainNibFile = KaomojiPickerPreferencePane;
+				INFOPLIST_KEY_NSPrincipalClass = KaomojiPickerPreferencePane;
+				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.KaomojiPickerPreferencePane;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				WRAPPER_EXTENSION = prefPane;
 			};
 			name = Release;
 		};
@@ -347,6 +497,15 @@
 			buildConfigurations = (
 				3B895B7D2A06567D006442A2 /* Debug */,
 				3B895B7E2A06567D006442A2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B895BD12A07B512006442A2 /* Build configuration list for PBXNativeTarget "KaomojiPickerPreferencePane" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B895BD22A07B512006442A2 /* Debug */,
+				3B895BD32A07B512006442A2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

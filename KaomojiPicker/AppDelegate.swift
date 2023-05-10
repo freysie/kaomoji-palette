@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import HotKey
 //import Combine
 
 // TODO: settings!
@@ -11,16 +12,15 @@ import SwiftUI
 // TODO: intercept escape key when closing popover so it doesn’t send escape key to other apps
 // TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
 // TODO: show regular mouse cursor while mousing over picker (or is this just an issue with my OpenCore-Legacy-Patcher-patched macOS??)
-// TODO: prevent double-clicking from insesrting two kaomoji
+// TODO: prevent double-clicking from inserting two kaomoji
 
 let popoverSize = NSSize(width: 320, height: 358)
 //let popoverSize = NSSize(width: 320, height: 368)
 
+func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
+
 @main
 class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
-  let defaults = UserDefaults.standard
-  let maxRecents = 12
-
   var keyMonitor: Any?
   var mouseMonitor: Any?
   var popover: NSPopover?
@@ -34,11 +34,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       return
     }
 
+//    defaults.register(defaults: [
+//      "Categories": Array(kaomojiSectionTitles.dropFirst()),
+//      "Kaomoji": Array(kaomoji.dropFirst()),
+//    ])
+
     //showSettingsWindow(nil)
 
-    kaomoji[0] = defaults.stringArray(forKey: "Recents") ?? []
+//    kaomoji[0] = defaults.stringArray(forKey: "Recents") ?? []
 
     //UserDefaults.standard.stringArray(forKey: "Recents")
+    //UserDefaults.standard.stringArray(forKey: "Kaomoji")
+    //UserDefaults.standard.stringArray(forKey: "Categories")
     //UserDefaults.standard.stringArray(forKey: "Favorites")
     //UserDefaults.standard.dictionary(forKey: "UsageHistory")
 
@@ -48,7 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     keyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [self] event in
       // FIXME: find another way (￣▽￣*)ゞ (use carbon hotkeys? or nonactivating panel?)
-      if event.keyCode == 53, popover?.isShown == true {
+      if event.keyCode == 53, popover?.isShown == true, popover?.isDetached == false {
         popover?.close()
         return
       }
@@ -64,12 +71,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [self] event in
+      guard popover?.isDetached == false else { return }
       popover?.close()
     }
 
     showPicker(at: CGEvent(source: nil)?.unflippedLocation ?? .zero)
 
-    // let w = NSWindow(contentViewController: KaomojiPickerViewController())
+    // let w = NSWindow(contentViewController: CollectionViewController())
     // //w.styleMask.insert(.nonactivatingPanel)
     // //w.setValue(true, forKey: "preventsActivation")
     // w.setContentSize(popoverSize)
@@ -77,9 +85,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     // //print(w.frame)
   }
 
+  var leftArrowHotKey: HotKey!
+  var rightArrowHotKey: HotKey!
+  var upArrowHotKey: HotKey!
+  var downArrowHotKey: HotKey!
+  var escapeHotKey: HotKey!
+  var returnHotKey: HotKey!
+
   func showPicker(at point: NSPoint) {
     //print(#function)
-    //let w = NSWindow(contentViewController: KaomojiPickerViewController())
+    //let w = NSWindow(contentViewController: CollectionViewController())
     ////w.styleMask.insert(.nonactivatingPanel)
     //w.setValue(true, forKey: "preventsActivation")
     //w.setContentSize(popoverSize)
@@ -97,15 +112,40 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     //positioningWindow.setValue(true, forKey: "preventsActivation")
     positioningWindow.orderFrontRegardless()
 
+    let collectionViewController = CollectionViewController()
+    collectionViewController.preferredContentSize = popoverSize
+
     let popover = NSPopover()
     popover.delegate = self
     popover.behavior = .transient
-    popover.contentViewController = KaomojiCollectionViewController()
+    popover.contentViewController = collectionViewController
     popover.contentSize = popoverSize
+
+//    func beginSelection() {
+//      if collectionViewController.collectionView.selectionIndexPaths.isEmpty {
+//        collectionViewController.collectionView.selectItems(at: [IndexPath(item: 0, section: 0)], scrollPosition: .nearestHorizontalEdge)
+//      }
+//    }
+
+//    leftArrowHotKey = HotKey(key: .leftArrow, modifiers: [])
+//    leftArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveLeft(nil) }
+//    rightArrowHotKey = HotKey(key: .rightArrow, modifiers: [])
+//    rightArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveRight(nil) }
+//    upArrowHotKey = HotKey(key: .upArrow, modifiers: [])
+//    upArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveUp(nil) }
+//    downArrowHotKey = HotKey(key: .downArrow, modifiers: [])
+//    downArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveDown(nil) }
+//    escapeHotKey = HotKey(key: .escape, modifiers: [])
+//    escapeHotKey.keyDownHandler = { self.popover?.close() }
+//    returnHotKey = HotKey(key: .return, modifiers: [])
+//    returnHotKey.keyDownHandler = { print("aaaaaaaa") }
 
     popover.animates = false
     popover.show(relativeTo: .zero, of: positioningWindow.contentView!, preferredEdge: .minY)
     popover.animates = true
+
+    //collectionViewController.collectionView.focusRingType = .exterior
+    collectionViewController.collectionView.becomeFirstResponder()
 
     if let popoverWindow = popover.value(forKey: "_popoverWindow") as? NSPanel {
       //print(popoverWindow)
@@ -116,7 +156,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       //popoverWindow.becomesKeyOnlyIfNeeded = true
 
       popoverWindow.level = .floating
-      popoverWindow.isMovableByWindowBackground = true
+      //popoverWindow.isMovableByWindowBackground = true
       //popoverWindow.setValue(true, forKey: "hasActiveAppearance")
       //popoverWindow.setValue(true, forKey: "nonactivatingPanel")
       //popoverWindow.setValue(true, forKey: "avoidsActivation")
@@ -215,11 +255,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       event.type = .keyDown
     }
 
-    var recents = defaults.stringArray(forKey: "Recents") ?? []
-    recents.insert(string, at: 0)
-    recents = Array(recents.uniqued().prefix(maxRecents))
-    defaults.set(recents, forKey: "Recents")
-    kaomoji[0] = recents
+    DataSource.shared.addKaomojiToRecents(string)
+
+//    var recents = defaults.stringArray(forKey: "Recents") ?? []
+//    recents.insert(string, at: 0)
+//    recents = Array(recents.uniqued().prefix(maxRecents))
+//    defaults.set(recents, forKey: "Recents")
+//    kaomoji[0] = recents
 
     // --8<----
 
@@ -262,8 +304,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 //  }
 
   let settingsWindow = {
-    let window = NSPanel(contentViewController: NSHostingController(rootView: KaomojiPickerSettingsView()))
-    window.title = "Kaomoji Picker Settings"
+    let window = NSPanel(contentViewController: NSHostingController(rootView: SettingsView()))
+    window.title = l("Kaomoji Picker Settings")
     window.styleMask = [.titled, .nonactivatingPanel, .utilityWindow, .closable]
     window.isFloatingPanel = true
     window.hidesOnDeactivate = false
@@ -289,6 +331,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   }
 
   // MARK: -
+
+  func popoverWillClose(_ notification: Notification) {
+    leftArrowHotKey = nil
+    rightArrowHotKey = nil
+    upArrowHotKey = nil
+    downArrowHotKey = nil
+    escapeHotKey = nil
+    returnHotKey = nil
+  }
 
   func popoverDidShow(_ notification: Notification) {
     //print((popover, popover?.value(forKey: "positioningWindow")))
@@ -328,27 +379,5 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     //print(popover.contentViewController?.view.window?.standardWindowButton(.closeButton)?.frame)
     //popover.contentViewController!.view.window!.standardWindowButton(.closeButton)!.frame = popover.contentViewController!.view.window!.standardWindowButton(.closeButton)!.frame.insetBy(dx: -5, dy: -5)
-  }
-}
-
-extension Collection {
-  func chunked(into size: Int) -> [SubSequence] {
-    var chunks: [SubSequence] = []
-    chunks.reserveCapacity((underestimatedCount + size - 1) / size)
-
-    var residual = self[...], splitIndex = startIndex
-    while formIndex(&splitIndex, offsetBy: size, limitedBy: endIndex) {
-      chunks.append(residual.prefix(upTo: splitIndex))
-      residual = residual.suffix(from: splitIndex)
-    }
-
-    return residual.isEmpty ? chunks : chunks + CollectionOfOne(residual)
-  }
-}
-
-extension Sequence where Iterator.Element: Hashable {
-  func uniqued() -> [Iterator.Element] {
-    var seen: Set<Iterator.Element> = []
-    return filter { seen.insert($0).inserted }
   }
 }

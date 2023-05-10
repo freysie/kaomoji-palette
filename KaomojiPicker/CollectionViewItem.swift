@@ -1,15 +1,16 @@
 import AppKit
 
-class KaomojiCollectionViewItem: NSCollectionViewItem {
+class CollectionViewItem: NSCollectionViewItem {
   var titleTextField: NSTextField!
-  var settingsMode = false
+//  var settingsMode = false
+  var selectionColor = NSColor.controlAccentColor
 
   override func loadView() {
-    titleTextField = KaomoijPickerCollectionViewItemTextField(labelWithString: "")
+    titleTextField = CollectionViewItemTextField(labelWithString: "")
     titleTextField.translatesAutoresizingMaskIntoConstraints = false
     titleTextField.alignment = .center
     titleTextField.lineBreakMode = .byTruncatingTail
-    //titleTextField.isEditable = true
+    titleTextField.allowsExpansionToolTips = true
     textField = titleTextField
 
     view = NSView()
@@ -27,14 +28,19 @@ class KaomojiCollectionViewItem: NSCollectionViewItem {
 
   override var isSelected: Bool {
     didSet {
-      view.layer?.backgroundColor = isSelected
-      ? NSColor.controlAccentColor.withAlphaComponent(0.5).cgColor
-      : NSColor.clear.cgColor
+      view.layer?.backgroundColor = isSelected ? selectionColor.cgColor : nil
     }
   }
 
+  override func prepareForReuse() {
+    view.layer?.backgroundColor = nil
+  }
+
+  // TODO: move to collection view controller
+  // TODO: add double-clicking support for settings
   func insert() {
-    guard !settingsMode, let appDelegate = NSApp.delegate as? AppDelegate else { return }
+    return
+    guard let appDelegate = NSApp.delegate as? AppDelegate else { return }
 
     if appDelegate.popover?.isDetached == false {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
@@ -76,6 +82,6 @@ class KaomojiCollectionViewItem: NSCollectionViewItem {
   }
 }
 
-class KaomoijPickerCollectionViewItemTextField: NSTextField {
+class CollectionViewItemTextField: NSTextField {
   override var mouseDownCanMoveWindow: Bool { false }
 }

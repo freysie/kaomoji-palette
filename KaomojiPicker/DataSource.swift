@@ -1,29 +1,63 @@
-// TODO: rewire this so we don’t need dropFirst() all over
+import Foundation
 
-var kaomojiSectionTitles = [
-  "Recently Used", // TODO: Frequently Used
-  "Joy",
-  "Love",
-  "Embarrassment",
-  // Sympathy
-  "Dissatisfaction",
-  "Anger",
-  "Sadness",
-  // Pain
-  // Fear
-  // Indifference
-  // Confusion
-  // Doubt
-  "Surprise",
-  "Greeting",
-]
+class DataSource: ObservableObject {
+  static let shared = DataSource()
+  static let maxRecents = 12
 
-var kaomoji = [
-  [
-    "ヽ(°〇°)ﾉ",
-    "(＾▽＾)"
-  ],
-  [
+  private let defaults = UserDefaults.standard
+
+  @Published var categories: [String]
+  @Published var kaomoji: [[String]]
+  @Published var recents: [String]
+
+  init() {
+    defaults.register(defaults: [
+      UserDefaultsKey.categories: defaultKaomoji.map { $0.0 },
+      UserDefaultsKey.kaomoji: defaultKaomoji.map { $0.1 }
+    ])
+
+    categories = defaults.stringArray(forKey: UserDefaultsKey.categories) ?? []
+    kaomoji = defaults.array(forKey: UserDefaultsKey.kaomoji) as? [[String]] ?? []
+    recents = defaults.stringArray(forKey: UserDefaultsKey.recents) ?? []
+  }
+
+  func index(ofCategory category: String) -> Int {
+    categories.firstIndex(of: category) ?? -1
+  }
+
+  func addKaomoji(_ string: String, category: String) {
+    //guard let categoryIndex = categories.firstIndex(of: category) else { return }
+    //kaomoji[categoryIndex].insert(string, at: 0)
+    kaomoji[index(ofCategory: category)].insert(string, at: 0)
+    defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+  }
+
+  func removeKaomoji(at indexPath: IndexPath) {
+    kaomoji[indexPath.section].remove(at: indexPath.item)
+    defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+  }
+
+  func moveKaomoji(at indexPath: IndexPath, to destinationIndexPath: IndexPath) {
+    let element = kaomoji[indexPath.section].remove(at: indexPath.item)
+    kaomoji[destinationIndexPath.section].insert(element, at: destinationIndexPath.item)
+    defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+  }
+
+  func addKaomojiToRecents(_ string: String) {
+    recents.insert(string, at: 0)
+    recents = Array(recents.uniqued().prefix(Self.maxRecents))
+    defaults.set(recents, forKey: UserDefaultsKey.recents)
+  }
+}
+
+fileprivate enum UserDefaultsKey {
+  static let categories = "Categories"
+  static let kaomoji = "Kaomoji"
+  static let recents = "Recents"
+}
+
+fileprivate let defaultKaomoji = [
+  ("Joy", [
     "(* ^ ω ^)",
     "(´ ∀ ` *)",
     "٩(◕‿◕｡)۶",
@@ -111,8 +145,8 @@ var kaomoji = [
     "(„• ᴗ •„)",
     "(ᵔ◡ᵔ)",
     "( ´ ▿ ` )",
-  ],
-  [
+  ]),
+  ("Love", [
     "(ﾉ´ з `)ノ",
     "(♡μ_μ)",
     "(*^^*)♡",
@@ -161,8 +195,8 @@ var kaomoji = [
     "(´,,•ω•,,)♡",
     "(´꒳`)♡",
     "♡(>ᴗ•)",
-  ],
-  [
+  ]),
+  ("Embarrassment", [
     "(⌒_⌒;)",
     "(o^ ^o)",
     "(*/ω＼)",
@@ -188,8 +222,9 @@ var kaomoji = [
     "( 〃▽〃)",
     "(/▿＼ )",
     "(///￣ ￣///)",
-  ],
-  [
+  ]),
+  // ("Sympathy", []),
+  ("Dissatisfaction", [
     "(＃＞＜)",
     "(；⌣̀_⌣́)",
     "☆ｏ(＞＜；)○",
@@ -216,8 +251,8 @@ var kaomoji = [
     "(」＞＜)」",
     "(ᗒᗣᗕ)՞",
     "(눈_눈)",
-  ],
-  [
+  ]),
+  ("Anger", [
     "(＃`Д´)",
     "(`皿´＃)",
     "( ` ω ´ )",
@@ -252,8 +287,8 @@ var kaomoji = [
     "٩(ఠ益ఠ)۶",
     "(ﾉಥ益ಥ)ﾉ",
     "(≖､≖╬)",
-  ],
-  [
+  ]),
+  ("Sadness", [
     "(ノ_<。)",
     "(-_-)",
     "(´-ω-`)",
@@ -290,7 +325,8 @@ var kaomoji = [
     "(｡•́︿•̀｡)",
     "(ಥ﹏ಥ)",
     "(ಡ‸ಡ)",
-  ], [
+  ]),
+  ("Surprise", [
     "w(°ｏ°)w",
     "ヽ(°〇°)ﾉ",
     "Σ(O_O)",
@@ -305,7 +341,8 @@ var kaomoji = [
     "Σ(□_□)",
     "∑(O_O;)",
     "( : ౦ ‸ ౦ : )",
-  ], [
+  ]),
+  ("Greeting", [
     "(*・ω・)ﾉ",
     "(￣▽￣)ノ",
     "(°▽°)/",
@@ -334,5 +371,5 @@ var kaomoji = [
     "(✧∀✧)/",
     "(o´▽`o)ﾉ",
     "(￣▽￣)/",
-  ]
+  ])
 ]

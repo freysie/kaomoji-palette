@@ -8,21 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		3B895B712A065679006442A2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B702A065679006442A2 /* AppDelegate.swift */; };
-		3B895B732A065679006442A2 /* KaomojiCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B722A065679006442A2 /* KaomojiCollectionViewController.swift */; };
+		3B895B732A065679006442A2 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B722A065679006442A2 /* CollectionViewController.swift */; };
 		3B895B752A06567D006442A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B742A06567D006442A2 /* Assets.xcassets */; };
 		3B895B802A065699006442A2 /* NSViewPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B7F2A065699006442A2 /* NSViewPreview.swift */; };
 		3B895B822A0673D3006442A2 /* Kaomoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B812A0673D3006442A2 /* Kaomoji.swift */; };
 		3B895B842A068BB5006442A2 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B832A068BB5006442A2 /* MainMenu.xib */; };
-		3B895BBD2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBC2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift */; };
-		3B895BBF2A07B477006442A2 /* KaomojiCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBE2A07B477006442A2 /* KaomojiCollectionViewItem.swift */; };
+		3B895BBD2A07B43E006442A2 /* CollectionViewSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */; };
+		3B895BBF2A07B477006442A2 /* CollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */; };
 		3B895BCC2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 3B895BCB2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff */; };
 		3B895BD42A07B56F006442A2 /* KaomojiPickerPreferencePane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */; };
 		3B895BD62A07B5FE006442A2 /* KaomojiPickerPreferencePane.prefPane in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3B895BC52A07B512006442A2 /* KaomojiPickerPreferencePane.prefPane */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3B895BDA2A07B6C9006442A2 /* KaomojiPickerPreferencePane.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3B895BD72A07B6C8006442A2 /* KaomojiPickerPreferencePane.xib */; };
 		3B895BDB2A07B6C9006442A2 /* KaomojiPickerPreferencePane.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B895BD82A07B6C9006442A2 /* KaomojiPickerPreferencePane.h */; };
 		3B895BDC2A07B6C9006442A2 /* KaomojiPickerPreferencePane.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BD92A07B6C9006442A2 /* KaomojiPickerPreferencePane.m */; };
-		3B895BDE2A082C74006442A2 /* KaomojiPickerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BDD2A082C74006442A2 /* KaomojiPickerSettingsView.swift */; };
-		3B895BE02A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BDF2A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift */; };
+		3B895BDE2A082C74006442A2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BDD2A082C74006442A2 /* SettingsView.swift */; };
+		3B895BE62A0946F6006442A2 /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 3B895BE52A0946F6006442A2 /* HotKey */; };
+		3B895BEA2A0A68F0006442A2 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BE92A0A68F0006442A2 /* DataSource.swift */; };
+		3B895BED2A0C2CCD006442A2 /* Collection+Chunked.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */; };
+		3B895BEF2A0C2CE1006442A2 /* Sequence+Uniqued.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -41,7 +44,7 @@
 /* Begin PBXFileReference section */
 		3B895B6D2A065679006442A2 /* Kaomoji Picker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kaomoji Picker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B895B702A065679006442A2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		3B895B722A065679006442A2 /* KaomojiCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCollectionViewController.swift; sourceTree = "<group>"; };
+		3B895B722A065679006442A2 /* CollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		3B895B742A06567D006442A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3B895B7F2A065699006442A2 /* NSViewPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSViewPreview.swift; sourceTree = "<group>"; };
 		3B895B812A0673D3006442A2 /* Kaomoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kaomoji.swift; sourceTree = "<group>"; };
@@ -49,16 +52,18 @@
 		3B895BB82A06EAA3006442A2 /* KaomojiPicker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = KaomojiPicker.png; sourceTree = "<group>"; };
 		3B895BB92A06EAAB006442A2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerPreferencePane.swift; sourceTree = "<group>"; };
-		3B895BBC2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCollectionViewSectionHeader.swift; sourceTree = "<group>"; };
-		3B895BBE2A07B477006442A2 /* KaomojiCollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCollectionViewItem.swift; sourceTree = "<group>"; };
+		3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewSectionHeader.swift; sourceTree = "<group>"; };
+		3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewItem.swift; sourceTree = "<group>"; };
 		3B895BC52A07B512006442A2 /* KaomojiPickerPreferencePane.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KaomojiPickerPreferencePane.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B895BCB2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = KaomojiPickerPreferencePane.tiff; sourceTree = "<group>"; };
 		3B895BD02A07B512006442A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3B895BD72A07B6C8006442A2 /* KaomojiPickerPreferencePane.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = KaomojiPickerPreferencePane.xib; sourceTree = "<group>"; };
 		3B895BD82A07B6C9006442A2 /* KaomojiPickerPreferencePane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KaomojiPickerPreferencePane.h; sourceTree = "<group>"; };
 		3B895BD92A07B6C9006442A2 /* KaomojiPickerPreferencePane.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KaomojiPickerPreferencePane.m; sourceTree = "<group>"; };
-		3B895BDD2A082C74006442A2 /* KaomojiPickerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiPickerSettingsView.swift; sourceTree = "<group>"; };
-		3B895BDF2A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KaomojiPickerSettingsView~tables.swift"; sourceTree = "<group>"; };
+		3B895BDD2A082C74006442A2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		3B895BE92A0A68F0006442A2 /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
+		3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Chunked.swift"; sourceTree = "<group>"; };
+		3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Sequence+Uniqued.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B895BE62A0946F6006442A2 /* HotKey in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,16 +108,16 @@
 		3B895B6F2A065679006442A2 /* KaomojiPicker */ = {
 			isa = PBXGroup;
 			children = (
+				3B895BEB2A0C2CBE006442A2 /* Additions */,
 				3B895B702A065679006442A2 /* AppDelegate.swift */,
-				3B895B742A06567D006442A2 /* Assets.xcassets */,
+				3B895B722A065679006442A2 /* CollectionViewController.swift */,
+				3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */,
+				3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */,
+				3B895BE92A0A68F0006442A2 /* DataSource.swift */,
 				3B895B812A0673D3006442A2 /* Kaomoji.swift */,
-				3B895B722A065679006442A2 /* KaomojiCollectionViewController.swift */,
-				3B895BBE2A07B477006442A2 /* KaomojiCollectionViewItem.swift */,
-				3B895BBC2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift */,
-				3B895BDD2A082C74006442A2 /* KaomojiPickerSettingsView.swift */,
-				3B895BDF2A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift */,
+				3B895BDD2A082C74006442A2 /* SettingsView.swift */,
+				3B895B742A06567D006442A2 /* Assets.xcassets */,
 				3B895B832A068BB5006442A2 /* MainMenu.xib */,
-				3B895B7F2A065699006442A2 /* NSViewPreview.swift */,
 			);
 			path = KaomojiPicker;
 			sourceTree = "<group>";
@@ -127,6 +133,16 @@
 				3B895BD02A07B512006442A2 /* Info.plist */,
 			);
 			path = KaomojiPickerPreferencePane;
+			sourceTree = "<group>";
+		};
+		3B895BEB2A0C2CBE006442A2 /* Additions */ = {
+			isa = PBXGroup;
+			children = (
+				3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */,
+				3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */,
+				3B895B7F2A065699006442A2 /* NSViewPreview.swift */,
+			);
+			path = Additions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -156,6 +172,9 @@
 			dependencies = (
 			);
 			name = KaomojiPicker;
+			packageProductDependencies = (
+				3B895BE52A0946F6006442A2 /* HotKey */,
+			);
 			productName = KaomojiPicker;
 			productReference = 3B895B6D2A065679006442A2 /* Kaomoji Picker.app */;
 			productType = "com.apple.product-type.application";
@@ -207,6 +226,9 @@
 				Base,
 			);
 			mainGroup = 3B895B642A065679006442A2;
+			packageReferences = (
+				3B895BE42A0946F6006442A2 /* XCRemoteSwiftPackageReference "HotKey" */,
+			);
 			productRefGroup = 3B895B6E2A065679006442A2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -244,13 +266,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B895B802A065699006442A2 /* NSViewPreview.swift in Sources */,
-				3B895B732A065679006442A2 /* KaomojiCollectionViewController.swift in Sources */,
-				3B895BBF2A07B477006442A2 /* KaomojiCollectionViewItem.swift in Sources */,
+				3B895B732A065679006442A2 /* CollectionViewController.swift in Sources */,
+				3B895BED2A0C2CCD006442A2 /* Collection+Chunked.swift in Sources */,
+				3B895BBF2A07B477006442A2 /* CollectionViewItem.swift in Sources */,
+				3B895BEF2A0C2CE1006442A2 /* Sequence+Uniqued.swift in Sources */,
 				3B895B712A065679006442A2 /* AppDelegate.swift in Sources */,
-				3B895BDE2A082C74006442A2 /* KaomojiPickerSettingsView.swift in Sources */,
+				3B895BDE2A082C74006442A2 /* SettingsView.swift in Sources */,
 				3B895B822A0673D3006442A2 /* Kaomoji.swift in Sources */,
-				3B895BE02A09132C006442A2 /* KaomojiPickerSettingsView~tables.swift in Sources */,
-				3B895BBD2A07B43E006442A2 /* KaomojiCollectionViewSectionHeader.swift in Sources */,
+				3B895BEA2A0A68F0006442A2 /* DataSource.swift in Sources */,
+				3B895BBD2A07B43E006442A2 /* CollectionViewSectionHeader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -511,6 +535,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3B895BE42A0946F6006442A2 /* XCRemoteSwiftPackageReference "HotKey" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/freyaalminde/HotKey.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3B895BE52A0946F6006442A2 /* HotKey */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B895BE42A0946F6006442A2 /* XCRemoteSwiftPackageReference "HotKey" */;
+			productName = HotKey;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3B895B652A065679006442A2 /* Project object */;
 }

@@ -1,6 +1,6 @@
 import AppKit
 
-class KaomojiCollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
+class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
   var stackView: NSStackView!
   var titleTextField: NSTextField!
 

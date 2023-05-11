@@ -1,8 +1,8 @@
 import AppKit
 
 class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
-  var stackView: NSStackView!
-  var titleTextField: NSTextField!
+  private(set) var stackView: NSStackView!
+  private(set) var titleTextField: NSTextField!
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -17,8 +17,6 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
     stackView = NSStackView(views: [titleTextField])
     stackView.edgeInsets = NSEdgeInsets(top: 12, left: 16, bottom: 0, right: 16)
     stackView.wantsLayer = true
-    //stackView.layer?.borderColor = .white
-    //stackView.layer?.borderWidth = 1
     // TODO: find out why the top edge inset is not working, then remove this:
     stackView.layer?.sublayerTransform = CATransform3DMakeTranslation(0, -4, 0)
     addSubview(stackView)
@@ -37,6 +35,7 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
   }
 
   override func prepareForReuse() {
+    super.prepareForReuse()
     stackView.arrangedSubviews.forEach(stackView.removeView)
     stackView.addArrangedSubview(titleTextField)
   }

@@ -11,7 +11,6 @@
 		3B895B732A065679006442A2 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B722A065679006442A2 /* CollectionViewController.swift */; };
 		3B895B752A06567D006442A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B742A06567D006442A2 /* Assets.xcassets */; };
 		3B895B802A065699006442A2 /* NSViewPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B7F2A065699006442A2 /* NSViewPreview.swift */; };
-		3B895B822A0673D3006442A2 /* Kaomoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B812A0673D3006442A2 /* Kaomoji.swift */; };
 		3B895B842A068BB5006442A2 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B832A068BB5006442A2 /* MainMenu.xib */; };
 		3B895BBD2A07B43E006442A2 /* CollectionViewSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */; };
 		3B895BBF2A07B477006442A2 /* CollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */; };
@@ -22,11 +21,11 @@
 		3B895BDB2A07B6C9006442A2 /* KaomojiPickerPreferencePane.h in Headers */ = {isa = PBXBuildFile; fileRef = 3B895BD82A07B6C9006442A2 /* KaomojiPickerPreferencePane.h */; };
 		3B895BDC2A07B6C9006442A2 /* KaomojiPickerPreferencePane.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BD92A07B6C9006442A2 /* KaomojiPickerPreferencePane.m */; };
 		3B895BDE2A082C74006442A2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BDD2A082C74006442A2 /* SettingsView.swift */; };
-		3B895BE62A0946F6006442A2 /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 3B895BE52A0946F6006442A2 /* HotKey */; };
 		3B895BEA2A0A68F0006442A2 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BE92A0A68F0006442A2 /* DataSource.swift */; };
 		3B895BED2A0C2CCD006442A2 /* Collection+Chunked.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */; };
 		3B895BEF2A0C2CE1006442A2 /* Sequence+Uniqued.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */; };
 		3B895BFB2A0C5670006442A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3B895BF92A0C5670006442A2 /* Localizable.strings */; };
+		3BB80F942A0C6BC100D77794 /* KaomojiPickerPreferencePane.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BB80F932A0C6BC100D77794 /* KaomojiPickerPreferencePane.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,7 +47,6 @@
 		3B895B722A065679006442A2 /* CollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		3B895B742A06567D006442A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3B895B7F2A065699006442A2 /* NSViewPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSViewPreview.swift; sourceTree = "<group>"; };
-		3B895B812A0673D3006442A2 /* Kaomoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kaomoji.swift; sourceTree = "<group>"; };
 		3B895B832A068BB5006442A2 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		3B895BB82A06EAA3006442A2 /* KaomojiPicker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = KaomojiPicker.png; sourceTree = "<group>"; };
 		3B895BB92A06EAAB006442A2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -66,6 +64,7 @@
 		3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Chunked.swift"; sourceTree = "<group>"; };
 		3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Sequence+Uniqued.swift"; sourceTree = "<group>"; };
 		3B895BFA2A0C5670006442A2 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3BB80F932A0C6BC100D77794 /* KaomojiPickerPreferencePane.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = KaomojiPickerPreferencePane.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,7 +72,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B895BE62A0946F6006442A2 /* HotKey in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,7 +115,6 @@
 				3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */,
 				3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */,
 				3B895BE92A0A68F0006442A2 /* DataSource.swift */,
-				3B895B812A0673D3006442A2 /* Kaomoji.swift */,
 				3B895BDD2A082C74006442A2 /* SettingsView.swift */,
 				3B895B742A06567D006442A2 /* Assets.xcassets */,
 				3B895B832A068BB5006442A2 /* MainMenu.xib */,
@@ -129,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				3B895BBA2A07B41E006442A2 /* KaomojiPickerPreferencePane.swift */,
+				3BB80F932A0C6BC100D77794 /* KaomojiPickerPreferencePane.png */,
 				3B895BCB2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff */,
 				3B895BD82A07B6C9006442A2 /* KaomojiPickerPreferencePane.h */,
 				3B895BD92A07B6C9006442A2 /* KaomojiPickerPreferencePane.m */,
@@ -184,7 +182,6 @@
 			);
 			name = KaomojiPicker;
 			packageProductDependencies = (
-				3B895BE52A0946F6006442A2 /* HotKey */,
 			);
 			productName = KaomojiPicker;
 			productReference = 3B895B6D2A065679006442A2 /* Kaomoji Picker.app */;
@@ -235,10 +232,10 @@
 			knownRegions = (
 				en,
 				Base,
+				da,
 			);
 			mainGroup = 3B895B642A065679006442A2;
 			packageReferences = (
-				3B895BE42A0946F6006442A2 /* XCRemoteSwiftPackageReference "HotKey" */,
 			);
 			productRefGroup = 3B895B6E2A065679006442A2 /* Products */;
 			projectDirPath = "";
@@ -265,6 +262,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3BB80F942A0C6BC100D77794 /* KaomojiPickerPreferencePane.png in Resources */,
 				3B895BCC2A07B512006442A2 /* KaomojiPickerPreferencePane.tiff in Resources */,
 				3B895BDA2A07B6C9006442A2 /* KaomojiPickerPreferencePane.xib in Resources */,
 			);
@@ -284,7 +282,6 @@
 				3B895BEF2A0C2CE1006442A2 /* Sequence+Uniqued.swift in Sources */,
 				3B895B712A065679006442A2 /* AppDelegate.swift in Sources */,
 				3B895BDE2A082C74006442A2 /* SettingsView.swift in Sources */,
-				3B895B822A0673D3006442A2 /* Kaomoji.swift in Sources */,
 				3B895BEA2A0A68F0006442A2 /* DataSource.swift in Sources */,
 				3B895BBD2A07B43E006442A2 /* CollectionViewSectionHeader.swift in Sources */,
 			);
@@ -437,7 +434,7 @@
 				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = NO;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -465,7 +462,7 @@
 				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = NO;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -558,25 +555,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		3B895BE42A0946F6006442A2 /* XCRemoteSwiftPackageReference "HotKey" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/freyaalminde/HotKey.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		3B895BE52A0946F6006442A2 /* HotKey */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3B895BE42A0946F6006442A2 /* XCRemoteSwiftPackageReference "HotKey" */;
-			productName = HotKey;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3B895B652A065679006442A2 /* Project object */;
 }

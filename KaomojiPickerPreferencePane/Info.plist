@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSPrefPaneIconFile</key>
-	<string>KaomojiPickerPreferencePane.tiff</string>
+	<string>KaomojiPickerPreferencePane.png</string>
 	<key>NSPrefPaneIconLabel</key>
 	<string>Kaomoji Picker</string>
 </dict>

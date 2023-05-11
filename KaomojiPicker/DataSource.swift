@@ -6,19 +6,32 @@ class DataSource: ObservableObject {
 
   private let defaults = UserDefaults.standard
 
-  @Published var categories: [String]
-  @Published var kaomoji: [[String]]
-  @Published var recents: [String]
+  @Published private(set) var categories = [String]()
+  @Published private(set) var kaomoji = [[String]]()
+  @Published private(set) var recents = [String]()
 
-  init() {
+  private init() {
     defaults.register(defaults: [
       UserDefaultsKey.categories: defaultKaomoji.map { $0.0 },
       UserDefaultsKey.kaomoji: defaultKaomoji.map { $0.1 }
     ])
 
+    loadFromDefaults()
+  }
+
+  private func loadFromDefaults() {
     categories = defaults.stringArray(forKey: UserDefaultsKey.categories) ?? []
     kaomoji = defaults.array(forKey: UserDefaultsKey.kaomoji) as? [[String]] ?? []
     recents = defaults.stringArray(forKey: UserDefaultsKey.recents) ?? []
+    // recents = ["ヽ(°〇°)ﾉ", "(＾▽＾)"] // for screenshots
+  }
+
+  func restoreToDefaults() {
+    defaults.removeObject(forKey: UserDefaultsKey.categories)
+    defaults.removeObject(forKey: UserDefaultsKey.kaomoji)
+    defaults.removeObject(forKey: UserDefaultsKey.recents)
+
+    loadFromDefaults()
   }
 
   func index(ofCategory category: String) -> Int {
@@ -26,13 +39,12 @@ class DataSource: ObservableObject {
   }
 
   func addKaomoji(_ string: String, category: String) {
-    //guard let categoryIndex = categories.firstIndex(of: category) else { return }
-    //kaomoji[categoryIndex].insert(string, at: 0)
     kaomoji[index(ofCategory: category)].insert(string, at: 0)
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
   }
 
   func removeKaomoji(at indexPath: IndexPath) {
+    // TODO: decide if we should remove from recents too?
     kaomoji[indexPath.section].remove(at: indexPath.item)
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
   }
@@ -373,3 +385,11 @@ fileprivate let defaultKaomoji = [
     "(￣▽￣)/",
   ])
 ]
+
+// TODO: add more kaomoji for categories like:
+// • Sympathy
+// • Pain
+// • Fear
+// • Indifference
+// • Confusion
+// • Doubt

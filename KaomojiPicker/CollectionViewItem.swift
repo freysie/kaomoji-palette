@@ -1,8 +1,7 @@
 import AppKit
 
 class CollectionViewItem: NSCollectionViewItem {
-  var titleTextField: NSTextField!
-//  var settingsMode = false
+  private(set) var titleTextField: NSTextField!
   var selectionColor = NSColor.controlAccentColor
 
   override func loadView() {
@@ -21,9 +20,15 @@ class CollectionViewItem: NSCollectionViewItem {
     NSLayoutConstraint.activate([
       titleTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 1),
       titleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -1),
-      titleTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 2),
+      titleTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 3),
       titleTextField.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -2),
     ])
+  }
+
+  override var representedObject: Any? {
+    didSet {
+      titleTextField.objectValue = representedObject
+    }
   }
 
   override var isSelected: Bool {
@@ -33,25 +38,8 @@ class CollectionViewItem: NSCollectionViewItem {
   }
 
   override func prepareForReuse() {
+    super.prepareForReuse()
     view.layer?.backgroundColor = nil
-  }
-
-  // TODO: move to collection view controller
-  // TODO: add double-clicking support for settings
-  func insert() {
-    return
-    guard let appDelegate = NSApp.delegate as? AppDelegate else { return }
-
-    if appDelegate.popover?.isDetached == false {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
-        appDelegate.popover?.close()
-        //DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
-          appDelegate.insertText(titleTextField.stringValue)
-        //}
-      }
-    } else {
-      appDelegate.insertText(titleTextField.stringValue)
-    }
   }
 
 // FIXME: don’t insert if dragged
@@ -74,11 +62,12 @@ class CollectionViewItem: NSCollectionViewItem {
     super.mouseUp(with: theEvent)
 
     //guard !wasDragging, let appDelegate = NSApp.delegate as? AppDelegate else { return }
-    insert()
+    // TODO: add double-clicking support for settings
+    NSApp.sendAction(#selector(CollectionViewController.insertKaomoji(_:)), to: collectionView?.delegate, from: self)
   }
 
   override func insertNewline(_ sender: Any?) {
-    insert()
+    NSApp.sendAction(#selector(CollectionViewController.insertKaomoji(_:)), to: collectionView?.delegate, from: self)
   }
 }
 

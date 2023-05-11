@@ -1,14 +1,10 @@
 import AppKit
-//import UniformTypeIdentifiers
 
 class CollectionViewController: NSViewController, NSCollectionViewDataSource, NSCollectionViewDelegate {
-//  let settingsMode: Bool
-
-  var showsRecents = true
-  var showsSearchField = true
-  var usesUppercaseSectionTitles = true
-
-  var selectionColor = NSColor.controlAccentColor.withAlphaComponent(0.25)
+  var showsRecents: Bool { true }
+  var showsSearchField: Bool { false }
+  var usesUppercaseSectionTitles: Bool { true }
+  var selectionColor: NSColor { .controlAccentColor.withAlphaComponent(0.25) }
 
   private(set) var flowLayout: NSCollectionViewFlowLayout!
   private(set) var collectionView: NSCollectionView!
@@ -17,20 +13,6 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
   private var kaomoji: [[String]] { (showsRecents ? [dataSource.recents] : []) + dataSource.kaomoji }
   private var categories: [String] { (showsRecents ? [l("Recently Used")] : []) + dataSource.categories }
-
-//  init(settingsMode: Bool = false) {
-//    self.settingsMode = settingsMode
-//    super.init(nibName: nil, bundle: nil)
-//
-//    if settingsMode {
-//      _kaomoji = Array(_kaomoji.dropFirst())
-//      _kaomojiSectionTitles = Array(_kaomojiSectionTitles.dropFirst())
-//    }
-//  }
-//
-//  required init?(coder: NSCoder) {
-//    fatalError("init(coder:) has not been implemented")
-//  }
 
   override func loadView() {
     flowLayout = NSCollectionViewFlowLayout()
@@ -47,7 +29,6 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     collectionView.isSelectable = true
     collectionView.backgroundColors = [.clear]
     collectionView.collectionViewLayout = flowLayout
-    collectionView.focusRingType = .default
 
     collectionView.register(
       CollectionViewItem.self,
@@ -99,8 +80,8 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   }
 
   private class BorderView: NSView {
-    override var intrinsicContentSize: NSSize { NSSize(width: NSView.noIntrinsicMetric, height: 1) }
     override var allowsVibrancy: Bool { true }
+    override var intrinsicContentSize: NSSize { NSSize(width: NSView.noIntrinsicMetric, height: 1) }
     override func draw(_ dirtyRect: NSRect) { NSColor.separatorColor.setFill(); bounds.fill() }
   }
 
@@ -109,6 +90,24 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   override func cancelOperation(_ sender: Any?) {
     view.window?.close()
   }
+
+  @objc func insertKaomoji(_ sender: CollectionViewItem) {
+    guard let kaomoji = sender.representedObject as? String else { return }
+
+    if AppDelegate.shared.popover?.isDetached == true {
+      AppDelegate.shared.insertText(kaomoji)
+    } else {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        AppDelegate.shared.popover?.close()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+          AppDelegate.shared.insertText(kaomoji)
+        }
+      }
+    }
+  }
+
+  @objc func editKaomoji(_ sender: CollectionViewItem) {}
 
   // MARK: - Collection View Data Source
 
@@ -121,23 +120,21 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   }
 
   func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
-    //let item = collectionView.makeItem(withIdentifier: .item, for: indexPath) as! CollectionViewItem
-    let item = CollectionViewItem()
-    item.loadView()
-    //item.settingsMode = settingsMode
+    let item = collectionView.makeItem(withIdentifier: .item, for: indexPath) as! CollectionViewItem
     item.selectionColor = selectionColor
-    item.textField?.stringValue = kaomoji[indexPath.section][indexPath.item]
+    item.representedObject = kaomoji[indexPath.section][indexPath.item]
     return item
   }
 
+  // TODO: find a way to use the default inter-item gap indicator (i.e. the one that shows up when this method is not implemented)
   func collectionView(_ collectionView: NSCollectionView, viewForSupplementaryElementOfKind kind: NSCollectionView.SupplementaryElementKind, at indexPath: IndexPath) -> NSView {
     switch kind {
     case NSCollectionView.elementKindSectionHeader:
       let headerView = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .sectionHeader, for: indexPath) as! CollectionViewSectionHeader
 
       headerView.titleTextField.stringValue = usesUppercaseSectionTitles
-      ? categories[indexPath.section].localizedUppercase
-      : categories[indexPath.section]
+        ? l(categories[indexPath.section]).localizedUppercase
+        : l(categories[indexPath.section])
 
       if indexPath.section == 0, !showsSearchField, !(headerView is SettingsCollectionViewSectionHeader) {
         let settingsButton = NSButton()
@@ -162,7 +159,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
         indicator.heightAnchor.constraint(equalToConstant: 24),
       ])
       return indicator
-      //return collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .interGapIndicator, for: indexPath)
+      //return collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .interItemGapIndicator, for: indexPath)
       //return collectionView.supplementaryView(forElementKind: kind, at: indexPath) ?? NSView()
 
     default:
@@ -173,14 +170,11 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   // MARK: - Collection View Delegate
 
   func collectionView(_ collectionView: NSCollectionView, pasteboardWriterForItemAt indexPath: IndexPath) -> NSPasteboardWriting? {
-    //guard !settingsMode else { return nil }
     kaomoji[indexPath.section][indexPath.item] as NSString
-//    let pasteboardItem = NSPasteboardItem()
-//    pasteboardItem.setString(kaomoji[indexPath.section][indexPath.item], forType: .string)
-////    if settingsMode {
-////      pasteboardItem.setData(Data(), forType: .item)
-////    }
-//    return pasteboardItem
+
+    // let pasteboardItem = NSPasteboardItem()
+    // pasteboardItem.setString(kaomoji[indexPath.section][indexPath.item], forType: .string)
+    // return pasteboardItem
   }
 }
 
@@ -198,10 +192,6 @@ struct CollectionViewController_Previews: PreviewProvider {
 }
 #endif
 
-//extension NSTableView {
-//  var headerView: NSTableHeaderView? { get { nil } set {} }
-//}
-
 //class KaomojiCollectionView: NSCollectionView {
 //  override func supplementaryView(forElementKind elementKind: NSCollectionView.SupplementaryElementKind, at indexPath: IndexPath) -> (NSView & NSCollectionViewElement)? {
 //    print(#function, elementKind)
@@ -216,7 +206,7 @@ struct CollectionViewController_Previews: PreviewProvider {
 extension NSUserInterfaceItemIdentifier {
   static let item = Self("item")
   static let sectionHeader = Self("sectionHeader")
-  //static let interGapIndicator = Self("interGapIndicator")
+  //static let interItemGapIndicator = Self("interItemGapIndicator")
 }
 
 //extension NSPasteboard.PasteboardType {

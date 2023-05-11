@@ -1,31 +1,32 @@
 import AppKit
 import SwiftUI
-import HotKey
-//import Combine
+//import HotKey
 
-// TODO: settings!
+// TODO: customizable keyboard shortcut (￣ω￣)
+// TODO: support older versions of macOS (only needs grouped forms backported)
 // TODO: do something about the varying widths?
 // TODO: keyboard navigation (arrow keys + return)
-// TODO: drag kaomoji out of the picker
 // TODO: more accessibility element edge cases (e.g. the empty text field thing w/ dummy space)
 // TODO: detach popover when moved by window background
 // TODO: intercept escape key when closing popover so it doesn’t send escape key to other apps
 // TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
 // TODO: show regular mouse cursor while mousing over picker (or is this just an issue with my OpenCore-Legacy-Patcher-patched macOS??)
-// TODO: prevent double-clicking from inserting two kaomoji
+// TODO: prevent double-clicking from inserting two kaomoji (//▽//)(//▽//)
+// TODO: perfect positioning of popover when shown in Discord (and other WebKit apps?)
 
 let popoverSize = NSSize(width: 320, height: 358)
-//let popoverSize = NSSize(width: 320, height: 368)
+//let popoverSize = NSSize(width: 320, height: 368) // for use with search field
 
 func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
+  static let shared = NSApp.delegate as! AppDelegate
+
   var keyMonitor: Any?
   var mouseMonitor: Any?
   var popover: NSPopover?
   var positioningWindow: NSWindow?
-  //var subscription: AnyCancellable?
 
   func applicationDidFinishLaunching(_ notification: Notification) {
     guard AXIsProcessTrustedWithOptions(["AXTrustedCheckOptionPrompt": true] as CFDictionary) else {
@@ -34,20 +35,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       return
     }
 
-//    defaults.register(defaults: [
-//      "Categories": Array(kaomojiSectionTitles.dropFirst()),
-//      "Kaomoji": Array(kaomoji.dropFirst()),
-//    ])
-
+#if DEBUG
+    showPicker(at: CGEvent(source: nil)?.unflippedLocation ?? .zero)
     //showSettingsWindow(nil)
-
-//    kaomoji[0] = defaults.stringArray(forKey: "Recents") ?? []
-
-    //UserDefaults.standard.stringArray(forKey: "Recents")
-    //UserDefaults.standard.stringArray(forKey: "Kaomoji")
-    //UserDefaults.standard.stringArray(forKey: "Categories")
-    //UserDefaults.standard.stringArray(forKey: "Favorites")
-    //UserDefaults.standard.dictionary(forKey: "UsageHistory")
+#endif
 
     // NotificationCenter.default.addObserver(forName: nil, object: nil, queue: nil) {
     //   print($0)
@@ -75,8 +66,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       popover?.close()
     }
 
-    showPicker(at: CGEvent(source: nil)?.unflippedLocation ?? .zero)
-
     // let w = NSWindow(contentViewController: CollectionViewController())
     // //w.styleMask.insert(.nonactivatingPanel)
     // //w.setValue(true, forKey: "preventsActivation")
@@ -85,22 +74,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     // //print(w.frame)
   }
 
-  var leftArrowHotKey: HotKey!
-  var rightArrowHotKey: HotKey!
-  var upArrowHotKey: HotKey!
-  var downArrowHotKey: HotKey!
-  var escapeHotKey: HotKey!
-  var returnHotKey: HotKey!
+  //var leftArrowHotKey: HotKey!
+  //var rightArrowHotKey: HotKey!
+  //var upArrowHotKey: HotKey!
+  //var downArrowHotKey: HotKey!
+  //var escapeHotKey: HotKey!
+  //var returnHotKey: HotKey!
 
   func showPicker(at point: NSPoint) {
-    //print(#function)
-    //let w = NSWindow(contentViewController: CollectionViewController())
-    ////w.styleMask.insert(.nonactivatingPanel)
-    //w.setValue(true, forKey: "preventsActivation")
-    //w.setContentSize(popoverSize)
-    //w.orderFrontRegardless()
-    //print(w.frame)
-
     //let positioningWindow = NSPanel()
     //positioningWindow.styleMask = [.borderless, .nonactivatingPanel]
     let positioningWindow = NSWindow()
@@ -120,6 +101,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     popover.behavior = .transient
     popover.contentViewController = collectionViewController
     popover.contentSize = popoverSize
+
+    // TODO: turns out Carbon hotkeys don’t support key repeat (＃＞＜) — find another way or hack it by manually applying repeat
 
 //    func beginSelection() {
 //      if collectionViewController.collectionView.selectionIndexPaths.isEmpty {
@@ -144,8 +127,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     popover.show(relativeTo: .zero, of: positioningWindow.contentView!, preferredEdge: .minY)
     popover.animates = true
 
-    //collectionViewController.collectionView.focusRingType = .exterior
-    collectionViewController.collectionView.becomeFirstResponder()
+    //collectionViewController.collectionView.becomeFirstResponder()
 
     if let popoverWindow = popover.value(forKey: "_popoverWindow") as? NSPanel {
       //print(popoverWindow)
@@ -173,6 +155,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     self.positioningWindow = positioningWindow
   }
 
+  // TODO: if text field is empty: insert dummy space, select it, get bounds, then delete space
+  // TODO: figure out why Discord is being weird (doesn’t work with Kaomoji Picker unless you inspect Discord once with Accessibility Inspector after every launch)
   func showPickerAtInsertionPoint() {
     // var attributeNames: CFArray?
     // AXUIElementCopyAttributeNames(AXUIElementCreateSystemWide(), &attributeNames)
@@ -184,25 +168,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var focusedElement: AnyObject?
     guard AXUIElementCopyAttributeValue(AXUIElementCreateSystemWide(), kAXFocusedUIElementAttribute as CFString, &focusedElement) == .success else {
       print("failed to get focused element")
-
-      var focusedApp: AnyObject?
-      guard AXUIElementCopyAttributeValue(AXUIElementCreateSystemWide(), kAXFocusedApplicationAttribute as CFString, &focusedApp) == .success else { return }
-      print(focusedApp as Any)
-
       return
     }
 
-    //AXSelectedTextMarkerRange
-    //AXStartTextMarker
-
     var textMarkerRange: AnyObject?
     if AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, "AXSelectedTextMarkerRange" as CFString, &textMarkerRange) == .success {
-      //print(range as Any)
-
-      //let endMarker = AXTextMarkerRangeCopyEndMarker(textMarkerRange as! AXTextMarkerRange)
-      //print(endMarker)
-      //print(AXTextMarkerGetLength(endMarker))
-
       var boundsValue: AnyObject?
       guard AXUIElementCopyParameterizedAttributeValue(focusedElement as! AXUIElement, "AXBoundsForTextMarkerRange" as CFString, textMarkerRange!, &boundsValue) == .success else {
         print("failed to find bounds for text marker range")
@@ -242,7 +212,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   }
 
   func insertText(_ string: String) {
-    print(#function, string)
     guard let event = CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: true) else { return }
 
     for chunk in string.chunked(into: 20) {
@@ -256,12 +225,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     DataSource.shared.addKaomojiToRecents(string)
-
-//    var recents = defaults.stringArray(forKey: "Recents") ?? []
-//    recents.insert(string, at: 0)
-//    recents = Array(recents.uniqued().prefix(maxRecents))
-//    defaults.set(recents, forKey: "Recents")
-//    kaomoji[0] = recents
 
     // --8<----
 
@@ -289,19 +252,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     // let newRange = AXValueCreate(.cfRange, &range)
     // AXUIElementSetAttributeValue(focusedElement as! AXUIElement, kAXSelectedTextRangeAttribute as CFString, newRange as AnyObject)
-
-    // --8<----
-
-    //var errorInfo: NSDictionary?
-    //NSAppleScript(source: "tell application \"System Events\" to keystroke \"\(string)\"")?.executeAndReturnError(&errorInfo)
-    //print(errorInfo as Any)
   }
 
-//  class KaomojiSettingsWindow: NSWindow {
-//    // FIXME: this doesn’t work (i blame swiftui)
-//    override var isMiniaturizable: Bool { false }
-//    override var isZoomable: Bool { false }
-//  }
+  // MARK: - Settings
 
   let settingsWindow = {
     let window = NSPanel(contentViewController: NSHostingController(rootView: SettingsView()))
@@ -316,29 +269,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
   @objc func showSettingsWindow(_ sender: Any?) {
     popover?.close()
-    //ProcessSerialNumber psn = { 0, kCurrentProcess };
-    //TransformProcessType(&psn, kProcessTransformToForegroundApplication);
+
     //NSApp.setActivationPolicy(.regular)
+
     //var psn = ProcessSerialNumber(highLongOfPSN: 0, lowLongOfPSN: UInt32(kCurrentProcess))
     //TransformProcessType(&psn, ProcessApplicationTransformState(kProcessTransformToForegroundApplication))
-    //DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
-      //settingsWindow.makeKeyAndOrderFront(nil)
-    //settingsWindow.orderFrontRegardless()
-    //settingsWindow.orderFront(nil)
+
     settingsWindow.makeKeyAndOrderFront(nil)
-      //settingsWindow.makeMain()
-    //}
   }
 
-  // MARK: -
+  // MARK: - Popover Delegate
 
   func popoverWillClose(_ notification: Notification) {
-    leftArrowHotKey = nil
-    rightArrowHotKey = nil
-    upArrowHotKey = nil
-    downArrowHotKey = nil
-    escapeHotKey = nil
-    returnHotKey = nil
+    // leftArrowHotKey = nil
+    // rightArrowHotKey = nil
+    // upArrowHotKey = nil
+    // downArrowHotKey = nil
+    // escapeHotKey = nil
+    // returnHotKey = nil
   }
 
   func popoverDidShow(_ notification: Notification) {
@@ -346,16 +294,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     //guard let popover, let window = popover.value(forKey: "positioningWindow") as? NSWindow else { return }
 
     // print(NSApp.windows as NSArray)
-
-//    DispatchQueue.main.async {
-//      self.subscription = NotificationCenter.default
-//        .publisher(for: NSWindow.didChangeOcclusionStateNotification, object: window)
-//        .sink { _ in
-//          print(window.occlusionState.contains(.visible))
-//          popover.close()
-//          self.subscription?.cancel()
-//        }
-//    }
   }
 
   // func popoverDidClose(_ notification: Notification) {

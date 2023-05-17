@@ -68,6 +68,7 @@ fileprivate enum UserDefaultsKey {
   static let recents = "Recents"
 }
 
+// TODO: add more default kaomoji and categories
 fileprivate let defaultKaomoji = [
   ("Joy", [
     "(* ^ ω ^)",
@@ -235,7 +236,6 @@ fileprivate let defaultKaomoji = [
     "(/▿＼ )",
     "(///￣ ￣///)",
   ]),
-  // ("Sympathy", []),
   ("Dissatisfaction", [
     "(＃＞＜)",
     "(；⌣̀_⌣́)",
@@ -385,11 +385,3 @@ fileprivate let defaultKaomoji = [
     "(￣▽￣)/",
   ])
 ]
-
-// TODO: add more kaomoji for categories like:
-// • Sympathy
-// • Pain
-// • Fear
-// • Indifference
-// • Confusion
-// • Doubt

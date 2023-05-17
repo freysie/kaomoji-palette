@@ -26,7 +26,7 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
       stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
       stackView.topAnchor.constraint(equalTo: topAnchor),
       stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
-      stackView.heightAnchor.constraint(equalToConstant: 27),
+      // stackView.heightAnchor.constraint(equalToConstant: 27),
     ])
   }
 

@@ -1,13 +1,19 @@
-"Recently Used" = "Senest brugt";
+"Recently Used" = "Seneste brugt";
 
 "Kaomoji Picker Settings" = "Indstillinger for kaomoji-vælger";
 "Restore to Defaults" = "Gendan standard";
+"Edit Categories…" = "Rediger kategorier…";
+"Import…" = "Importer…";
+"Export…" = "Eksporter…";
 "Keyboard Shortcut" = "Tastaturgenvej";
 "Space" = "Mellemrum";
 
 "Kaomoji" = "Kaomoji";
+"Kaomoji:" = "Kaomoji:";
 "Category" = "Kategori";
+"Category:" = "Kategori:";
 "Add" = "Tilføj";
+"Done" = "OK";
 "Cancel" = "Annuller";
 
 "Joy" = "Glæde";

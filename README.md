@@ -1,11 +1,11 @@
-# Kaomoji Picker for macOS (＾▽＾)
+# Kaomoji Picker for macOS
 
 <img src="/KaomojiPicker.png" width="392">
 
 
 ## Features
 
-- Quickly insert kaomoji
+- Quickly insert kaomoji (^０^)ノ
 - Customizable list of kaomoji
 - Available in Danish and English
 
@@ -22,5 +22,5 @@
 
 For some reason, Discord seemingly doesn’t respond to accessibility queries by default.
 
-Until a proper solution is found, a temporary workaround is launching Accessibility Inspector and inspecting any element in Discord. Kaomoji Picker will now work until the next time you launch Discord.
+Until a proper solution is found, a temporary workaround is to launch Accessibility Inspector and inspect any element in Discord. Kaomoji Picker will then work until the next time Discord is launched.
 

@@ -34,6 +34,10 @@ class CollectionViewItem: NSCollectionViewItem {
   override var isSelected: Bool {
     didSet {
       view.layer?.backgroundColor = isSelected ? selectionColor.cgColor : nil
+
+      if selectionColor == .controlAccentColor {
+        titleTextField.textColor = isSelected ? .alternateSelectedControlTextColor : nil
+      }
     }
   }
 

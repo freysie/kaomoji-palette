@@ -2,17 +2,23 @@ import AppKit
 import SwiftUI
 //import HotKey
 
-// TODO: customizable keyboard shortcut (￣ω￣)
-// TODO: support older versions of macOS (only needs grouped forms backported)
-// TODO: do something about the varying widths?
+// TODO: support older versions of macOS than macOS 11 Big Sur?
+// TODO: show detached picker window when invoking without a text field focused
 // TODO: keyboard navigation (arrow keys + return)
 // TODO: more accessibility element edge cases (e.g. the empty text field thing w/ dummy space)
-// TODO: detach popover when moved by window background
 // TODO: intercept escape key when closing popover so it doesn’t send escape key to other apps
-// TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
-// TODO: show regular mouse cursor while mousing over picker (or is this just an issue with my OpenCore-Legacy-Patcher-patched macOS??)
-// TODO: prevent double-clicking from inserting two kaomoji (//▽//)(//▽//)
+// TODO: prevent double-clicking from inserting twice the kaomoji (//▽//)(//▽//)
+// TODO: settings: customizable keyboard shortcut (￣ω￣)
+// TODO: settings: customizable categories
+// TODO: settings: edit existing kaomoji on double click
+// TODO: settings: import/export?
 // TODO: perfect positioning of popover when shown in Discord (and other WebKit apps?)
+// TODO: detach popover when moved by window background
+// TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
+// TODO: show regular mouse cursor while mousing over picker (or is this just an issue with OpenCore-Legacy-Patcher-patched macOS??)
+// TODO: do something about the varying of kaomoji?
+// TODO: animate the picker popover into the settings panel?
+// TODO: app notarization
 
 let popoverSize = NSSize(width: 320, height: 358)
 //let popoverSize = NSSize(width: 320, height: 368) // for use with search field
@@ -29,10 +35,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   var positioningWindow: NSWindow?
 
   func applicationDidFinishLaunching(_ notification: Notification) {
-    guard AXIsProcessTrustedWithOptions(["AXTrustedCheckOptionPrompt": true] as CFDictionary) else {
-      print("Accessibility permissions needed.")
-      NSApp.terminate(nil)
-      return
+    if !AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary) {
+      NSLog("Accessibility permissions needed.")
     }
 
 #if DEBUG
@@ -56,7 +60,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             event.modifierFlags.contains(.option),
             event.modifierFlags.contains(.command) else { return }
 
-      //print("ヽ(°〇°)ﾉ")
+      // NSLog("ヽ(°〇°)ﾉ")
 
       showPickerAtInsertionPoint()
     }
@@ -104,24 +108,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     // TODO: turns out Carbon hotkeys don’t support key repeat (＃＞＜) — find another way or hack it by manually applying repeat
 
-//    func beginSelection() {
-//      if collectionViewController.collectionView.selectionIndexPaths.isEmpty {
-//        collectionViewController.collectionView.selectItems(at: [IndexPath(item: 0, section: 0)], scrollPosition: .nearestHorizontalEdge)
-//      }
-//    }
+    //    func beginSelection() {
+    //      if collectionViewController.collectionView.selectionIndexPaths.isEmpty {
+    //        collectionViewController.collectionView.selectItems(at: [IndexPath(item: 0, section: 0)], scrollPosition: .nearestHorizontalEdge)
+    //      }
+    //    }
 
-//    leftArrowHotKey = HotKey(key: .leftArrow, modifiers: [])
-//    leftArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveLeft(nil) }
-//    rightArrowHotKey = HotKey(key: .rightArrow, modifiers: [])
-//    rightArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveRight(nil) }
-//    upArrowHotKey = HotKey(key: .upArrow, modifiers: [])
-//    upArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveUp(nil) }
-//    downArrowHotKey = HotKey(key: .downArrow, modifiers: [])
-//    downArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveDown(nil) }
-//    escapeHotKey = HotKey(key: .escape, modifiers: [])
-//    escapeHotKey.keyDownHandler = { self.popover?.close() }
-//    returnHotKey = HotKey(key: .return, modifiers: [])
-//    returnHotKey.keyDownHandler = { print("aaaaaaaa") }
+    //    leftArrowHotKey = HotKey(key: .leftArrow, modifiers: [])
+    //    leftArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveLeft(nil) }
+    //    rightArrowHotKey = HotKey(key: .rightArrow, modifiers: [])
+    //    rightArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveRight(nil) }
+    //    upArrowHotKey = HotKey(key: .upArrow, modifiers: [])
+    //    upArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveUp(nil) }
+    //    downArrowHotKey = HotKey(key: .downArrow, modifiers: [])
+    //    downArrowHotKey.keyDownHandler = { beginSelection(); collectionViewController.collectionView.moveDown(nil) }
+    //    escapeHotKey = HotKey(key: .escape, modifiers: [])
+    //    escapeHotKey.keyDownHandler = { self.popover?.close() }
+    //    returnHotKey = HotKey(key: .return, modifiers: [])
+    //    returnHotKey.keyDownHandler = { print("aaaaaaaa") }
 
     popover.animates = false
     popover.show(relativeTo: .zero, of: positioningWindow.contentView!, preferredEdge: .minY)
@@ -167,7 +171,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     var focusedElement: AnyObject?
     guard AXUIElementCopyAttributeValue(AXUIElementCreateSystemWide(), kAXFocusedUIElementAttribute as CFString, &focusedElement) == .success else {
-      print("failed to get focused element")
+      NSLog("failed to get focused element")
       return
     }
 
@@ -175,7 +179,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     if AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, "AXSelectedTextMarkerRange" as CFString, &textMarkerRange) == .success {
       var boundsValue: AnyObject?
       guard AXUIElementCopyParameterizedAttributeValue(focusedElement as! AXUIElement, "AXBoundsForTextMarkerRange" as CFString, textMarkerRange!, &boundsValue) == .success else {
-        print("failed to find bounds for text marker range")
+        NSLog("failed to find bounds for text marker range")
         return
       }
 
@@ -195,7 +199,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
       var boundsValue: AnyObject?
       guard AXUIElementCopyParameterizedAttributeValue(focusedElement as! AXUIElement, kAXBoundsForRangeParameterizedAttribute as CFString, selectedRangeValue!, &boundsValue) == .success else {
-        print("failed to find bounds for selected text range")
+        NSLog("failed to find bounds for selected text range")
         return
       }
 
@@ -209,6 +213,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     showPicker(at: CGEvent(source: nil)?.unflippedLocation ?? .zero)
+    // popover?.perform(Selector((String("detach"))))
   }
 
   func insertText(_ string: String) {
@@ -259,22 +264,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   let settingsWindow = {
     let window = NSPanel(contentViewController: NSHostingController(rootView: SettingsView()))
     window.title = l("Kaomoji Picker Settings")
-    window.styleMask = [.titled, .nonactivatingPanel, .utilityWindow, .closable]
+    window.styleMask = [.titled, .nonactivatingPanel, .utilityWindow, .closable, .resizable]
     window.isFloatingPanel = true
     window.hidesOnDeactivate = false
-    //window.becomesKeyOnlyIfNeeded = true
+    window.setContentSize(NSSize(width: 499, height: 736))
     window.level = .modalPanel
     return window
   }()
 
   @objc func showSettingsWindow(_ sender: Any?) {
     popover?.close()
-
-    //NSApp.setActivationPolicy(.regular)
-
-    //var psn = ProcessSerialNumber(highLongOfPSN: 0, lowLongOfPSN: UInt32(kCurrentProcess))
-    //TransformProcessType(&psn, ProcessApplicationTransformState(kProcessTransformToForegroundApplication))
-
     settingsWindow.makeKeyAndOrderFront(nil)
   }
 
@@ -307,9 +306,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   }
 
   func popoverDidDetach(_ popover: NSPopover) {
-    var frame = popover.contentViewController!.view.frame
-    frame.size.height -= 27
-    popover.contentViewController!.view.frame = frame
+    guard let stackView = popover.contentViewController!.view as? NSStackView else { return }
+
+    stackView.edgeInsets.top = 27
+
+//    var frame = popover.contentViewController!.view.frame
+//    frame.size.height -= 27
+//    popover.contentViewController!.view.frame = frame
 
     // if let popoverWindow = popover.value(forKey: "_popoverWindow") as? NSWindow {
     //   print(popoverWindow)

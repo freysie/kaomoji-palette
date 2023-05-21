@@ -2,13 +2,14 @@ import AppKit
 import SwiftUI
 //import HotKey
 
+// TODO: app notarization
 // TODO: support older versions of macOS than macOS 11 Big Sur?
 // TODO: show detached picker window when invoking without a text field focused
 // TODO: keyboard navigation (arrow keys + return)
 // TODO: more accessibility element edge cases (e.g. the empty text field thing w/ dummy space)
 // TODO: intercept escape key when closing popover so it doesn’t send escape key to other apps
 // TODO: prevent double-clicking from inserting twice the kaomoji (//▽//)(//▽//)
-// TODO: settings: customizable keyboard shortcut (￣ω￣)
+// TODO: settings: customizable keyboard shortcut (ﾉД`)
 // TODO: settings: customizable categories
 // TODO: settings: edit existing kaomoji on double click
 // TODO: settings: import/export?
@@ -16,9 +17,8 @@ import SwiftUI
 // TODO: detach popover when moved by window background
 // TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
 // TODO: show regular mouse cursor while mousing over picker (or is this just an issue with OpenCore-Legacy-Patcher-patched macOS??)
-// TODO: do something about the varying of kaomoji?
-// TODO: animate the picker popover into the settings panel?
-// TODO: app notarization
+// TODO: do something about the varying widths of kaomoji other than just ellipsizing?
+// TODO: animate the picker popover into the settings panel??
 
 let popoverSize = NSSize(width: 320, height: 358)
 //let popoverSize = NSSize(width: 320, height: 368) // for use with search field

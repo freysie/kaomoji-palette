@@ -83,3 +83,63 @@ struct Menu<Content: View, Label: View>: NSViewRepresentable {
     }
   }
 }
+
+#if DEBUG
+@available(macOS 13.0, *)
+struct HighlightingMenu_Previews: PreviewProvider {
+  static var previews: some View {
+    Form {
+      LabeledContent("Borderless `SwiftUI.Menu`:") {
+        SwiftUI.Menu {
+          Button("Restore to Defaults") { }
+          Divider()
+          Button("Edit Categories…") {  }
+          Divider()
+          Button("Import…") {}
+          Button("Export…") {}
+        } label: {
+          Image(systemName: "ellipsis.circle")
+            .resizable()
+            .imageScale(.large)
+        }
+        .fixedSize()
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .frame(width: 24, height: 24)
+      }
+
+      LabeledContent("Borderless `SwiftUI.Button`:") {
+        Button(action: {}) {
+          Image(systemName: "ellipsis.circle")
+        }
+        .buttonStyle(.borderless)
+        .frame(width: 24, height: 24)
+      }
+
+      LabeledContent("  `AppKit.NSSegmentedControl`:") {
+        Menu {
+          Button {} label: {
+            Text("Restore to Defaults")
+          }
+
+          Button {} label: {
+            Text(verbatim: "Restore to Defaults")
+          }
+
+          Divider()
+          Button("Edit Categories…") {}
+
+          Divider()
+          Button("Import…") {}
+          Button("Export…") {}
+        } label: {
+          Image(systemName: "ellipsis.circle")
+        }
+        .frame(width: 24, height: 24)
+      }
+    }
+    .padding()
+    .padding()
+  }
+}
+#endif

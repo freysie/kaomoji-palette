@@ -24,3 +24,4 @@ For some reason, Discord seemingly doesn’t respond to accessibility queries by
 
 Until a proper solution is found, a temporary workaround is to launch Accessibility Inspector and inspect any element in Discord. Kaomoji Picker will then work until the next time Discord is launched.
 
+

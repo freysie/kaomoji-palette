@@ -63,11 +63,14 @@ class CollectionViewItem: NSCollectionViewItem {
 //  }
 
   override func mouseUp(with theEvent: NSEvent) {
-    super.mouseUp(with: theEvent)
+    guard collectionView?.selectionIndexPaths.isEmpty == true else { return }
 
     //guard !wasDragging, let appDelegate = NSApp.delegate as? AppDelegate else { return }
     // TODO: add double-clicking support for settings
+
     NSApp.sendAction(#selector(CollectionViewController.insertKaomoji(_:)), to: collectionView?.delegate, from: self)
+
+    super.mouseUp(with: theEvent)
   }
 
   override func insertNewline(_ sender: Any?) {

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B13E06F2A2FF1E0007FC921 /* NSImage+CornerMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */; };
+		3B29D80A2A31C8AC007E89AD /* CollectionViewControlsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B29D8092A31C8AC007E89AD /* CollectionViewControlsHeader.swift */; };
+		3B29D80C2A31E4A5007E89AD /* NSView+SubtreeDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B29D80B2A31E4A5007E89AD /* NSView+SubtreeDescription.swift */; };
 		3B85A75B2A0FDD67006482C8 /* EnvironmentValues+Dismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */; };
 		3B85A75F2A10039A006482C8 /* Menu+Highlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */; };
 		3B895B712A065679006442A2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B702A065679006442A2 /* AppDelegate.swift */; };
@@ -24,6 +27,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+CornerMask.swift"; sourceTree = "<group>"; };
+		3B29D8092A31C8AC007E89AD /* CollectionViewControlsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewControlsHeader.swift; sourceTree = "<group>"; };
+		3B29D80B2A31E4A5007E89AD /* NSView+SubtreeDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+SubtreeDescription.swift"; sourceTree = "<group>"; };
 		3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EnvironmentValues+Dismiss.swift"; sourceTree = "<group>"; };
 		3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu+Highlight.swift"; sourceTree = "<group>"; };
 		3B895B6D2A065679006442A2 /* Kaomoji Picker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kaomoji Picker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -81,6 +87,7 @@
 				3B895B722A065679006442A2 /* CollectionViewController.swift */,
 				3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */,
 				3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */,
+				3B29D8092A31C8AC007E89AD /* CollectionViewControlsHeader.swift */,
 				3B895BE92A0A68F0006442A2 /* DataSource.swift */,
 				3B895BDD2A082C74006442A2 /* SettingsView.swift */,
 				3B895B742A06567D006442A2 /* Assets.xcassets */,
@@ -96,6 +103,8 @@
 				3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */,
 				3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */,
 				3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */,
+				3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */,
+				3B29D80B2A31E4A5007E89AD /* NSView+SubtreeDescription.swift */,
 				3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */,
 			);
 			path = Additions;
@@ -185,9 +194,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B29D80C2A31E4A5007E89AD /* NSView+SubtreeDescription.swift in Sources */,
 				3B895B802A065699006442A2 /* AppKit+Previews.swift in Sources */,
 				3B895B732A065679006442A2 /* CollectionViewController.swift in Sources */,
 				3B85A75B2A0FDD67006482C8 /* EnvironmentValues+Dismiss.swift in Sources */,
+				3B13E06F2A2FF1E0007FC921 /* NSImage+CornerMask.swift in Sources */,
 				3B895BED2A0C2CCD006442A2 /* Collection+Chunked.swift in Sources */,
 				3B895BBF2A07B477006442A2 /* CollectionViewItem.swift in Sources */,
 				3B895BEF2A0C2CE1006442A2 /* Sequence+Uniqued.swift in Sources */,
@@ -195,6 +206,7 @@
 				3B895B712A065679006442A2 /* AppDelegate.swift in Sources */,
 				3B895BDE2A082C74006442A2 /* SettingsView.swift in Sources */,
 				3B895BEA2A0A68F0006442A2 /* DataSource.swift in Sources */,
+				3B29D80A2A31C8AC007E89AD /* CollectionViewControlsHeader.swift in Sources */,
 				3B895BBD2A07B43E006442A2 /* CollectionViewSectionHeader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -247,6 +259,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -307,6 +320,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -337,7 +351,7 @@
 				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -366,7 +380,7 @@
 				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;

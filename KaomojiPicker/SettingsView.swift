@@ -21,21 +21,23 @@ struct SettingsView: View {
           .padding(.bottom, 1)
 
         HStack(spacing: 0) {
-          Button(action: { isEditKaomojiSheetPresented = true }) { Image(systemName: "plus").frame(width: 24, height: 24) }
+          Button(action: { isEditKaomojiSheetPresented = true }) {
+            Image(systemName: "plus").frame(width: 24, height: 24)
+          }
 
           Divider().padding(.bottom, -1)
 
-          Button(action: deleteSelected) { Image(systemName: "minus").frame(width: 24, height: 24) }
-            .disabled(selection.isEmpty)
+          Button(action: deleteSelected) {
+            Image(systemName: "minus").frame(width: 24, height: 24)
+          }
+          .disabled(selection.isEmpty)
 
           Spacer()
 
           Menu {
             Button("Restore to Defaults") { DataSource.shared.restoreToDefaults() }
-
             Divider()
             Button("Edit Categories…") { isEditCategoriesSheetPresented = true }
-
             Divider()
             Button("Import…") { isImportSheetPresented = true }
             Button("Export…") { isExportSheetPresented = true }
@@ -82,6 +84,8 @@ struct SettingsView: View {
   }
 
   func deleteSelected() {
+    // NSApp.sendAction(#selector(SettingsCollectionViewController.deleteSelected), to: nil, from: nil)
+
     for indexPath in selection.sorted().reversed() {
       DataSource.shared.removeKaomoji(at: indexPath)
     }
@@ -123,16 +127,21 @@ struct SettingsCollection: NSViewControllerRepresentable {
 
 class SettingsCollectionViewController: CollectionViewController {
   override var showsRecents: Bool { false }
-  override var showsSearchField: Bool { false }
+  //override var showsSearchField: Bool { false }
+  //override var usesMaterialBackground: Bool { false }
   override var usesUppercaseSectionTitles: Bool { false }
   override var selectionColor: NSColor { .controlAccentColor }
 
   private var indexPathsForDraggedItems = Set<IndexPath>()
-  private var subscriptions = Set<AnyCancellable>()
 
   override func loadView() {
+    mode = .settings
+    showsSearchField = false
+    showsCategoryButtons = false
+
     super.loadView()
 
+    flowLayout.itemSize = NSSize(width: 83, height: 24)
     flowLayout.sectionInset = NSEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
     flowLayout.headerReferenceSize = NSSize(width: 80, height: 29)
 
@@ -147,21 +156,27 @@ class SettingsCollectionViewController: CollectionViewController {
 
     collectionView.setDraggingSourceOperationMask([], forLocal: false)
     collectionView.setDraggingSourceOperationMask(.move, forLocal: true)
-
-    DataSource.shared.objectWillChange.sink { self.collectionView.reloadData() }.store(in: &subscriptions)
   }
 
   // MARK: - Actions
 
-  override func cancelOperation(_ sender: Any?) {
+  override func insertKaomoji(_ sender: NSCollectionViewItem?) {
     /// This method intentionally left blank.
   }
 
-  override func insertKaomoji(_ sender: CollectionViewItem?) {
-    /// This method intentionally left blank.
-  }
+  // @objc func editKaomoji(_ sender: NSCollectionViewItem) {}
+
+  //@objc func deleteSelected() {
+  //  let indexPaths = collectionView.selectionIndexPaths.sorted().reversed()
+  //  indexPaths.forEach(DataSource.shared.removeKaomoji(at:))
+  //  collectionView.animator().deleteItems(at: Set(indexPaths))
+  //}
 
   // MARK: - Collection View Delegate
+
+//  override func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+//    /// This method intentionally left blank.
+//  }
 
   func collectionView(_ collectionView: NSCollectionView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint, forItemsAt indexPaths: Set<IndexPath>) {
     indexPathsForDraggedItems = indexPaths
@@ -182,20 +197,30 @@ class SettingsCollectionViewController: CollectionViewController {
   // TODO: move kaomoji between sections
   // TODO: correctly move multiple kamoji at once
   func collectionView(_ collectionView: NSCollectionView, acceptDrop draggingInfo: NSDraggingInfo, indexPath: IndexPath, dropOperation: NSCollectionView.DropOperation) -> Bool {
-    for sourceIndexPath in indexPathsForDraggedItems.sorted().reversed() {
+    let indexPaths = indexPathsForDraggedItems.sorted().reversed()
+
+    for sourceIndexPath in indexPaths {
       guard sourceIndexPath.section == indexPath.section else { continue }
       collectionView.animator().moveItem(at: sourceIndexPath, to: indexPath)
     }
 
     /// idk why `NSAnimationContext` with completion handler doesn’t work; instead we use 0.3 sec delay
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
-      for sourceIndexPath in indexPathsForDraggedItems.sorted().reversed() {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+      for sourceIndexPath in indexPaths {
         guard sourceIndexPath.section == indexPath.section else { continue }
         DataSource.shared.moveKaomoji(at: sourceIndexPath, to: indexPath)
       }
+
+      //collectionView.selectItems(at: Set(indexPaths), scrollPosition: .nearestHorizontalEdge)
     }
 
     return true
+  }
+
+  // MARK: - Flow Layout Delegate
+
+  override func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> NSSize {
+    section == 0 ? .zero : NSSize(width: 80, height:  29)
   }
 }
 
@@ -209,8 +234,8 @@ class SettingsCollectionViewSectionHeader: CollectionViewSectionHeader {
     //titleTextField.textColor = .labelColor
     titleTextField.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
 
-    stackView.edgeInsets = NSEdgeInsets(top: 5, left: 10, bottom: 0, right: 10)
-    stackView.layer?.sublayerTransform = CATransform3DIdentity
+    stackView.edgeInsets = NSEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+    stackViewTopAnchor.constant = 0
 
     // let topBorder = NSBox()
     // topBorder.translatesAutoresizingMaskIntoConstraints = false

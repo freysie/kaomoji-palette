@@ -14,6 +14,7 @@ struct NSViewPreview<View: NSView>: NSViewRepresentable {
 struct NSViewControllerPreview<ViewController: NSViewController>: NSViewControllerRepresentable {
   let viewController: ViewController
   init(_ builder: @escaping () -> ViewController) { viewController = builder() }
+  init(_ setUp: ((ViewController) -> ())? = nil) { viewController = ViewController(); setUp?(viewController) }
   func makeNSViewController(context: Context) -> NSViewController { viewController }
   func updateNSViewController(_ viewController: NSViewController, context: Context) {
     viewController.view.setContentHuggingPriority(.defaultHigh, for: .horizontal)

@@ -3,6 +3,9 @@ import AppKit
 class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
   private(set) var stackView: NSStackView!
   private(set) var titleTextField: NSTextField!
+  private(set) var stackViewTopAnchor: NSLayoutConstraint!
+
+  //override var mouseDownCanMoveWindow: Bool { true }
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -15,18 +18,17 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
     titleTextField.textColor = .secondaryLabelColor
 
     stackView = NSStackView(views: [titleTextField])
-    stackView.edgeInsets = NSEdgeInsets(top: 12, left: 16, bottom: 0, right: 16)
+    stackView.edgeInsets = NSEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
     stackView.wantsLayer = true
-    // TODO: find out why the top edge inset is not working, then remove this:
-    stackView.layer?.sublayerTransform = CATransform3DMakeTranslation(0, -4, 0)
     addSubview(stackView)
+
+    stackViewTopAnchor = stackView.topAnchor.constraint(equalTo: topAnchor, constant: 6.5)
 
     NSLayoutConstraint.activate([
       stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
       stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
-      stackView.topAnchor.constraint(equalTo: topAnchor),
+      stackViewTopAnchor,
       stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
-      // stackView.heightAnchor.constraint(equalToConstant: 27),
     ])
   }
 
@@ -40,3 +42,21 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
     stackView.addArrangedSubview(titleTextField)
   }
 }
+
+#if DEBUG
+import SwiftUI
+struct CollectionViewSectionHeader_Previews: PreviewProvider {
+  static var previews: some View {
+    NSViewPreview {
+      let header = CollectionViewSectionHeader()
+      header.titleTextField.stringValue = "Joy"
+      NSLayoutConstraint.activate([
+        header.widthAnchor.constraint(equalToConstant: popoverSize.width),
+        header.heightAnchor.constraint(equalToConstant: 26),
+      ])
+      return header
+    }
+    .previewLayout(.sizeThatFits)
+  }
+}
+#endif

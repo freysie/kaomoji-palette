@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21701"/>
     </dependencies>
     <objects>
@@ -674,6 +675,6 @@
             </items>
             <point key="canvasLocation" x="140" y="154"/>
         </menu>
-        <customObject id="neL-me-FCL" customClass="AppDelegate" customModule="Kaomoji_Picker" customModuleProvider="target"/>
+        <customObject id="neL-me-FCL" customClass="AppDelegate" customModule="KaomojiPicker" customModuleProvider="target"/>
     </objects>
 </document>

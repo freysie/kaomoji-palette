@@ -11,6 +11,8 @@ struct SettingsView: View {
   @State private var isImportSheetPresented = false
   @State private var isExportSheetPresented = false
 
+  private var dataSource: DataSource { .shared }
+
   var body: some View {
     VStack {
       GroupBox {
@@ -35,7 +37,7 @@ struct SettingsView: View {
           Spacer()
 
           Menu {
-            Button("Restore to Defaults") { DataSource.shared.restoreToDefaults() }
+            Button("Restore to Defaults") { dataSource.restoreToDefaults() }
             Divider()
             Button("Edit Categories…") { isEditCategoriesSheetPresented = true }
             Divider()
@@ -78,19 +80,34 @@ struct SettingsView: View {
     .frame(width: 499)
     .sheet(isPresented: $isEditKaomojiSheetPresented) { EditKaomojiView(collectionSelection: $selection) }
     .sheet(isPresented: $isEditCategoriesSheetPresented) { EditCategoriesView() }
-    // TODO: finish adding this:
-    .fileImporter(isPresented: $isImportSheetPresented, allowedContentTypes: [.propertyList]) { _ in }
-    //.fileExporter(isPresented: $isExportSheetPresented, document: FileDocument?.none, contentType: .propertyList) { _ in }
+    .fileImporter(isPresented: $isImportSheetPresented, allowedContentTypes: [.propertyList]) {
+      switch $0 {
+      case .success(let url): importKaomojiSet(at: url)
+      case .failure(let error): NSLog(error.localizedDescription)
+      }
+    }
+    .fileExporter(isPresented: $isExportSheetPresented, document: dataSource.kaomojiSet, contentType: .propertyList) {
+      switch $0 {
+      case .success(let url): NSLog("exported kaomoji set to \(url)")
+      case .failure(let error): NSLog(error.localizedDescription)
+      }
+    }
   }
 
-  func deleteSelected() {
+  private func deleteSelected() {
     // NSApp.sendAction(#selector(SettingsCollectionViewController.deleteSelected), to: nil, from: nil)
 
     for indexPath in selection.sorted().reversed() {
-      DataSource.shared.removeKaomoji(at: indexPath)
+      dataSource.removeKaomoji(at: indexPath)
     }
 
     selection = []
+  }
+
+  private func importKaomojiSet(at url: URL) {
+    if let importedSet = try? KaomojiSet(contentsOf: url) {
+      dataSource.kaomojiSet = importedSet
+    }
   }
 }
 

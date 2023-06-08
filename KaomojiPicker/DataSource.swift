@@ -1,4 +1,5 @@
-import Foundation
+import SwiftUI
+import UniformTypeIdentifiers
 
 class DataSource: ObservableObject {
   static let shared = DataSource()
@@ -6,9 +7,9 @@ class DataSource: ObservableObject {
 
   private let defaults = UserDefaults.standard
 
-  @Published private(set) var categories = [String]()
-  @Published private(set) var kaomoji = [[String]]()
-  @Published private(set) var recents = [String]()
+  @Published fileprivate(set) var categories = [String]()
+  @Published fileprivate(set) var kaomoji = [[String]]()
+  @Published fileprivate(set) var recents = [String]()
 
   private init() {
     defaults.register(defaults: [
@@ -66,6 +67,41 @@ fileprivate enum UserDefaultsKey {
   static let categories = "Categories"
   static let kaomoji = "Kaomoji"
   static let recents = "Recents"
+}
+
+struct KaomojiSet: FileDocument, Codable {
+  static var readableContentTypes = [UTType.propertyList]
+  static var writableContentTypes = [UTType.propertyList]
+
+  var categories: [String]
+  var kaomoji: [[String]]
+
+  init(categories: [String], kaomoji: [[String]]) {
+    self.categories = categories
+    self.kaomoji = kaomoji
+  }
+
+  init(contentsOf url: URL) throws {
+    let data = try Data(contentsOf: url)
+    self = try PropertyListDecoder().decode(Self.self, from: data)
+  }
+
+  init(configuration: ReadConfiguration) throws {
+    guard let data = configuration.file.regularFileContents else { throw CocoaError(.fileReadCorruptFile) }
+    self = try PropertyListDecoder().decode(Self.self, from: data)
+  }
+
+  func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+    let data = try PropertyListEncoder().encode(self)
+    return FileWrapper(regularFileWithContents: data)
+  }
+}
+
+extension DataSource {
+  var kaomojiSet: KaomojiSet {
+    get { KaomojiSet(categories: categories, kaomoji: kaomoji) }
+    set { categories = newValue.categories; kaomoji = newValue.kaomoji }
+  }
 }
 
 // TODO: add more default kaomoji and categories

@@ -32,18 +32,17 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   private(set) var scrollView: NSScrollView!
   private(set) var stackView: NSStackView!
   private(set) var closeButton: NSButton?
-  private(set) var categoryScrollView: NSScrollView!
-
   private(set) var categoryButtons = [CategoryButton]()
-
+  private(set) var categoryScrollView: NSScrollView!
+  private(set) var placeholderView: NSTextField!
   private(set) weak var searchField: NSSearchField?
 
+  private var currentSectionIndex = 0
   private var isSearching = false
   private var searchResults = [String]()
 
-  private var currentSectionIndex = 0
-
-  private let dataSource = DataSource.shared
+  private var appDelegate: AppDelegate { .shared }
+  private var dataSource: DataSource { .shared }
   private var subscriptions = Set<AnyCancellable>()
 
   private var kaomoji: [[String]] { (showsRecents ? [dataSource.recents] : []) + dataSource.kaomoji }
@@ -174,6 +173,17 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
       stackView.insertArrangedSubview(titlebarStackView, at: 0)
     }
 
+    placeholderView = NSTextField(labelWithString: l("No Kaomoji Found"))
+    placeholderView.translatesAutoresizingMaskIntoConstraints = false
+    placeholderView.textColor = .secondaryLabelColor
+    placeholderView.isHidden = true
+    stackView.addSubview(placeholderView)
+
+    NSLayoutConstraint.activate([
+      placeholderView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+      placeholderView.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor, constant: 33/2),
+    ])
+
     stackView.autoresizingMask = [.width, .height]
     stackView.translatesAutoresizingMaskIntoConstraints = true
     stackView.orientation = .vertical
@@ -277,23 +287,31 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     insertKaomoji(item, withCloseDelay: false)
   }
 
+  private func insertSelectedOrCloseWindow() {
+    if !collectionView.selectionIndexPaths.isEmpty {
+      insertSelected()
+    } else {
+      appDelegate.popover?.close()
+    }
+  }
+
   private func insertKaomoji(_ sender: NSCollectionViewItem, withCloseDelay: Bool) {
     guard let kaomoji = sender.representedObject as? String else { return }
 
-    if AppDelegate.shared.panel.isVisible {
-      AppDelegate.shared.insertText(kaomoji)
+    if appDelegate.panel.isVisible {
+      appDelegate.insertText(kaomoji)
     } else {
-      DispatchQueue.main.asyncAfter(deadline: .now() + (withCloseDelay ? 0.5 : 0)) {
-        AppDelegate.shared.popover?.close()
+      DispatchQueue.main.asyncAfter(deadline: .now() + (withCloseDelay ? 0.5 : 0)) { [self] in
+        appDelegate.popover?.close()
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-          AppDelegate.shared.insertText(kaomoji)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
+          appDelegate.insertText(kaomoji)
         }
       }
     }
   }
 
-  // MARK: - Control Text Editing Delegate
+  // MARK: - Keyboard Navigation
 
   func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
     // print(commandSelector)
@@ -312,8 +330,8 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     case #selector(moveRight): if !selectFirstIfNeeded() { collectionView.moveRight(nil) }
     case #selector(moveUp): if !selectFirstIfNeeded() { collectionView.moveUp(nil) }
     case #selector(moveDown): if !selectFirstIfNeeded() { collectionView.moveDown(nil) }
-    case #selector(cancelOperation): view.window?.close()
-    case #selector(insertNewline): !collectionView.selectionIndexPaths.isEmpty ? insertSelected() : view.window?.close()
+    case #selector(cancelOperation): clearSearchFieldOrCloseWindow()
+    case #selector(insertNewline): insertSelectedOrCloseWindow()
     case #selector(insertTab): jumpToNextCategorySection()
     case #selector(insertBacktab): jumpToPreviousCategorySection()
     case #selector(moveToBeginningOfDocument): break // TODO: implement
@@ -326,24 +344,56 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
   // MARK: - Searching
 
+  private static let symbolsByName = [l("heart"): ["♡", "❤"], l("star"): ["☆"]]
+
+  private static func searchTitle(for kaomoji: String) -> String {
+    var searchTitle = kaomoji
+    for (symbolName, symbols) in symbolsByName {
+      for symbol in symbols {
+        searchTitle = searchTitle.replacingOccurrences(of: symbol, with: "\(symbolName)")
+      }
+    }
+    return searchTitle
+  }
+
   @objc func search(_ sender: NSSearchField) {
-    searchResults = kaomoji.flatMap { $0 }.filter { $0.localizedCaseInsensitiveContains(sender.stringValue) }
+    searchResults = dataSource.kaomoji.flatMap { $0 }.filter {
+      $0.localizedCaseInsensitiveContains(sender.stringValue) ||
+      Self.searchTitle(for: $0).localizedCaseInsensitiveContains(sender.stringValue)
+    }
+
+    placeholderView.isHidden = !isSearching || !searchResults.isEmpty
+
     collectionView.reloadSections([1])
   }
 
   func searchFieldDidStartSearching(_ sender: NSSearchField) {
-    print(#function)
     isSearching = true
-    collectionView.deleteSections(IndexSet(1..<collectionView.numberOfSections))
-    //collectionView.reloadData()
+
+    collectionView.performBatchUpdates {
+      collectionView.deleteSections(IndexSet(2..<collectionView.numberOfSections))
+      collectionView.reloadSections([1])
+    }
   }
 
   func searchFieldDidEndSearching(_ sender: NSSearchField) {
-    print(#function)
     isSearching = false
-    //collectionView.reloadData()
-    print(collectionView.numberOfSections, numberOfSections(in: collectionView))
-    collectionView.insertSections(IndexSet(1..<collectionView.numberOfSections))
+
+    collectionView.performBatchUpdates {
+      collectionView.reloadSections([1])
+      collectionView.insertSections(IndexSet(2..<categories.count + 1))
+    }
+  }
+
+  private func clearSearchFieldOrCloseWindow() {
+    if let searchField, !searchField.stringValue.isEmpty {
+      searchField.stringValue = ""
+      search(searchField)
+      isSearching = false
+      //searchFieldDidEndSearching(searchField)
+    } else {
+      appDelegate.popover?.close()
+    }
   }
 
   // MARK: - Collection View Data Source
@@ -359,6 +409,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
     let item = collectionView.makeItem(withIdentifier: .item, for: indexPath) as! CollectionViewItem
     item.selectionColor = selectionColor
+    item.allowsOnlyOneClick = mode != .settings
     item.representedObject = isSearching ? searchResults[indexPath.item] : kaomoji[indexPath.section - 1][indexPath.item]
     return item
   }
@@ -419,7 +470,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   //  func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
   //    print(indexPaths)
   //    guard let indexPath = indexPaths.first else { return }
-  //    AppDelegate.shared.insertKaomoji(kaomoji[indexPath.section][indexPath.item])
+  //    appDelegate.insertKaomoji(kaomoji[indexPath.section][indexPath.item])
   //  }
 
   func collectionView(_ collectionView: NSCollectionView, pasteboardWriterForItemAt indexPath: IndexPath) -> NSPasteboardWriting? {
@@ -434,7 +485,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
   func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, insetForSectionAt section: Int) -> NSEdgeInsets {
     section == 0
-    ? NSEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+    ? NSEdgeInsets(top: 0, left: 8, bottom: isSearching ? 8 : 0, right: 8)
     : (collectionViewLayout as? NSCollectionViewFlowLayout)?.sectionInset ?? .init()
     //: NSEdgeInsets(top: 2, left: 8, bottom: 20, right: 8)
     // TODO: add extra space at end of last section?

@@ -3,6 +3,7 @@ import AppKit
 class CollectionViewItem: NSCollectionViewItem {
   private(set) var titleTextField: NSTextField!
   var selectionColor = NSColor.controlAccentColor
+  var allowsOnlyOneClick = false
 
   override func loadView() {
     titleTextField = CollectionViewItemTextField(labelWithString: "")
@@ -63,7 +64,7 @@ class CollectionViewItem: NSCollectionViewItem {
 //  }
 
   override func mouseUp(with theEvent: NSEvent) {
-    guard collectionView?.selectionIndexPaths.isEmpty == true else { return }
+    guard !allowsOnlyOneClick || collectionView?.selectionIndexPaths.isEmpty == true else { return }
 
     //guard !wasDragging, let appDelegate = NSApp.delegate as? AppDelegate else { return }
     // TODO: add double-clicking support for settings

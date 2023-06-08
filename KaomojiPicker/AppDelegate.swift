@@ -9,9 +9,9 @@ import SwiftUI
 // TODO: settings: customizable keyboard shortcut (ﾉД`)
 // TODO: settings: customizable categories
 // TODO: settings: edit existing kaomoji on double click
-// TODO: settings: import/export?
+//  ✅   settings: import/export?
 // TODO: perfect positioning of popover when shown in Discord (and other WebKit apps?)
-//  ❇️   detach popover when moved by window background (but what is going on with this wrt collection view???)
+//  ❇️   detach popover when moved by window background (🚨 but what is going on with this wrt collection view???)
 // TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
 // TODO: show regular mouse cursor while mousing over picker
 // TODO: do something about the varying widths of kaomoji other than just ellipsizing? 🫣
@@ -43,12 +43,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 //     }
 
     NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [self] event in
-      // FIXME: find another way (￣▽￣*)ゞ (use carbon hotkeys? or nonactivating panel?)
-      if event.keyCode == 53, popover?.isShown == true, popover?.isDetached == false {
-        popover?.close()
-        return
-      }
-
       guard event.charactersIgnoringModifiers == " ",
             event.modifierFlags.contains(.control),
             event.modifierFlags.contains(.option),
@@ -81,10 +75,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   }
 
   func showPicker(at point: NSPoint) {
-    //let positioningWindow = NSPanel()
-    //positioningWindow.styleMask = [.borderless, .nonactivatingPanel]
-    let positioningWindow = NSWindow()
-    positioningWindow.styleMask = .borderless
+    let positioningWindow = NSPanel()
+    positioningWindow.styleMask = [.borderless, .nonactivatingPanel]
+    //positioningWindow.styleMask.insert(.nonactivatingPanel)
+    //let positioningWindow = NSWindow()
+    //positioningWindow.styleMask = .borderless
     positioningWindow.contentView = NSView()
     positioningWindow.setContentSize(NSSize(width: 10, height: 10))
     positioningWindow.setFrameTopLeftPoint(point)
@@ -134,7 +129,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       //popoverWindow.setValue(true, forKey: "forceActiveControls")
       //popoverWindow.setValue(true, forKey: "preventsActivation")
       //popoverWindow.setValue(true, forKey: "avoidsActivation")
-      popoverWindow.setValue(true, forKey: "nonactivatingPanel")
+      //popoverWindow.setValue(true, forKey: "nonactivatingPanel")
       popoverWindow.setValue(true, forKey: "forceMainAppearance")
     }
   }
@@ -253,14 +248,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     collectionViewController.preferredContentSize = size
 
     let window = NSPanel(contentViewController: collectionViewController)
-    window.styleMask = [.fullSizeContentView, .utilityWindow, .closable]
-    window.titleVisibility = .hidden
+    print(window.styleMask.rawValue, window.becomesKeyOnlyIfNeeded)
+//    window.styleMask = [.fullSizeContentView, .utilityWindow, .closable]
+    window.styleMask.insert(.borderless)
+    window.styleMask.insert(.utilityWindow)
+    window.styleMask.insert(.fullSizeContentView)
+    window.styleMask.insert(.closable)
+    window.styleMask.insert(.nonactivatingPanel)
+    //window.styleMask = [.fullSizeContentView, .closable]
+    //window.titleVisibility = .hidden
     window.isFloatingPanel = true
     window.hidesOnDeactivate = false
     window.animationBehavior = .none
-    window.becomesKeyOnlyIfNeeded = false
+    window.becomesKeyOnlyIfNeeded = true
     window.setContentSize(size)
-    window.level = .modalPanel
+    window.level = .floating
     window.isMovableByWindowBackground = true
     window.setValue(true, forKey: "forceMainAppearance")
 
@@ -287,27 +289,53 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   // MARK: - Popover Delegate
 
   func popoverWillClose(_ notification: Notification) {
+    print(#function)
     popover?.animates = true
-    //monitor.map(NSEvent.removeCarbonMonitor)
   }
 
+  func popoverDidClose(_ notification: Notification) {
+    print(#function)
+    positioningWindow?.close()
+  }
+
+  // func popoverDidClose(_ notification: Notification) {
+  //   DispatchQueue.main.async {
+  //     self.positioningWindow?.close()
+  //   }
+  // }
+
   func popoverDidShow(_ notification: Notification) {
-    //print(#function)
-    //print((popover, popover?.value(forKey: "positioningWindow")))
-    //guard let popover, let window = popover.value(forKey: "positioningWindow") as? NSWindow else { return }
-
-    // print(NSApp.windows as NSArray)
-
     guard let popoverController = popover?.contentViewController as? CollectionViewController else { return }
-    //print("aaaaaaa")
-    //popoverController.view.window?.makeKeyAndOrderFront(nil)
-    //print(popoverController.view.window as Any)
-    //print(popoverController.view.window?.makeFirstResponder(popoverController.searchField) as Any)
-    //print(popoverController.view.window?.firstResponder as Any)
+    popoverController.view.window?.setValue(false, forKey: "nonactivatingPanel")
     popoverController.view.window?.makeFirstResponder(popoverController.searchField)
     popoverController.view.window?.makeKeyAndOrderFront(nil)
     popoverController.view.window?.makeKey()
     popoverController.view.window?.orderFrontRegardless()
+    popoverController.view.window?.setValue(true, forKey: "nonactivatingPanel")
+
+//    if let field = popoverController.searchField {
+//      print(field.frame)
+//      print(field.convert(NSPoint(x: field.frame.midX, y: field.frame.midY), to: nil))
+//      //print(popoverController.view.window?.convertToScreen(searchField.frame) as Any)
+//      let fieldLocation = field.convert(NSPoint(x: field.frame.midX, y: field.frame.midY), to: nil)
+//
+//      guard
+//        let screenLocation = popoverController.view.window?.convertPoint(toScreen: fieldLocation),
+//        let event = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: screenLocation, mouseButton: .left)
+//      else { return }
+//
+//      event.post(tap: .cghidEventTap)
+//      event.type = .leftMouseUp
+//      event.post(tap: .cghidEventTap)
+////      event.type = .keyDown
+//    }
+
+//    let oldLocation = CGEvent(source: nil)?.unflippedLocation ?? .zero
+//    let point = popoverController.view.window?.convertPoint(toScreen: .zero) ?? .zero
+//    print(point)
+//    guard let event = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: point, mouseButton: .left) else { return }
+//    event.post(tap: .cghidEventTap)
+//    event.oldLocation
 
     //popoverController.view.window?.makeKey()
     //NSApp.activate(ignoringOtherApps: true)
@@ -316,12 +344,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     //  popoverController.view.window?.makeFirstResponder(popoverController.searchField)
     //}
   }
-
-  // func popoverDidClose(_ notification: Notification) {
-  //   DispatchQueue.main.async {
-  //     self.positioningWindow?.close()
-  //   }
-  // }
 
   func popoverShouldDetach(_ popover: NSPopover) -> Bool {
     true

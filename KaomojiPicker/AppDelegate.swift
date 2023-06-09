@@ -8,10 +8,10 @@ import SwiftUI
 //  ✅   perfect positioning of popover
 //  ❇️   detachable picker panel
 //  ✅   show regular mouse cursor while mousing over picker
+//  ✅   add kaomoji inserted by drag-and-drop to recents
 
 // TODO: app notarization
 // TODO: more accessibility element edge cases (e.g. the empty text field thing w/ dummy space)
-// TODO: add kaomoji inserted by drag-and-drop to recents
 // TODO: detach popover when moved by any part of window background, including within collection view
 // TODO: settings: customizable keyboard shortcut (ﾉД`)
 // TODO: settings: customizable categories

@@ -198,7 +198,7 @@ class SettingsCollectionViewController: CollectionViewController {
     indexPathsForDraggedItems = indexPaths
   }
 
-  func collectionView(_ collectionView: NSCollectionView, draggingSession session: NSDraggingSession, endedAt screenPoint: NSPoint, dragOperation operation: NSDragOperation) {
+  override func collectionView(_ collectionView: NSCollectionView, draggingSession session: NSDraggingSession, endedAt screenPoint: NSPoint, dragOperation operation: NSDragOperation) {
     indexPathsForDraggedItems = []
   }
 

@@ -478,6 +478,13 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     // return pasteboardItem
   }
 
+  func collectionView(_ collectionView: NSCollectionView, draggingSession session: NSDraggingSession, endedAt screenPoint: NSPoint, dragOperation operation: NSDragOperation) {
+    if operation == .copy, let kaomoji = session.draggingPasteboard.string(forType: .string) {
+      dataSource.addKaomojiToRecents(kaomoji)
+      appDelegate.popover?.close()
+    }
+  }
+
   // MARK: - Flow Layout Delegate
 
   func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, insetForSectionAt section: Int) -> NSEdgeInsets {

@@ -64,9 +64,9 @@ class DataSource: ObservableObject {
 }
 
 fileprivate enum UserDefaultsKey {
-  static let categories = "Categories"
-  static let kaomoji = "Kaomoji"
-  static let recents = "Recents"
+  static let categories = "KPCategories"
+  static let kaomoji = "KPKaomoji"
+  static let recents = "KPRecents"
 }
 
 struct KaomojiSet: FileDocument, Codable {

@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 import UniformTypeIdentifiers
 
-// TODO: show confirmation dialog before restoring
+// TODO: show confirmation dialog before restoring to defaults
 // TODO: make editing categories work on earlier versions of macOS
 struct SettingsView: View {
   @State private var selection = Set<IndexPath>()
@@ -97,7 +97,8 @@ struct SettingsView: View {
   private func deleteSelected() {
     // NSApp.sendAction(#selector(SettingsCollectionViewController.deleteSelected), to: nil, from: nil)
 
-    for indexPath in selection.sorted().reversed() {
+    for var indexPath in selection.sorted().reversed() {
+      indexPath.section -= 1 /// to account for hidden controls section
       dataSource.removeKaomoji(at: indexPath)
     }
 
@@ -144,8 +145,6 @@ struct SettingsCollection: NSViewControllerRepresentable {
 
 class SettingsCollectionViewController: CollectionViewController {
   override var showsRecents: Bool { false }
-  //override var showsSearchField: Bool { false }
-  //override var usesMaterialBackground: Bool { false }
   override var usesUppercaseSectionTitles: Bool { false }
   override var selectionColor: NSColor { .controlAccentColor }
 
@@ -223,8 +222,11 @@ class SettingsCollectionViewController: CollectionViewController {
 
     /// idk why `NSAnimationContext` with completion handler doesn’t work; instead we use 0.3 sec delay
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-      for sourceIndexPath in indexPaths {
+      for var sourceIndexPath in indexPaths {
         guard sourceIndexPath.section == indexPath.section else { continue }
+        var indexPath = indexPath
+        indexPath.section -= 1 /// to account for hidden controls section
+        sourceIndexPath.section -= 1 /// to account for hidden controls section
         DataSource.shared.moveKaomoji(at: sourceIndexPath, to: indexPath)
       }
 

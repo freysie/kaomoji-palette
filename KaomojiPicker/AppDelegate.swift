@@ -1,20 +1,24 @@
 import AppKit
 import SwiftUI
 
-// TODO: app notarization
 //  ✅   keyboard navigation (arrow keys + return)
-// TODO: more accessibility element edge cases (e.g. the empty text field thing w/ dummy space)
 //  ✅   intercept escape key when closing popover so it doesn’t send escape key to other apps
 //  ✅   prevent double-clicking from inserting twice the kaomoji (//▽//)(//▽//)
+//  ✅   settings: import/export?
+//  ✅   perfect positioning of popover
+//  ❇️   detachable picker panel
+//  ✅   show regular mouse cursor while mousing over picker
+
+// TODO: app notarization
+// TODO: more accessibility element edge cases (e.g. the empty text field thing w/ dummy space)
+// TODO: add kaomoji inserted by drag-and-drop to recents
+// TODO: detach popover when moved by any part of window background, including within collection view
 // TODO: settings: customizable keyboard shortcut (ﾉД`)
 // TODO: settings: customizable categories
 // TODO: settings: edit existing kaomoji on double click
-//  ✅   settings: import/export?
-// TODO: perfect positioning of popover when shown in Discord (and other WebKit apps?)
-//  ❇️   detach popover when moved by window background (🚨 but what is going on with this wrt collection view???)
-// TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
-// TODO: show regular mouse cursor while mousing over picker
+// TODO: persisted panel position changing with active app à la system’s character picker?
 // TODO: do something about the varying widths of kaomoji other than just ellipsizing? 🫣
+// TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
 
 let popoverSize = NSSize(width: 320, height: 358)
 //let popoverSize = NSSize(width: 320, height: 368) // for use with search field
@@ -29,6 +33,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   var positioningWindow: NSWindow?
 
   func applicationDidFinishLaunching(_ notification: Notification) {
+    UserDefaults.standard.register(defaults: [
+      "NSUseAnimatedFocusRing": false
+    ])
+
     if !AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary) {
       NSLog("Accessibility permissions needed.")
     }
@@ -74,14 +82,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     // //print(w.frame)
   }
 
-  func showPicker(at point: NSPoint) {
+  func showPicker(at point: NSPoint, insertionPointHeight: CGFloat = 2) {
+    guard !panel.isVisible else { return }
+
     let positioningWindow = NSPanel()
     positioningWindow.styleMask = [.borderless, .nonactivatingPanel]
-    //positioningWindow.styleMask.insert(.nonactivatingPanel)
-    //let positioningWindow = NSWindow()
-    //positioningWindow.styleMask = .borderless
     positioningWindow.contentView = NSView()
-    positioningWindow.setContentSize(NSSize(width: 10, height: 10))
+    positioningWindow.setContentSize(NSSize(width: 2, height: insertionPointHeight))
     positioningWindow.setFrameTopLeftPoint(point)
     positioningWindow.alphaValue = 0
     //positioningWindow.setValue(true, forKey: "preventsActivation")
@@ -134,17 +141,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
   }
 
-  var monitor: Any?
-
-  // TODO: if text field is empty: insert dummy space, select it, get bounds, then delete space
+  // TODO: unless there’s a better way — if text field is empty: insert dummy space, select it, get bounds, then delete space
   // TODO: figure out why Discord is being weird (doesn’t work with Kaomoji Picker unless you inspect Discord once with Accessibility Inspector after every launch)
   func showPickerAtInsertionPoint() {
-    // var attributeNames: CFArray?
-    // AXUIElementCopyAttributeNames(AXUIElementCreateSystemWide(), &attributeNames)
-    // print(attributeNames as Any)
-    // var parameterizedAttributeNames: CFArray?
-    // AXUIElementCopyParameterizedAttributeNames(AXUIElementCreateSystemWide(), &parameterizedAttributeNames)
-    // print(parameterizedAttributeNames as Any)
+//    var attributeNames: CFArray?
+//    AXUIElementCopyAttributeNames(AXUIElementCreateSystemWide(), &attributeNames)
+//    print(attributeNames as Any)
+//    var parameterizedAttributeNames: CFArray?
+//    AXUIElementCopyParameterizedAttributeNames(AXUIElementCreateSystemWide(), &parameterizedAttributeNames)
+//    print(parameterizedAttributeNames as Any)
 
     var focusedElement: AnyObject?
     guard AXUIElementCopyAttributeValue(AXUIElementCreateSystemWide(), kAXFocusedUIElementAttribute as CFString, &focusedElement) == .success else {
@@ -153,21 +158,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       return
     }
 
+//    var attributeNames: CFArray?
+//    AXUIElementCopyAttributeNames(focusedElement as! AXUIElement, &attributeNames)
+//    print(attributeNames as Any)
+//    var parameterizedAttributeNames: CFArray?
+//    AXUIElementCopyParameterizedAttributeNames(focusedElement as! AXUIElement, &parameterizedAttributeNames)
+//    print(parameterizedAttributeNames as Any)
+
     var textMarkerRange: AnyObject?
     if AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, "AXSelectedTextMarkerRange" as CFString, &textMarkerRange) == .success {
       var boundsValue: AnyObject?
       guard AXUIElementCopyParameterizedAttributeValue(focusedElement as! AXUIElement, "AXBoundsForTextMarkerRange" as CFString, textMarkerRange!, &boundsValue) == .success else {
-        NSLog("failed to find bounds for text marker range")
+        NSLog("failed to find bounds for selected text marker range")
         return
       }
 
       var bounds = CGRect.null
       AXValueGetValue(boundsValue as! AXValue, .cgRect, &bounds)
-      bounds.origin.x -= 4
-      bounds.origin.y = (NSScreen.main?.frame.size.height ?? 0) - bounds.origin.y - bounds.size.height + 10
-      //print(bounds)
+      bounds.origin.y = (NSScreen.main?.frame.size.height ?? 0) - bounds.origin.y
 
-      return showPicker(at: bounds.origin)
+      return showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
     }
 
     var selectedRangeValue: AnyObject?
@@ -183,14 +193,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
       var bounds = CGRect.null
       AXValueGetValue(boundsValue as! AXValue, .cgRect, &bounds)
-      bounds.origin.x -= 4
-      bounds.origin.y = (NSScreen.main?.frame.size.height ?? 0) - bounds.origin.y - bounds.size.height + 10
-      //print(bounds)
+      bounds.origin.y = (NSScreen.main?.frame.size.height ?? 0) - bounds.origin.y
 
-      return showPicker(at: bounds.origin)
+      return showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
     }
 
-    showPicker(at: CGEvent(source: nil)?.unflippedLocation ?? .zero)
+    // showPicker(at: CGEvent(source: nil)?.unflippedLocation ?? .zero)
     // popover?.perform(Selector((String("detach"))))
   }
 
@@ -237,7 +245,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     // AXUIElementSetAttributeValue(focusedElement as! AXUIElement, kAXSelectedTextRangeAttribute as CFString, newRange as AnyObject)
   }
 
-  // MARK: - Settings
+  // MARK: - Panel
 
   let panel = {
     let size = NSSize(width: popoverSize.width, height: popoverSize.height + 27)
@@ -248,26 +256,32 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     collectionViewController.preferredContentSize = size
 
     let window = NSPanel(contentViewController: collectionViewController)
-    print(window.styleMask.rawValue, window.becomesKeyOnlyIfNeeded)
-//    window.styleMask = [.fullSizeContentView, .utilityWindow, .closable]
+    //print(window.styleMask.rawValue, window.becomesKeyOnlyIfNeeded)
+    //window.styleMask = [.borderless, .closable, .fullSizeContentView, .utilityWindow]
+    window.styleMask.remove(.titled)
     window.styleMask.insert(.borderless)
     window.styleMask.insert(.utilityWindow)
     window.styleMask.insert(.fullSizeContentView)
-    window.styleMask.insert(.closable)
-    window.styleMask.insert(.nonactivatingPanel)
+    //window.styleMask.insert(.closable)
+    //window.styleMask.insert(.nonactivatingPanel)
     //window.styleMask = [.fullSizeContentView, .closable]
     //window.titleVisibility = .hidden
-    window.isFloatingPanel = true
+    //window.hasTitleBar = false
+    //window.isFloatingPanel = true
     window.hidesOnDeactivate = false
-    window.animationBehavior = .none
+    //window.animationBehavior = .none
     window.becomesKeyOnlyIfNeeded = true
-    window.setContentSize(size)
     window.level = .floating
     window.isMovableByWindowBackground = true
+    window.setContentSize(size)
+    //window.setValue(true, forKey: "nonactivatingPanel")
     window.setValue(true, forKey: "forceMainAppearance")
+    window.makeFirstResponder(collectionViewController.searchField)
 
     return window
   }()
+
+  // MARK: - Settings
 
   let settingsWindow = {
     let window = NSPanel(contentViewController: NSHostingController(rootView: SettingsView()))
@@ -288,65 +302,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
   // MARK: - Popover Delegate
 
-  func popoverWillClose(_ notification: Notification) {
-    print(#function)
-    popover?.animates = true
-  }
-
-  func popoverDidClose(_ notification: Notification) {
-    print(#function)
-    positioningWindow?.close()
-  }
-
-  // func popoverDidClose(_ notification: Notification) {
-  //   DispatchQueue.main.async {
-  //     self.positioningWindow?.close()
-  //   }
-  // }
-
-  func popoverDidShow(_ notification: Notification) {
-    guard let popoverController = popover?.contentViewController as? CollectionViewController else { return }
-    popoverController.view.window?.setValue(false, forKey: "nonactivatingPanel")
-    popoverController.view.window?.makeFirstResponder(popoverController.searchField)
-    popoverController.view.window?.makeKeyAndOrderFront(nil)
-    popoverController.view.window?.makeKey()
-    popoverController.view.window?.orderFrontRegardless()
-    popoverController.view.window?.setValue(true, forKey: "nonactivatingPanel")
-
-//    if let field = popoverController.searchField {
-//      print(field.frame)
-//      print(field.convert(NSPoint(x: field.frame.midX, y: field.frame.midY), to: nil))
-//      //print(popoverController.view.window?.convertToScreen(searchField.frame) as Any)
-//      let fieldLocation = field.convert(NSPoint(x: field.frame.midX, y: field.frame.midY), to: nil)
-//
-//      guard
-//        let screenLocation = popoverController.view.window?.convertPoint(toScreen: fieldLocation),
-//        let event = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: screenLocation, mouseButton: .left)
-//      else { return }
-//
-//      event.post(tap: .cghidEventTap)
-//      event.type = .leftMouseUp
-//      event.post(tap: .cghidEventTap)
-////      event.type = .keyDown
-//    }
-
-//    let oldLocation = CGEvent(source: nil)?.unflippedLocation ?? .zero
-//    let point = popoverController.view.window?.convertPoint(toScreen: .zero) ?? .zero
-//    print(point)
-//    guard let event = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: point, mouseButton: .left) else { return }
-//    event.post(tap: .cghidEventTap)
-//    event.oldLocation
-
-    //popoverController.view.window?.makeKey()
-    //NSApp.activate(ignoringOtherApps: true)
-    //popoverController.view.window?.orderFront(nil)
-    //DispatchQueue.main.async {
-    //  popoverController.view.window?.makeFirstResponder(popoverController.searchField)
-    //}
-  }
-
   func popoverShouldDetach(_ popover: NSPopover) -> Bool {
     true
+  }
+
+  func popoverDidDetach(_ popover: NSPopover) {
+    guard let stackView = (popover.contentViewController as? CollectionViewController)?.stackView else { return }
+    stackView.edgeInsets.top = 27
   }
 
   func detachableWindow(for popover: NSPopover) -> NSWindow? {
@@ -357,8 +319,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     return panel
   }
 
-  func popoverDidDetach(_ popover: NSPopover) {
-    guard let stackView = (popover.contentViewController as? CollectionViewController)?.stackView else { return }
-    stackView.edgeInsets.top = 27
+  func popoverDidShow(_ notification: Notification) {
+    guard let popoverController = popover?.contentViewController as? CollectionViewController else { return }
+    popoverController.view.window?.setValue(false, forKey: "nonactivatingPanel")
+    popoverController.view.window?.makeFirstResponder(popoverController.searchField)
+//    popoverController.view.window?.makeKeyAndOrderFront(nil)
+//    popoverController.view.window?.makeKey()
+//    popoverController.view.window?.orderFrontRegardless()
+    popoverController.view.window?.setValue(true, forKey: "nonactivatingPanel")
+  }
+
+  func popoverWillClose(_ notification: Notification) {
+    // print(#function)
+    popover?.animates = true
+  }
+
+  func popoverDidClose(_ notification: Notification) {
+    // print(#function)
+    positioningWindow?.close()
   }
 }

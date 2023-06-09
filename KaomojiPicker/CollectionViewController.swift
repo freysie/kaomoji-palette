@@ -1,10 +1,6 @@
 import AppKit
 import Combine
 
-class CollectionView: NSCollectionView {
-//  override var mouseDownCanMoveWindow: Bool { true }
-}
-
 //class BaseCollectionViewController: NSViewController {}
 //class PickerCollectionViewController: BaseCollectionViewController {}
 //class PopoverCollectionViewController: PickerCollectionViewController {}
@@ -15,17 +11,16 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   private static let recentsCategoryTitle = ".:☆*:･"
   // private static let recentsCategoryTitle = "。.:☆*:･"
 
+  // TODO: get rid of this:
   enum Mode { case pickerPopover, pickerWindow, settings }
   var mode = Mode.pickerPopover
 
   var showsRecents: Bool { !dataSource.recents.isEmpty }
-  //var showsSearchField: Bool { false }
   var showsSearchField = true
   var showsCategoryButtons = true
   var usesMaterialBackground = false
   var usesUppercaseSectionTitles: Bool { true }
   var selectionColor: NSColor { .controlAccentColor.withAlphaComponent(0.25) }
-  //var selectionColor: NSColor { .controlAccentColor.withSystemEffect(.disabled) }
 
   private(set) var flowLayout: NSCollectionViewFlowLayout!
   private(set) var collectionView: NSCollectionView!
@@ -142,7 +137,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     }
 
     if mode == .pickerWindow {
-      // TODO: get better icon
+      // TODO: get better icon?
       let closeButton = NSButton()
       closeButton.image = .closeIcon
       closeButton.symbolConfiguration = NSImage.SymbolConfiguration(pointSize: 13.5, weight: .heavy)
@@ -287,9 +282,11 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     insertKaomoji(item, withCloseDelay: false)
   }
 
-  private func insertSelectedOrCloseWindow() {
+  private func insertSelectedOrSelectFirstOrCloseWindow() {
     if !collectionView.selectionIndexPaths.isEmpty {
       insertSelected()
+    } else if isSearching {
+      collectionView.selectionIndexPaths = [IndexPath(item: 0, section: 1)]
     } else {
       appDelegate.popover?.close()
     }
@@ -318,7 +315,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
     func selectFirstIfNeeded() -> Bool {
       if collectionView.selectionIndexPaths.isEmpty {
-        collectionView.selectItems(at: [IndexPath(item: 0, section: 1)], scrollPosition: .nearestHorizontalEdge)
+        collectionView.selectionIndexPaths = [IndexPath(item: 0, section: 1)]
         return true
       }
 
@@ -331,7 +328,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     case #selector(moveUp): if !selectFirstIfNeeded() { collectionView.moveUp(nil) }
     case #selector(moveDown): if !selectFirstIfNeeded() { collectionView.moveDown(nil) }
     case #selector(cancelOperation): clearSearchFieldOrCloseWindow()
-    case #selector(insertNewline): insertSelectedOrCloseWindow()
+    case #selector(insertNewline): insertSelectedOrSelectFirstOrCloseWindow()
     case #selector(insertTab): jumpToNextCategorySection()
     case #selector(insertBacktab): jumpToPreviousCategorySection()
     case #selector(moveToBeginningOfDocument): break // TODO: implement
@@ -350,7 +347,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     var searchTitle = kaomoji
     for (symbolName, symbols) in symbolsByName {
       for symbol in symbols {
-        searchTitle = searchTitle.replacingOccurrences(of: symbol, with: "\(symbolName)")
+        searchTitle = searchTitle.replacingOccurrences(of: symbol, with: symbolName)
       }
     }
     return searchTitle

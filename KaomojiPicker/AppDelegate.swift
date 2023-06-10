@@ -9,6 +9,7 @@ import SwiftUI
 //  ❇️   detachable picker panel
 //  ✅   show regular mouse cursor while mousing over picker
 //  ✅   add kaomoji inserted by drag-and-drop to recents
+//  ✅   make search field work in detached panel
 //  ❇️   detach popover when moved by any part of window background, including within collection view
 
 // TODO: app notarization
@@ -23,6 +24,7 @@ import SwiftUI
 
 let popoverSize = NSSize(width: 320, height: 358)
 //let popoverSize = NSSize(width: 320, height: 368) // for use with search field
+let titlebarHeight = 27.0
 
 func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
 
@@ -249,35 +251,49 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   // MARK: - Panel
 
   let panel = {
-    let size = NSSize(width: popoverSize.width, height: popoverSize.height + 27)
+    let size = NSSize(width: popoverSize.width, height: popoverSize.height + titlebarHeight)
 
     let collectionViewController = CollectionViewController()
     collectionViewController.mode = .pickerWindow
     collectionViewController.usesMaterialBackground = true
     collectionViewController.preferredContentSize = size
 
-    let window = NSPanel(contentViewController: collectionViewController)
-    //print(window.styleMask.rawValue, window.becomesKeyOnlyIfNeeded)
-    //window.styleMask = [.borderless, .closable, .fullSizeContentView, .utilityWindow]
-    window.styleMask.remove(.titled)
-    window.styleMask.insert(.borderless)
-    window.styleMask.insert(.utilityWindow)
-    window.styleMask.insert(.fullSizeContentView)
-    //window.styleMask.insert(.closable)
-    //window.styleMask.insert(.nonactivatingPanel)
-    //window.styleMask = [.fullSizeContentView, .closable]
-    //window.titleVisibility = .hidden
-    //window.hasTitleBar = false
-    //window.isFloatingPanel = true
+    collectionViewController.loadView()
+//    print(collectionViewController.view.needsPanelToBecomeKey)
+//    print(collectionViewController.scrollView.needsPanelToBecomeKey)
+//    print(collectionViewController.collectionView.needsPanelToBecomeKey)
+//    DispatchQueue.main.async {
+//      print(collectionViewController.searchField?.needsPanelToBecomeKey)
+//    }
+
+    let window = PickerPanel(contentViewController: collectionViewController)
+    //window.styleMask = [.borderless, .closable, ]
+    window.styleMask = [.borderless, .closable, .fullSizeContentView, .utilityWindow]
+    window.isFloatingPanel = true
     window.hidesOnDeactivate = false
-    //window.animationBehavior = .none
-    window.becomesKeyOnlyIfNeeded = true
-    window.level = .floating
+    window.animationBehavior = .utilityWindow
+    //window.becomesKeyOnlyIfNeeded = true
+    //window.level = .floating
     window.isMovableByWindowBackground = true
-    window.setContentSize(size)
-    //window.setValue(true, forKey: "nonactivatingPanel")
+    window.allowsToolTipsWhenApplicationIsInactive = true
+    //window.standardWindowButton(.closeButton)?.isHidden = true
+    //window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+    //window.standardWindowButton(.zoomButton)?.isHidden = true
+    window.setValue(true, forKey: "nonactivatingPanel")
     window.setValue(true, forKey: "forceMainAppearance")
+    window.setContentSize(size)
     window.makeFirstResponder(collectionViewController.searchField)
+    //window.makeKeyAndOrderFront(nil)
+
+//    if let windowFrameView = window.contentView?.superview {
+//      //windowFrameView.alphaValue = 0.5
+//      print(windowFrameView.subtreeDescription)
+//      print(windowFrameView.gestureRecognizers)
+//      //windowFrameView.subviews.last?.removeFromSuperview()
+//      windowFrameView.subviews.last?.alphaValue = 0.5
+//      windowFrameView.subviews.last?.frame = windowFrameView.subviews.last!.frame.offsetBy(dx: 0, dy: <#T##CGFloat#>)
+//      //print(windowFrameView.subtreeDescription)
+//    }
 
     return window
   }()
@@ -339,4 +355,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     // print(#function)
     positioningWindow?.close()
   }
+}
+
+class PickerPanel: NSPanel {
+  override var canBecomeKey: Bool { true }
 }

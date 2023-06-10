@@ -286,6 +286,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     panelController.scrollView.scrollToVisible(popoverController.scrollView.contentView.bounds)
     panelController.searchField?.stringValue = popoverController.searchField?.stringValue ?? ""
     panelController.view.window?.makeFirstResponder(panelController.searchField)
+    tryBlock { panel.setValue(true, forKey: "preventsActivation") }
     return panel
   }
 

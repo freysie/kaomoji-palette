@@ -45,12 +45,13 @@ struct SettingsView: View {
           Spacer()
 
           Menu {
-            Button("Restore to Defaults") { dataSource.restoreToDefaults() }
-            Divider()
             Button("Edit Categories…") { isEditCategoriesSheetPresented = true }
             Divider()
             Button("Import…") { isImportSheetPresented = true }
             Button("Export…") { isExportSheetPresented = true }
+            Divider()
+            Button("Clear Recently Used Kaomoji") { dataSource.clearRecents() }
+            Button("Restore to Defaults") { dataSource.restoreToDefaults() }
           } label: {
             Image(systemName: "ellipsis.circle")
           }

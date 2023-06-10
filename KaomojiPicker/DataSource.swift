@@ -71,6 +71,11 @@ class DataSource: ObservableObject {
     recents = Array(recents.uniqued().prefix(Self.maxRecents))
     defaults.set(recents, forKey: UserDefaultsKey.recents)
   }
+
+  func clearRecents() {
+    recents = []
+    defaults.set(recents, forKey: UserDefaultsKey.recents)
+  }
 }
 
 fileprivate enum UserDefaultsKey {
@@ -385,8 +390,8 @@ fileprivate let defaultKaomoji = [
     "(ಡ‸ಡ)",
   ]),
   ("Surprise", [
-    "w(°ｏ°)w",
     "ヽ(°〇°)ﾉ",
+    "w(°ｏ°)w",
     "Σ(O_O)",
     "Σ(°ロ°)",
     "(⊙_⊙)",
@@ -401,6 +406,7 @@ fileprivate let defaultKaomoji = [
     "( : ౦ ‸ ౦ : )",
   ]),
   ("Greeting", [
+    "(^０^)ノ",
     "(*・ω・)ﾉ",
     "(￣▽￣)ノ",
     "(°▽°)/",
@@ -413,7 +419,6 @@ fileprivate let defaultKaomoji = [
     "＼(⌒▽⌒)",
     "ヾ(☆▽☆)",
     "( ´ ▽ ` )ﾉ",
-    "(^０^)ノ",
     "~ヾ(・ω・)",
     "(・∀・)ノ",
     "ヾ(・ω・*)",

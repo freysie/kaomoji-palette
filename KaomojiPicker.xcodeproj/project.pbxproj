@@ -24,7 +24,6 @@
 		3B895BED2A0C2CCD006442A2 /* Collection+Chunked.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */; };
 		3B895BEF2A0C2CE1006442A2 /* Sequence+Uniqued.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */; };
 		3B895BFB2A0C5670006442A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3B895BF92A0C5670006442A2 /* Localizable.strings */; };
-		3BDD0FA92A3323F30000CAA8 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FA82A3323F30000CAA8 /* CollectionView.swift */; };
 		3BDD0FAC2A33A7410000CAA8 /* EditCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */; };
 		3BDD0FAE2A33A7470000CAA8 /* EditKaomojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */; };
 		3BDD0FB02A33A7910000CAA8 /* TextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FAF2A33A7910000CAA8 /* TextFieldCell.swift */; };
@@ -34,6 +33,7 @@
 		3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+CornerMask.swift"; sourceTree = "<group>"; };
 		3B29D8092A31C8AC007E89AD /* CollectionViewControlsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewControlsHeader.swift; sourceTree = "<group>"; };
 		3B29D80B2A31E4A5007E89AD /* NSView+SubtreeDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+SubtreeDescription.swift"; sourceTree = "<group>"; };
+		3B5332B42A34D31100B271EB /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EnvironmentValues+Dismiss.swift"; sourceTree = "<group>"; };
 		3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu+Highlight.swift"; sourceTree = "<group>"; };
 		3B895B6D2A065679006442A2 /* Kaomoji Picker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kaomoji Picker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -51,7 +51,6 @@
 		3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Chunked.swift"; sourceTree = "<group>"; };
 		3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Sequence+Uniqued.swift"; sourceTree = "<group>"; };
 		3B895BFA2A0C5670006442A2 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
-		3BDD0FA82A3323F30000CAA8 /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
 		3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCategoriesView.swift; sourceTree = "<group>"; };
 		3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditKaomojiView.swift; sourceTree = "<group>"; };
 		3BDD0FAF2A33A7910000CAA8 /* TextFieldCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldCell.swift; sourceTree = "<group>"; };
@@ -89,18 +88,18 @@
 		3B895B6F2A065679006442A2 /* KaomojiPicker */ = {
 			isa = PBXGroup;
 			children = (
+				3B5332B42A34D31100B271EB /* BridgingHeader.h */,
 				3B895B702A065679006442A2 /* AppDelegate.swift */,
-				3BDD0FA82A3323F30000CAA8 /* CollectionView.swift */,
 				3B895B722A065679006442A2 /* CollectionViewController.swift */,
 				3B29D8092A31C8AC007E89AD /* CollectionViewControlsHeader.swift */,
 				3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */,
 				3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */,
 				3B895BE92A0A68F0006442A2 /* DataSource.swift */,
-				3BDD0FAA2A33914A0000CAA8 /* Settings */,
 				3B895B742A06567D006442A2 /* Assets.xcassets */,
 				3B895B832A068BB5006442A2 /* MainMenu.xib */,
 				3B895BEB2A0C2CBE006442A2 /* Additions */,
 				3B895BF82A0C5670006442A2 /* Localization */,
+				3BDD0FAA2A33914A0000CAA8 /* Settings */,
 			);
 			path = KaomojiPicker;
 			sourceTree = "<group>";
@@ -172,6 +171,7 @@
 				TargetAttributes = {
 					3B895B6C2A065679006442A2 = {
 						CreatedOnToolsVersion = 14.3;
+						LastSwiftMigration = 1430;
 					};
 				};
 			};
@@ -217,7 +217,6 @@
 				3B29D80C2A31E4A5007E89AD /* NSView+SubtreeDescription.swift in Sources */,
 				3BDD0FAE2A33A7470000CAA8 /* EditKaomojiView.swift in Sources */,
 				3B895B802A065699006442A2 /* AppKit+Previews.swift in Sources */,
-				3BDD0FA92A3323F30000CAA8 /* CollectionView.swift in Sources */,
 				3B895B732A065679006442A2 /* CollectionViewController.swift in Sources */,
 				3B85A75B2A0FDD67006482C8 /* EnvironmentValues+Dismiss.swift in Sources */,
 				3B13E06F2A2FF1E0007FC921 /* NSImage+CornerMask.swift in Sources */,
@@ -369,6 +368,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -389,6 +389,8 @@
 				PRODUCT_MODULE_NAME = KaomojiPicker;
 				PRODUCT_NAME = "Kaomoji Picker";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = KaomojiPicker/BridgingHeader.h;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -398,6 +400,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -418,6 +421,7 @@
 				PRODUCT_MODULE_NAME = KaomojiPicker;
 				PRODUCT_NAME = "Kaomoji Picker";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = KaomojiPicker/BridgingHeader.h;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

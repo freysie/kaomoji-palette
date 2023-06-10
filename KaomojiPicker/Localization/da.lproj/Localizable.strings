@@ -1,10 +1,11 @@
 "Recently Used" = "Seneste brugte";
 
-"Kaomoji Picker Settings" = "Indstillinger for kaomoji-vælger";
-"Restore to Defaults" = "Gendan standard";
+"Kaomoji Picker Settings" = "Indstillinger for kaomojis-vælger";
 "Edit Categories…" = "Rediger kategorier…";
 "Import…" = "Importer…";
 "Export…" = "Eksporter…";
+"Clear Recently Used Kaomoji" = "Ryd seneste brugte kaomojis";
+"Restore to Defaults" = "Gendan standard";
 "Keyboard Shortcut" = "Tastaturgenvej";
 "Space" = "Mellemrum";
 
@@ -25,7 +26,7 @@
 "Surprise" = "Overraskelse";
 "Greeting" = "Hilsen";
 
-"No Kaomoji Found" = "Ingen kaomoji fundet";
+"No Kaomoji Found" = "Ingen kaomojis fundet";
 
 "heart" = "hjerte";
 "star" = "stjerne";

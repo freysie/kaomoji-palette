@@ -25,7 +25,6 @@ import SwiftUI
 // TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
 
 let popoverSize = NSSize(width: 320, height: 358)
-//let popoverSize = NSSize(width: 320, height: 368) // for use with search field
 let titlebarHeight = 27.0
 
 func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
@@ -40,9 +39,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   func applicationDidFinishLaunching(_ notification: Notification) {
     guard ProcessInfo.processInfo.environment["XCODE_IS_RUNNING_FOR_PREVIEWS"] != "1" else { return }
 
-    UserDefaults.standard.register(defaults: [
-      "NSUseAnimatedFocusRing": false
-    ])
+//    UserDefaults.standard.register(defaults: [
+//      "NSUseAnimatedFocusRing": false
+//    ])
 
     if !AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary) {
       NSLog("Accessibility permissions needed.")
@@ -76,11 +75,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       if popover?.isDetached != true { popover?.close() }
     }
 
-//    NSEvent.addLocalMonitorForEvents(matching: .leftMouseUp) { [self] event in
-//      if popover?.isDetached != true { popover?.close() }
-//      return event
-//    }
-
     // let w = NSWindow(contentViewController: CollectionViewController())
     // //w.styleMask.insert(.nonactivatingPanel)
     // //w.setValue(true, forKey: "preventsActivation")
@@ -100,16 +94,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     positioningWindow.setContentSize(NSSize(width: 2, height: insertionPointHeight))
     positioningWindow.setFrameTopLeftPoint(point)
     positioningWindow.alphaValue = 0
-    //positioningWindow.setValue(true, forKey: "preventsActivation")
     positioningWindow.orderFrontRegardless()
 
-     class ViewController: NSViewController {
-       convenience init() { self.init(nibName: nil, bundle: nil) }
-       override func loadView() { view = NSView() }
-     }
-
     let collectionViewController = CollectionViewController()
-    //let collectionViewController = ViewController()
     collectionViewController.preferredContentSize = popoverSize
 
     let popover = NSPopover()
@@ -125,29 +112,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     popover.show(relativeTo: .zero, of: positioningWindow.contentView!, preferredEdge: .minY)
 
-//    if let controlsHeader = collectionViewController.collectionView?.supplementaryView(
-//      forElementKind: NSCollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)
-//    ) as? CollectionViewControlsHeader {
-//      controlsHeader.searchField.becomeFirstResponder()
-//    }
-
     if let popoverWindow = popover.value(forKey: "_popoverWindow") as? NSPanel {
-      //print(popoverWindow)
-      //print(popoverWindow.isFloatingPanel, popoverWindow.styleMask, popoverWindow.becomesKeyOnlyIfNeeded)
-      //print(popoverWindow.hidesOnDeactivate)
-//      popoverWindow.hidesOnDeactivate = false
-//      popoverWindow.canHide = false
-//      popoverWindow.becomesKeyOnlyIfNeeded = true
-
-      popoverWindow.level = .floating
-      //popoverWindow.isMovableByWindowBackground = true
-
-      //popoverWindow.setValue(true, forKey: "hasActiveAppearance")
-      //popoverWindow.setValue(true, forKey: "forceActiveControls")
-      //popoverWindow.setValue(true, forKey: "preventsActivation")
-      //popoverWindow.setValue(true, forKey: "avoidsActivation")
-      //popoverWindow.setValue(true, forKey: "nonactivatingPanel")
-      popoverWindow.setValue(true, forKey: "forceMainAppearance")
+      tryBlock { popoverWindow.setValue(true, forKey: "forceMainAppearance") }
     }
   }
 
@@ -207,9 +173,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
       return showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
     }
-
-    // showPicker(at: CGEvent(source: nil)?.unflippedLocation ?? .zero)
-    // popover?.perform(Selector((String("detach"))))
   }
 
   func insertText(_ string: String) {
@@ -261,46 +224,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     let size = NSSize(width: popoverSize.width, height: popoverSize.height + titlebarHeight)
 
     let collectionViewController = CollectionViewController()
-    collectionViewController.mode = .pickerWindow
+    collectionViewController.mode = .pickerPanel
     collectionViewController.usesMaterialBackground = true
     collectionViewController.preferredContentSize = size
 
-    collectionViewController.loadView()
-//    print(collectionViewController.view.needsPanelToBecomeKey)
-//    print(collectionViewController.scrollView.needsPanelToBecomeKey)
-//    print(collectionViewController.collectionView.needsPanelToBecomeKey)
-//    DispatchQueue.main.async {
-//      print(collectionViewController.searchField?.needsPanelToBecomeKey)
-//    }
-
     let window = PickerPanel(contentViewController: collectionViewController)
-    //window.styleMask = [.borderless, .closable, ]
-    window.styleMask = [.borderless, .closable, .fullSizeContentView, .utilityWindow]
+    window.styleMask = [.borderless, .closable, .fullSizeContentView, .utilityWindow, .nonactivatingPanel]
     window.isFloatingPanel = true
     window.hidesOnDeactivate = false
     window.animationBehavior = .utilityWindow
-    //window.becomesKeyOnlyIfNeeded = true
+    window.becomesKeyOnlyIfNeeded = true
     //window.level = .floating
     window.isMovableByWindowBackground = true
     window.allowsToolTipsWhenApplicationIsInactive = true
-    //window.standardWindowButton(.closeButton)?.isHidden = true
-    //window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-    //window.standardWindowButton(.zoomButton)?.isHidden = true
-    window.setValue(true, forKey: "nonactivatingPanel")
-    window.setValue(true, forKey: "forceMainAppearance")
+    tryBlock { window.setValue(true, forKey: "forceMainAppearance") }
     window.setContentSize(size)
-    window.makeFirstResponder(collectionViewController.searchField)
-    //window.makeKeyAndOrderFront(nil)
-
-//    if let windowFrameView = window.contentView?.superview {
-//      //windowFrameView.alphaValue = 0.5
-//      print(windowFrameView.subtreeDescription)
-//      print(windowFrameView.gestureRecognizers)
-//      //windowFrameView.subviews.last?.removeFromSuperview()
-//      windowFrameView.subviews.last?.alphaValue = 0.5
-//      windowFrameView.subviews.last?.frame = windowFrameView.subviews.last!.frame.offsetBy(dx: 0, dy: <#T##CGFloat#>)
-//      //print(windowFrameView.subtreeDescription)
-//    }
 
     return window
   }()
@@ -310,11 +248,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   let settingsWindow = {
     let window = NSPanel(contentViewController: NSHostingController(rootView: SettingsView()))
     window.title = l("Kaomoji Picker Settings")
-    //window.styleMask = [.titled, .nonactivatingPanel, .utilityWindow, .closable, .resizable]
-    window.styleMask = [.titled, .utilityWindow, .closable, .resizable]
+      window.styleMask = [.titled, .nonactivatingPanel, .utilityWindow, .closable, .resizable]
+    //window.styleMask = [.titled, .utilityWindow, .closable, .resizable]
     window.isFloatingPanel = true
     window.hidesOnDeactivate = false
-    //window.becomesKeyOnlyIfNeeded = true
+    window.becomesKeyOnlyIfNeeded = true
     window.setContentSize(NSSize(width: 499, height: 736))
     window.level = .modalPanel
     return window
@@ -336,6 +274,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   }
 
   func popoverDidDetach(_ popover: NSPopover) {
+    print(#function)
 //    guard let stackView = (popover.contentViewController as? CollectionViewController)?.stackView else { return }
 //    stackView.edgeInsets.top = titlebarHeight
 //    print()
@@ -352,9 +291,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
   func popoverDidShow(_ notification: Notification) {
     guard let popoverController = popover?.contentViewController as? CollectionViewController else { return }
-    popoverController.view.window?.setValue(false, forKey: "nonactivatingPanel")
     popoverController.view.window?.makeFirstResponder(popoverController.searchField)
-    popoverController.view.window?.setValue(true, forKey: "nonactivatingPanel")
   }
 
   func popoverWillClose(_ notification: Notification) {

@@ -263,6 +263,7 @@ class CategoriesTableCellView: NSTableCellView {
     //field.usesSingleLineMode = true
     field.isBordered = false
     field.drawsBackground = false
+    field.focusRingType = .none
     textField = field
     addSubview(field)
 

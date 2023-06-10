@@ -13,7 +13,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   private static let sectionHeaderHeight = 26.0
 
   // TODO: get rid of this:
-  enum Mode { case pickerPopover, pickerWindow, settings }
+  enum Mode { case pickerPopover, pickerPanel, settings }
   var mode = Mode.pickerPopover
 
   var showsRecents: Bool { !dataSource.recents.isEmpty }
@@ -144,7 +144,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
       stackView = NSStackView(views: [scrollView])
     }
 
-    if mode == .pickerWindow {
+    if mode == .pickerPanel {
       // TODO: get better icon?
       let closeButton = NSButton()
       closeButton.image = .closeIcon
@@ -288,14 +288,17 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     insertKaomoji(item, withCloseDelay: false)
   }
 
-  private func insertSelectedOrSelectFirstOrCloseWindow() {
+  private func insertSelectedOrSelectFirstOrCloseWindow() -> Bool {
     if !collectionView.selectionIndexPaths.isEmpty {
       insertSelected()
     } else if isSearching {
+      guard !searchResults.isEmpty else { return false }
       collectionView.selectionIndexPaths = [IndexPath(item: 0, section: 1)]
     } else {
       appDelegate.popover?.close()
     }
+
+    return true
   }
 
   private func insertKaomoji(_ sender: NSCollectionViewItem, withCloseDelay: Bool) {
@@ -340,7 +343,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     case #selector(moveUp): if !selectFirstIfNeeded() { collectionView.moveUp(nil) }
     case #selector(moveDown): if !selectFirstIfNeeded() { collectionView.moveDown(nil) }
     case #selector(cancelOperation): clearSearchFieldOrCloseWindow()
-    case #selector(insertNewline): insertSelectedOrSelectFirstOrCloseWindow()
+    case #selector(insertNewline): return insertSelectedOrSelectFirstOrCloseWindow()
     case #selector(insertTab): jumpToNextCategorySection()
     case #selector(insertBacktab): jumpToPreviousCategorySection()
     case #selector(moveToBeginningOfDocument): break // TODO: implement
@@ -440,7 +443,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
         headerView.searchField.target = self
         headerView.searchField.action = #selector(search(_:))
         headerView.searchField.delegate = self
-        headerView.settingsButton.isHidden = mode == .pickerWindow
+        headerView.settingsButton.isHidden = mode == .pickerPanel
         searchField = headerView.searchField
         return headerView
       } else {
@@ -536,13 +539,13 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     }
   }
 
-  func collectionView(_ collectionView: NSCollectionView, shouldSelectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath> {
-    isInserting ? selectionIndexPaths : indexPaths
-  }
-
-  func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
-    selectionIndexPaths = indexPaths
-  }
+//  func collectionView(_ collectionView: NSCollectionView, shouldSelectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath> {
+//    isInserting ? selectionIndexPaths : indexPaths
+//  }
+//
+//  func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+//    selectionIndexPaths = indexPaths
+//  }
 
   // MARK: - Flow Layout Delegate
 
@@ -566,6 +569,33 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 }
 
 // MARK: -
+
+class CollectionView: NSCollectionView {
+  // override var mouseDownCanMoveWindow: Bool { true }
+
+  /// Move popover by background.
+  override func mouseDown(with event: NSEvent) {
+    super.mouseDown(with: event)
+
+    if indexPathForItem(at: convert(event.locationInWindow, from: nil)) == nil {
+      AppDelegate.shared.popover?.mouseDown(with: event)
+    }
+  }
+
+  // TODO: implement this but for moveLeft/Right/Up/Down instead
+  // override func becomeFirstResponder() -> Bool {
+  //   if selectionIndexPaths.isEmpty {
+  //     for section in 0..<numberOfSections {
+  //       if numberOfItems(inSection: section) > 0 {
+  //         selectionIndexPaths = [IndexPath(item: 0, section: section)]
+  //         break
+  //       }
+  //     }
+  //   }
+  //
+  //   return super.becomeFirstResponder()
+  // }
+}
 
 //extension NSPasteboard.PasteboardType {
 //  static let item = Self(UTType.item.identifier)
@@ -593,15 +623,15 @@ struct CollectionViewController_Previews: PreviewProvider {
       .frame(width: popoverSize.width, height: popoverSize.height)
       .previewDisplayName("Popover")
 
-    NSViewControllerPreview<CollectionViewController>() { $0.mode = .pickerWindow }
+    NSViewControllerPreview<CollectionViewController>() { $0.mode = .pickerPanel }
       .frame(width: popoverSize.width, height: popoverSize.height + titlebarHeight)
-      .previewDisplayName("Window")
+      .previewDisplayName("Panel")
 
 //    NSViewControllerPreview<CollectionViewController>() { $0.showsCategoryButtons = true }
 //      .frame(width: popoverSize.width, height: popoverSize.height + 10)
 //      .previewDisplayName("Search (Popover)")
 //
-//    NSViewControllerPreview<CollectionViewController>() { $0.showsCategoryButtons = true; $0.mode = .pickerWindow }
+//    NSViewControllerPreview<CollectionViewController>() { $0.showsCategoryButtons = true; $0.mode = .pickerPanel }
 //      .frame(width: popoverSize.width, height: popoverSize.height + titlebarHeight + 10)
 //      .previewDisplayName("Search (Window)")
   }

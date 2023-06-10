@@ -5,7 +5,7 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
   private(set) var titleTextField: NSTextField!
   private(set) var stackViewTopAnchor: NSLayoutConstraint!
 
-  //override var mouseDownCanMoveWindow: Bool { true }
+  // override var mouseDownCanMoveWindow: Bool { true }
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)

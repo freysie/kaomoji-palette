@@ -2,12 +2,20 @@ import SwiftUI
 import Combine
 import UniformTypeIdentifiers
 
+struct KaomojiItem: Identifiable {
+  let id = UUID()
+  let kaomoji: String
+  let categoryIndex: Int
+}
+
 // TODO: show confirmation dialog before restoring to defaults
 // TODO: make editing categories work on earlier versions of macOS
 struct SettingsView: View {
   @State private var selection = Set<IndexPath>()
   @State private var isEditKaomojiSheetPresented = false
   @State private var isEditCategoriesSheetPresented = false
+  @State private var isEditCategoriesSheetPresented_ = false
+  @State private var editedKaomojiItem: KaomojiItem?
   @State private var isImportSheetPresented = false
   @State private var isExportSheetPresented = false
 
@@ -16,7 +24,7 @@ struct SettingsView: View {
   var body: some View {
     VStack {
       GroupBox {
-        SettingsCollection(selection: $selection)
+        SettingsCollection(selection: $selection, editedKaomojiItem: $editedKaomojiItem)
           //.onDeleteCommand(perform: deleteSelected)
           .frame(minHeight: 178)
           .padding(-5)
@@ -78,6 +86,7 @@ struct SettingsView: View {
       }
     }
     .frame(width: 499)
+    .sheet(item: $editedKaomojiItem) { EditKaomojiView(kaomoji: $0.kaomoji, category: "") }
     .sheet(isPresented: $isEditKaomojiSheetPresented) { EditKaomojiView(collectionSelection: $selection) }
     .sheet(isPresented: $isEditCategoriesSheetPresented) { EditCategoriesView() }
     .fileImporter(isPresented: $isImportSheetPresented, allowedContentTypes: [.propertyList]) {
@@ -112,11 +121,14 @@ struct SettingsView: View {
   }
 }
 
+// MARK: -
+
 struct SettingsCollection: NSViewControllerRepresentable {
   @Binding var selection: Set<IndexPath>
+  @Binding var editedKaomojiItem: KaomojiItem?
 
   func makeNSViewController(context: Context) -> SettingsCollectionViewController {
-    let viewController = SettingsCollectionViewController()
+    let viewController = SettingsCollectionViewController(editedKaomojiItem: $editedKaomojiItem)
     viewController.loadView()
     viewController.collectionView.publisher(for: \.selectionIndexPaths)
       .sink { newValue in DispatchQueue.main.async { selection = newValue } }
@@ -129,17 +141,11 @@ struct SettingsCollection: NSViewControllerRepresentable {
   }
 
   func makeCoordinator() -> Coordinator {
-    // Coordinator(parent: self)
     Coordinator()
   }
 
   class Coordinator: NSObject {
     var subscriptions = Set<AnyCancellable>()
-
-    // let parent: SettingsCollection
-    // init(parent: SettingsCollection) {
-    //   self.parent = parent
-    // }
   }
 }
 
@@ -148,7 +154,17 @@ class SettingsCollectionViewController: CollectionViewController {
   override var usesUppercaseSectionTitles: Bool { false }
   override var selectionColor: NSColor { .controlAccentColor }
 
+  @Binding private var editedKaomojiItem: KaomojiItem?
   private var indexPathsForDraggedItems = Set<IndexPath>()
+
+  init(editedKaomojiItem: Binding<KaomojiItem?>) {
+    _editedKaomojiItem = editedKaomojiItem
+    super.init(nibName: nil, bundle: nil)
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
 
   override func loadView() {
     mode = .settings
@@ -174,11 +190,20 @@ class SettingsCollectionViewController: CollectionViewController {
     collectionView.setDraggingSourceOperationMask(.move, forLocal: true)
   }
 
-  // MARK: - Actions
+  // MARK: - Item Click Handling
 
-  override func insertKaomoji(_ sender: NSCollectionViewItem?) {
+  @objc override func collectionViewItemWasClicked(_ sender: CollectionViewItem) {
     /// This method intentionally left blank.
   }
+
+  @objc override func collectionViewItemWasDoubleClicked(_ sender: CollectionViewItem) {
+    print(#function, sender)
+    editedKaomojiItem = KaomojiItem(kaomoji: sender.representedObject as? String ?? "", categoryIndex: 0)
+  }
+
+//  override func insertKaomoji(_ sender: NSCollectionViewItem?) {
+//    /// This method intentionally left blank.
+//  }
 
   // @objc func editKaomoji(_ sender: NSCollectionViewItem) {}
 
@@ -194,7 +219,10 @@ class SettingsCollectionViewController: CollectionViewController {
 //    /// This method intentionally left blank.
 //  }
 
-  func collectionView(_ collectionView: NSCollectionView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint, forItemsAt indexPaths: Set<IndexPath>) {
+  // TODO: use pasteboard for reals
+
+  override func collectionView(_ collectionView: NSCollectionView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint, forItemsAt indexPaths: Set<IndexPath>) {
+    //session.draggingFormation = .pile
     indexPathsForDraggedItems = indexPaths
   }
 
@@ -239,7 +267,7 @@ class SettingsCollectionViewController: CollectionViewController {
   // MARK: - Flow Layout Delegate
 
   override func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> NSSize {
-    section == 0 ? .zero : NSSize(width: 80, height:  29)
+    section == 0 ? .zero : NSSize(width: 80, height: 29)
   }
 }
 
@@ -282,123 +310,17 @@ class SettingsCollectionViewSectionHeader: CollectionViewSectionHeader {
   }
 }
 
-extension String: Identifiable {
-  public var id: Self { self }
-}
+// MARK: -
 
-struct EditCategoriesView: View {
-  @State private var categories = DataSource.shared.categories.map { l($0) }
-  @State private var selection = Set<String>()
-  @Environment(\.dismiss) private var dismiss
-
-  var body: some View {
-    if #available(macOS 12, *) {
-      Form {
-        GroupBox {
-          Table($categories, selection: $selection) {
-            TableColumn("Category") { TextField("", text: $0).padding(.horizontal, -5) }
-          }
-          //.tableStyle(.bordered(alternatesRowBackgrounds: false))
-          .tableStyle(.bordered)
-          .padding(-5)
-          .frame(height: 20 + max(1, CGFloat(categories.count)) * 24)
-          //.padding(.bottom, -1)
-
-          HStack(spacing: 0) {
-            Button(action: { categories.append("") }) { Image(systemName: "plus") }
-              .frame(width: 24, height: 24)
-
-            Divider()
-              .padding(.bottom, -1)
-
-            Button(action: deleteSelected) { Image(systemName: "minus") }
-              .frame(width: 24, height: 24)
-              .disabled(selection.isEmpty)
-
-            Spacer()
-          }
-          //.overlay(alignment: .top) { Divider() }
-          .padding(.horizontal, -5)
-          .frame(height: 15)
-          .buttonStyle(.borderless)
-        }
-      }
-      .padding(20)
-      .frame(width: 300)
-      .toolbar {
-        ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-        ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
-      }
-    }
-  }
-
-  func deleteSelected() {
-    for category in selection.reversed() {
-      categories.removeAll { $0 == category }
-    }
-
-    selection = []
+extension Collection {
+  /// Returns the element at the specified index if it is within bounds, otherwise nil.
+  subscript(orNil index: Index) -> Element? {
+    indices.contains(index) ? self[index] : nil
   }
 }
 
-struct EditKaomojiView: View {
-  @Binding var collectionSelection: Set<IndexPath>
-  @State private var kaomoji = ""
-  @State private var category = DataSource.shared.categories.first ?? ""
-  @Environment(\.dismiss) private var dismiss
-
-  var body: some View {
-    Group {
-      if #available(macOS 13, *) {
-        Form {
-          TextField("Kaomoji", text: $kaomoji)
-          Picker("Category", selection: $category) {
-            ForEach(DataSource.shared.categories, id: \.self) {
-              Text(LocalizedStringKey($0)).tag($0)
-            }
-          }
-        }
-        .formStyle(.grouped)
-      } else {
-        Form {
-          TextField("Kaomoji:", text: $kaomoji)
-          Picker("Category:", selection: $category) {
-            ForEach(DataSource.shared.categories, id: \.self) {
-              Text(LocalizedStringKey($0)).tag($0)
-            }
-          }
-        }
-        .padding(20)
-      }
-    }
-    .frame(width: 300)
-    .toolbar {
-      ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-      ToolbarItem(placement: .confirmationAction) { Button("Add") { submit() } }
-    }
-  }
-
-  func submit() {
-    DataSource.shared.addKaomoji(kaomoji, category: category)
-    collectionSelection = [IndexPath(item: 0, section: DataSource.shared.index(ofCategory: category))]
-    dismiss()
-  }
-}
-
-#if DEBUG
 struct SettingsView_Previews: PreviewProvider {
   static var previews: some View {
     SettingsView()
   }
 }
-struct EditKaomojiView_Previews: PreviewProvider {
-  static var previews: some View {
-    EditKaomojiView(collectionSelection: .constant([]))
-  }
-}
-struct EditCategoriesView_Previews: PreviewProvider {
-  static var previews: some View {
-    EditCategoriesView()
-  }
-}
-#endif

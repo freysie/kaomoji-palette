@@ -15,6 +15,7 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
 
     titleTextField = NSTextField(labelWithString: "")
     titleTextField.translatesAutoresizingMaskIntoConstraints = false
+    titleTextField.font = .systemFont(ofSize: NSFont.smallSystemFontSize + 1)
     titleTextField.textColor = .secondaryLabelColor
 
     stackView = NSStackView(views: [titleTextField])
@@ -22,7 +23,7 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
     stackView.wantsLayer = true
     addSubview(stackView)
 
-    stackViewTopAnchor = stackView.topAnchor.constraint(equalTo: topAnchor, constant: 6.5)
+    stackViewTopAnchor = stackView.topAnchor.constraint(equalTo: topAnchor, constant: 7.5)
 
     NSLayoutConstraint.activate([
       stackView.leadingAnchor.constraint(equalTo: leadingAnchor),

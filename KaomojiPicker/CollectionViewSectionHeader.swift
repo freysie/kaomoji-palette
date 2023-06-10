@@ -42,6 +42,13 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
     stackView.arrangedSubviews.forEach(stackView.removeView)
     stackView.addArrangedSubview(titleTextField)
   }
+
+//  override func mouseDown(with event: NSEvent) {
+//    super.mouseDown(with: event)
+//    print(#function)
+//
+//    AppDelegate.shared.popover?.mouseDown(with: event)
+//  }
 }
 
 #if DEBUG

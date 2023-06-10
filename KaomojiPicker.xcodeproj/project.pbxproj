@@ -25,6 +25,9 @@
 		3B895BEF2A0C2CE1006442A2 /* Sequence+Uniqued.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */; };
 		3B895BFB2A0C5670006442A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3B895BF92A0C5670006442A2 /* Localizable.strings */; };
 		3BDD0FA92A3323F30000CAA8 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FA82A3323F30000CAA8 /* CollectionView.swift */; };
+		3BDD0FAC2A33A7410000CAA8 /* EditCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */; };
+		3BDD0FAE2A33A7470000CAA8 /* EditKaomojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */; };
+		3BDD0FB02A33A7910000CAA8 /* TextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FAF2A33A7910000CAA8 /* TextFieldCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +52,9 @@
 		3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Sequence+Uniqued.swift"; sourceTree = "<group>"; };
 		3B895BFA2A0C5670006442A2 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3BDD0FA82A3323F30000CAA8 /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
+		3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCategoriesView.swift; sourceTree = "<group>"; };
+		3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditKaomojiView.swift; sourceTree = "<group>"; };
+		3BDD0FAF2A33A7910000CAA8 /* TextFieldCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,7 +96,7 @@
 				3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */,
 				3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */,
 				3B895BE92A0A68F0006442A2 /* DataSource.swift */,
-				3B895BDD2A082C74006442A2 /* SettingsView.swift */,
+				3BDD0FAA2A33914A0000CAA8 /* Settings */,
 				3B895B742A06567D006442A2 /* Assets.xcassets */,
 				3B895B832A068BB5006442A2 /* MainMenu.xib */,
 				3B895BEB2A0C2CBE006442A2 /* Additions */,
@@ -119,6 +125,17 @@
 				3B895BF92A0C5670006442A2 /* Localizable.strings */,
 			);
 			path = Localization;
+			sourceTree = "<group>";
+		};
+		3BDD0FAA2A33914A0000CAA8 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */,
+				3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */,
+				3B895BDD2A082C74006442A2 /* SettingsView.swift */,
+				3BDD0FAF2A33A7910000CAA8 /* TextFieldCell.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -198,14 +215,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B29D80C2A31E4A5007E89AD /* NSView+SubtreeDescription.swift in Sources */,
+				3BDD0FAE2A33A7470000CAA8 /* EditKaomojiView.swift in Sources */,
 				3B895B802A065699006442A2 /* AppKit+Previews.swift in Sources */,
 				3BDD0FA92A3323F30000CAA8 /* CollectionView.swift in Sources */,
 				3B895B732A065679006442A2 /* CollectionViewController.swift in Sources */,
 				3B85A75B2A0FDD67006482C8 /* EnvironmentValues+Dismiss.swift in Sources */,
 				3B13E06F2A2FF1E0007FC921 /* NSImage+CornerMask.swift in Sources */,
+				3BDD0FB02A33A7910000CAA8 /* TextFieldCell.swift in Sources */,
 				3B895BED2A0C2CCD006442A2 /* Collection+Chunked.swift in Sources */,
 				3B895BBF2A07B477006442A2 /* CollectionViewItem.swift in Sources */,
 				3B895BEF2A0C2CE1006442A2 /* Sequence+Uniqued.swift in Sources */,
+				3BDD0FAC2A33A7410000CAA8 /* EditCategoriesView.swift in Sources */,
 				3B85A75F2A10039A006482C8 /* Menu+Highlight.swift in Sources */,
 				3B895B712A065679006442A2 /* AppDelegate.swift in Sources */,
 				3B895BDE2A082C74006442A2 /* SettingsView.swift in Sources */,

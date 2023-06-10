@@ -34,7 +34,7 @@ class CollectionViewControlsHeader: NSView, NSCollectionViewElement {
     settingsButton.target = NSApp.delegate
     settingsButton.action = #selector(AppDelegate.showSettingsWindow(_:))
     settingsButton.isBordered = false
-    settingsButton.focusRingType = .none
+    settingsButton.refusesFirstResponder = true
 
     let stackView = NSStackView(views: [searchField, settingsButton])
     stackView.edgeInsets = NSEdgeInsets(top: 0, left: 7, bottom: 0, right: 7)

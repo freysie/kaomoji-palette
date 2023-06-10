@@ -44,6 +44,16 @@ class DataSource: ObservableObject {
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
   }
 
+  func addKaomoji(_ string: String, categoryIndex: Int) {
+    kaomoji[categoryIndex].insert(string, at: 0)
+    defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+  }
+
+  //func editKaomij(at indexPath: IndexPath, item: KaomojiItem) {
+  func editKaomij(at indexPath: IndexPath, kaomoji: String, categoryIndex: Int) {
+    // TODO: …
+  }
+
   func removeKaomoji(at indexPath: IndexPath) {
     // TODO: decide if we should remove from recents too?
     kaomoji[indexPath.section].remove(at: indexPath.item)

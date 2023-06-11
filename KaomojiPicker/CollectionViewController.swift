@@ -1,6 +1,7 @@
 import AppKit
 import Combine
 
+// TODO: instead of mode etc., use this:
 //class BaseCollectionViewController: NSViewController {}
 //class PickerCollectionViewController: BaseCollectionViewController {}
 //class PopoverCollectionViewController: PickerCollectionViewController {}
@@ -59,6 +60,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     flowLayout.sectionHeadersPinToVisibleBounds = true
 
     collectionView = CollectionView()
+    collectionView.wantsLayer = true
     collectionView.dataSource = self
     collectionView.delegate = self
     collectionView.isSelectable = true
@@ -77,7 +79,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     )
 
     collectionView.register(
-      CollectionViewControlsHeader.self,
+      CollectionViewHeader.self,
       forSupplementaryViewOfKind: NSCollectionView.elementKindSectionHeader,
       withIdentifier: .controlsHeader
     )
@@ -134,7 +136,6 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
       //categoryStackView.layer?.borderWidth = 1
 
       NSLayoutConstraint.activate([
-        //categoryStackView.heightAnchor.constraint(equalToConstant: 38),
         categoryStackView.leadingAnchor.constraint(equalTo: categoryScrollView.leadingAnchor),
         categoryStackView.topAnchor.constraint(equalTo: categoryScrollView.topAnchor),
         categoryStackView.bottomAnchor.constraint(equalTo: categoryScrollView.bottomAnchor),
@@ -226,7 +227,9 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   // MARK: - Section Jumping
 
   @objc func jumpTo(_ sender: NSButton) {
+    clearSearchFieldAndStopSearching()
     jumpToSection(at: sender.tag)
+    updateCategoryButtons()
   }
 
   private func jumpToNextCategorySection() {
@@ -273,7 +276,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
   private func updateCategoryButtons() {
     let categoryButton = categoryButtons[max(currentSectionIndex - 1, 0)]
-    categoryButton.state = .on
+    categoryButton.state = isSearching ? .off : .on
 
     let frame = categoryButton.convert(categoryButton.bounds, to: categoryScrollView.contentView)
     categoryScrollView.contentView.scrollToVisible(frame.insetBy(dx: -7/2 - 12, dy: 0))
@@ -303,6 +306,8 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
   private func insertKaomoji(_ sender: NSCollectionViewItem, withCloseDelay: Bool) {
     guard let kaomoji = sender.representedObject as? String else { return }
+
+    dataSource.addKaomojiToRecents(kaomoji)
 
     if appDelegate.panel.isVisible {
       NSApp.deactivate()
@@ -389,6 +394,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     } completionHandler: { [self] finished in
       if finished {
         flowLayout.sectionHeadersPinToVisibleBounds = false
+        updateCategoryButtons()
       }
     }
   }
@@ -403,14 +409,21 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     } completionHandler: { [self] finished in
       if finished {
         flowLayout.sectionHeadersPinToVisibleBounds = true
+        updateCategoryButtons()
       }
     }
   }
 
+  private func clearSearchFieldAndStopSearching() {
+    guard let searchField, let cell = searchField.cell as? NSSearchFieldCell, !cell.stringValue.isEmpty else { return }
+
+    cell.cancelButtonCell?.performClick(nil)
+    searchFieldDidEndSearching(searchField)
+  }
+
   private func clearSearchFieldOrCloseWindow() {
-    if let searchField, let cell = searchField.cell as? NSSearchFieldCell, !cell.stringValue.isEmpty {
-      cell.cancelButtonCell?.performClick(nil)
-      searchFieldDidEndSearching(searchField)
+    if searchField?.stringValue.isEmpty == false {
+      clearSearchFieldAndStopSearching()
     } else {
       appDelegate.popover?.close()
     }
@@ -508,7 +521,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   }
 
   @objc func collectionViewItemWasDoubleClicked(_ sender: CollectionViewItem) {
-    //print(#function, sender)
+    collectionViewItemWasClicked(sender)
   }
 
   // MARK: - Collection View Delegate
@@ -539,13 +552,13 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     }
   }
 
-//  func collectionView(_ collectionView: NSCollectionView, shouldSelectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath> {
-//    isInserting ? selectionIndexPaths : indexPaths
-//  }
-//
-//  func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
-//    selectionIndexPaths = indexPaths
-//  }
+  func collectionView(_ collectionView: NSCollectionView, shouldSelectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath> {
+    isInserting ? selectionIndexPaths : indexPaths
+  }
+
+  func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+    selectionIndexPaths = indexPaths
+  }
 
   // MARK: - Flow Layout Delegate
 

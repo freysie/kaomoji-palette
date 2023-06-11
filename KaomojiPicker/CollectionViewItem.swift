@@ -52,37 +52,36 @@ class CollectionViewItem: NSCollectionViewItem {
   }
 
   /// Select items immediately on mouse down.
-//  override func mouseDown(with event: NSEvent) {
-//    //(collectionView.delegate as? CollectionViewController)?.isInserting
-//
-//    super.mouseDown(with: event)
-//
-//    guard
-//      let collectionView,
-//      let indexPath = collectionView.indexPath(for: self),
-//      let itemsToSelect = collectionView.delegate?.collectionView?(collectionView, shouldSelectItemsAt: [indexPath])
-//    else { return }
-//
-//    if collectionView.allowsMultipleSelection {
-//      collectionView.selectionIndexPaths.formUnion(itemsToSelect)
-//    } else {
-//      collectionView.selectionIndexPaths = itemsToSelect
-//    }
-//
-//    collectionView.delegate?.collectionView?(collectionView, didSelectItemsAt: collectionView.selectionIndexPaths)
-//  }
+  override func mouseDown(with event: NSEvent) {
+    //(collectionView.delegate as? CollectionViewController)?.isInserting
 
-  override func mouseUp(with theEvent: NSEvent) {
-    super.mouseUp(with: theEvent)
+    super.mouseDown(with: event)
 
-    switch theEvent.clickCount {
+    guard
+      let collectionView, !collectionView.allowsMultipleSelection, let indexPath = collectionView.indexPath(for: self),
+      let itemsToSelect = collectionView.delegate?.collectionView?(collectionView, shouldSelectItemsAt: [indexPath])
+    else { return }
+
+    //if collectionView.allowsMultipleSelection {
+    //  collectionView.selectionIndexPaths.formUnion(itemsToSelect)
+    //} else {
+      collectionView.selectionIndexPaths = itemsToSelect
+    //}
+
+    collectionView.delegate?.collectionView?(collectionView, didSelectItemsAt: collectionView.selectionIndexPaths)
+  }
+
+  override func mouseUp(with event: NSEvent) {
+    super.mouseUp(with: event)
+
+    switch event.clickCount {
     case 1:
       NSApp.sendAction(
         #selector(CollectionViewController.collectionViewItemWasClicked(_:)),
         to: collectionView?.delegate,
         from: self
       )
-    case 2:
+    case 2...:
       NSApp.sendAction(
         #selector(CollectionViewController.collectionViewItemWasDoubleClicked(_:)),
         to: collectionView?.delegate,

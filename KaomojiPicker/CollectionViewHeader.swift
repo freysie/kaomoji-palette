@@ -19,7 +19,7 @@ class CategoryButtonCell: NSButtonCell {
   }
 }
 
-class CollectionViewControlsHeader: NSView, NSCollectionViewElement {
+class CollectionViewHeader: NSView, NSCollectionViewElement {
   private(set) var searchField: NSSearchField!
   private(set) var settingsButton: NSButton!
 
@@ -59,9 +59,4 @@ class CollectionViewControlsHeader: NSView, NSCollectionViewElement {
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
-  //override func prepareForReuse() {
-  //  super.prepareForReuse()
-  //  print(#function)
-  //}
 }

@@ -5,15 +5,15 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
   private(set) var titleTextField: NSTextField!
   private(set) var stackViewTopAnchor: NSLayoutConstraint!
 
-  // override var mouseDownCanMoveWindow: Bool { true }
-
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
 
+    wantsLayer = true
     material = .popover
     blendingMode = .behindWindow
 
     titleTextField = NSTextField(labelWithString: "")
+    titleTextField.wantsLayer = true
     titleTextField.translatesAutoresizingMaskIntoConstraints = false
     titleTextField.font = .systemFont(ofSize: NSFont.smallSystemFontSize + 1)
     titleTextField.textColor = .secondaryLabelColor
@@ -42,13 +42,6 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
     stackView.arrangedSubviews.forEach(stackView.removeView)
     stackView.addArrangedSubview(titleTextField)
   }
-
-//  override func mouseDown(with event: NSEvent) {
-//    super.mouseDown(with: event)
-//    print(#function)
-//
-//    AppDelegate.shared.popover?.mouseDown(with: event)
-//  }
 }
 
 #if DEBUG
@@ -57,7 +50,7 @@ struct CollectionViewSectionHeader_Previews: PreviewProvider {
   static var previews: some View {
     NSViewPreview {
       let header = CollectionViewSectionHeader()
-      header.titleTextField.stringValue = "Joy"
+      header.titleTextField.stringValue = l("Joy")
       NSLayoutConstraint.activate([
         header.widthAnchor.constraint(equalToConstant: popoverSize.width),
         header.heightAnchor.constraint(equalToConstant: 26),

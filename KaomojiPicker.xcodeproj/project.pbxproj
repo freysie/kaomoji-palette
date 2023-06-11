@@ -8,8 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		3B13E06F2A2FF1E0007FC921 /* NSImage+CornerMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */; };
-		3B29D80A2A31C8AC007E89AD /* CollectionViewControlsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B29D8092A31C8AC007E89AD /* CollectionViewControlsHeader.swift */; };
+		3B29D80A2A31C8AC007E89AD /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B29D8092A31C8AC007E89AD /* CollectionViewHeader.swift */; };
 		3B29D80C2A31E4A5007E89AD /* NSView+SubtreeDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B29D80B2A31E4A5007E89AD /* NSView+SubtreeDescription.swift */; };
+		3B5332BE2A363E5100B271EB /* FormToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5332BD2A363E5000B271EB /* FormToolbar.swift */; };
+		3B5332C02A363ECC00B271EB /* Collection+SubscriptOrNil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5332BF2A363ECC00B271EB /* Collection+SubscriptOrNil.swift */; };
 		3B85A75B2A0FDD67006482C8 /* EnvironmentValues+Dismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */; };
 		3B85A75F2A10039A006482C8 /* Menu+Highlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */; };
 		3B895B712A065679006442A2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B702A065679006442A2 /* AppDelegate.swift */; };
@@ -31,9 +33,11 @@
 
 /* Begin PBXFileReference section */
 		3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+CornerMask.swift"; sourceTree = "<group>"; };
-		3B29D8092A31C8AC007E89AD /* CollectionViewControlsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewControlsHeader.swift; sourceTree = "<group>"; };
+		3B29D8092A31C8AC007E89AD /* CollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
 		3B29D80B2A31E4A5007E89AD /* NSView+SubtreeDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+SubtreeDescription.swift"; sourceTree = "<group>"; };
 		3B5332B42A34D31100B271EB /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
+		3B5332BD2A363E5000B271EB /* FormToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormToolbar.swift; sourceTree = "<group>"; };
+		3B5332BF2A363ECC00B271EB /* Collection+SubscriptOrNil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+SubscriptOrNil.swift"; sourceTree = "<group>"; };
 		3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EnvironmentValues+Dismiss.swift"; sourceTree = "<group>"; };
 		3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu+Highlight.swift"; sourceTree = "<group>"; };
 		3B895B6D2A065679006442A2 /* Kaomoji Picker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kaomoji Picker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -91,7 +95,7 @@
 				3B5332B42A34D31100B271EB /* BridgingHeader.h */,
 				3B895B702A065679006442A2 /* AppDelegate.swift */,
 				3B895B722A065679006442A2 /* CollectionViewController.swift */,
-				3B29D8092A31C8AC007E89AD /* CollectionViewControlsHeader.swift */,
+				3B29D8092A31C8AC007E89AD /* CollectionViewHeader.swift */,
 				3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */,
 				3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */,
 				3B895BE92A0A68F0006442A2 /* DataSource.swift */,
@@ -109,6 +113,7 @@
 			children = (
 				3B895B7F2A065699006442A2 /* AppKit+Previews.swift */,
 				3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */,
+				3B5332BF2A363ECC00B271EB /* Collection+SubscriptOrNil.swift */,
 				3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */,
 				3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */,
 				3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */,
@@ -131,6 +136,7 @@
 			children = (
 				3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */,
 				3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */,
+				3B5332BD2A363E5000B271EB /* FormToolbar.swift */,
 				3B895BDD2A082C74006442A2 /* SettingsView.swift */,
 				3BDD0FAF2A33A7910000CAA8 /* TextFieldCell.swift */,
 			);
@@ -217,8 +223,10 @@
 				3B29D80C2A31E4A5007E89AD /* NSView+SubtreeDescription.swift in Sources */,
 				3BDD0FAE2A33A7470000CAA8 /* EditKaomojiView.swift in Sources */,
 				3B895B802A065699006442A2 /* AppKit+Previews.swift in Sources */,
+				3B5332C02A363ECC00B271EB /* Collection+SubscriptOrNil.swift in Sources */,
 				3B895B732A065679006442A2 /* CollectionViewController.swift in Sources */,
 				3B85A75B2A0FDD67006482C8 /* EnvironmentValues+Dismiss.swift in Sources */,
+				3B5332BE2A363E5100B271EB /* FormToolbar.swift in Sources */,
 				3B13E06F2A2FF1E0007FC921 /* NSImage+CornerMask.swift in Sources */,
 				3BDD0FB02A33A7910000CAA8 /* TextFieldCell.swift in Sources */,
 				3B895BED2A0C2CCD006442A2 /* Collection+Chunked.swift in Sources */,
@@ -229,7 +237,7 @@
 				3B895B712A065679006442A2 /* AppDelegate.swift in Sources */,
 				3B895BDE2A082C74006442A2 /* SettingsView.swift in Sources */,
 				3B895BEA2A0A68F0006442A2 /* DataSource.swift in Sources */,
-				3B29D80A2A31C8AC007E89AD /* CollectionViewControlsHeader.swift in Sources */,
+				3B29D80A2A31C8AC007E89AD /* CollectionViewHeader.swift in Sources */,
 				3B895BBD2A07B43E006442A2 /* CollectionViewSectionHeader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

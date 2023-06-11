@@ -16,6 +16,7 @@ import SwiftUI
 // TODO: settings: edit existing kaomoji on double click
 // FIXME: fix any regressions in the settings window (＞﹏＜)
 // FIXME: NSCollectionView keyboard navigation not accounting for section headers
+// FIXME: keep search field in view hierarchy even when scrolling waaay down
 
 // TODO: app notarization
 // TODO: more accessibility element edge cases (e.g. the empty text field thing w/ dummy space)
@@ -23,8 +24,12 @@ import SwiftUI
 // TODO: persisted panel position changing with active app à la system’s character picker?
 // TODO: try out variable-width items in the picker view? (ᗒᗣᗕ)՞
 // TODO: make the “recently used” be “frequently used” instead and/or add “favorites”
+// TODO: when dragging kaomoji out of the picker, don’t disappear the original collection view item
+// TODO: collection view item background colors should be grayed out sometimes like in the system symbols palette
+// TODO: add Sparkle or something for automatic updates
 
 let popoverSize = NSSize(width: 320, height: 358)
+//let popoverSize = NSSize(width: 320, height: 44)
 let titlebarHeight = 27.0
 
 func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
@@ -74,14 +79,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [self] event in
       if popover?.isDetached != true { popover?.close() }
     }
-
-    // let w = NSWindow(contentViewController: CollectionViewController())
-    // //w.styleMask.insert(.nonactivatingPanel)
-    // //w.setValue(true, forKey: "preventsActivation")
-    // w.setContentSize(popoverSize)
-    // w.orderFrontRegardless()
-    // //print(w.frame)
   }
+
+  // MARK: - Showing Picker
 
   func showPicker(at point: NSPoint, insertionPointHeight: CGFloat = 2) {
     guard !panel.isVisible else { return }
@@ -111,9 +111,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     self.positioningWindow = positioningWindow
 
     popover.show(relativeTo: .zero, of: positioningWindow.contentView!, preferredEdge: .minY)
+    //popover.show(relativeTo: .zero, of: positioningWindow.contentView!, preferredEdge: .maxY)
 
     if let popoverWindow = popover.value(forKey: "_popoverWindow") as? NSPanel {
       tryBlock { popoverWindow.setValue(true, forKey: "forceMainAppearance") }
+      //print(tryBlock { popoverWindow.setValue(true, forKey: "animates") } as Any)
     }
   }
 
@@ -175,6 +177,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
   }
 
+  // MARK: - Inserting Text
+
   func insertText(_ string: String) {
     guard let event = CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: true) else { return }
 
@@ -187,35 +191,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       event.post(tap: .cghidEventTap)
       event.type = .keyDown
     }
-
-    DataSource.shared.addKaomojiToRecents(string)
-
-    // --8<----
-
-    // var focusedElement: AnyObject?
-    // guard AXUIElementCopyAttributeValue(AXUIElementCreateSystemWide(), kAXFocusedUIElementAttribute as CFString, &focusedElement) == .success else {
-    //   print("failed to get focused element")
-    //   return
-    // }
-
-    // var value: AnyObject?
-    // var rangeValue: AnyObject?
-    // AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, kAXValueAttribute as CFString, &value)
-    // AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, kAXSelectedTextRangeAttribute as CFString, &rangeValue)
-
-    // guard rangeValue != nil else { return print("nil range") }
-
-    // var range = NSRange()
-    // AXValueGetValue(rangeValue as! AXValue, .cfRange, &range)
-
-    // let newValue = (value as! NSString).replacingCharacters(in: range, with: string)
-    // AXUIElementSetAttributeValue(focusedElement as! AXUIElement, kAXValueAttribute as CFString, newValue as AnyObject)
-
-    // range.length = 0
-    // range.location += string.count
-
-    // let newRange = AXValueCreate(.cfRange, &range)
-    // AXUIElementSetAttributeValue(focusedElement as! AXUIElement, kAXSelectedTextRangeAttribute as CFString, newRange as AnyObject)
   }
 
   // MARK: - Panel
@@ -230,13 +205,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     let window = PickerPanel(contentViewController: collectionViewController)
     window.styleMask = [.borderless, .closable, .fullSizeContentView, .utilityWindow, .nonactivatingPanel]
-    window.isFloatingPanel = true
-    window.hidesOnDeactivate = false
-    window.animationBehavior = .utilityWindow
-    window.becomesKeyOnlyIfNeeded = true
-    //window.level = .floating
     window.isMovableByWindowBackground = true
+    window.hidesOnDeactivate = false
     window.allowsToolTipsWhenApplicationIsInactive = true
+    //window.level = .floating
+    window.animationBehavior = .utilityWindow
+    window.isFloatingPanel = true
+    window.becomesKeyOnlyIfNeeded = true
     tryBlock { window.setValue(true, forKey: "forceMainAppearance") }
     window.setContentSize(size)
 
@@ -248,19 +223,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   let settingsWindow = {
     let window = NSPanel(contentViewController: NSHostingController(rootView: SettingsView()))
     window.title = l("Kaomoji Picker Settings")
-      window.styleMask = [.titled, .nonactivatingPanel, .utilityWindow, .closable, .resizable]
-    //window.styleMask = [.titled, .utilityWindow, .closable, .resizable]
-    window.isFloatingPanel = true
+    window.styleMask = [.titled, .utilityWindow, .closable, .resizable]
     window.hidesOnDeactivate = false
-    window.becomesKeyOnlyIfNeeded = true
-    window.setContentSize(NSSize(width: 499, height: 736))
     window.level = .modalPanel
+    window.isFloatingPanel = true
+    // window.becomesKeyOnlyIfNeeded = true
+    window.setContentSize(NSSize(width: 499, height: 736))
     return window
   }()
 
   @objc func showSettingsWindow(_ sender: Any?) {
     popover?.close()
-    panel.performClose(nil)
+    panel.close()
     // TODO: animate the picker popover into the settings panel?? 🤪
     //settingsWindow.makeMain()
     settingsWindow.makeKeyAndOrderFront(nil)
@@ -305,6 +279,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     positioningWindow?.close()
   }
 }
+
+// MARK: -
 
 class PickerPanel: NSPanel {
   override var canBecomeKey: Bool { true }

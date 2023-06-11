@@ -45,7 +45,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   private var subscriptions = Set<AnyCancellable>()
 
   private var kaomoji: [[String]] { (showsRecents ? [dataSource.recents] : []) + dataSource.kaomoji }
-  private var categories: [String] { (showsRecents ? [l("Recently Used")] : []) + dataSource.categories }
+  private var categories: [String] { (showsRecents ? [l("Recently Used")] : []) + dataSource.categoryNames }
 
   override func loadView() {
     // TODO: tweak spacing
@@ -100,7 +100,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
     if showsCategoryButtons {
       for (index, category) in categories.enumerated() {
-        let title = showsRecents && index == 0 ? Self.recentsCategoryTitle : kaomoji[index].first ?? ""
+        let title = showsRecents && index == 0 ? Self.recentsCategoryTitle : kaomoji[orNil: index]?.first ?? "--"
         let button = CategoryButton(radioButtonWithTitle: title, target: self, action: #selector(jumpTo(_:)))
         button.font = .systemFont(ofSize: NSFont.smallSystemFontSize, weight: .bold)
         button.toolTip = l(category)
@@ -208,8 +208,24 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     }
 
     //if mode != .settings {
-    DataSource.shared.$categories.sink { _ in self.collectionView.reloadData() }.store(in: &subscriptions)
-    DataSource.shared.$kaomoji.sink { _ in self.collectionView.reloadData() }.store(in: &subscriptions)
+
+    DataSource.shared.$categories
+      .sink { _ in self.collectionView.reloadData() }
+      .store(in: &subscriptions)
+
+    DataSource.shared.$kaomoji
+      .sink { _ in self.collectionView.reloadData() }
+      .store(in: &subscriptions)
+
+    DataSource.shared.$recents
+      .delay(for: 1, scheduler: DispatchQueue.main)
+      .sink { [self] _ in if !isSearching { collectionView.reloadData() } }
+      .store(in: &subscriptions)
+
+//    DataSource.shared.kaomojiOrCategoriesDidChange
+//      .sink { _ in self.collectionView.reloadData() }
+//      .store(in: &subscriptions)
+
     //}
 
     if mode != .settings {
@@ -280,7 +296,6 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
     let frame = categoryButton.convert(categoryButton.bounds, to: categoryScrollView.contentView)
     categoryScrollView.contentView.scrollToVisible(frame.insetBy(dx: -7/2 - 12, dy: 0))
-    //categoryScrollView.scrollToVisible(categoryButton.frame)
   }
 
   // MARK: - Inserting Kaomoji
@@ -374,6 +389,8 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   }
 
   @objc func search(_ sender: NSSearchField) {
+    guard !dataSource.kaomoji.isEmpty else { return }
+
     searchResults = dataSource.kaomoji.flatMap { $0 }.filter {
       $0.localizedCaseInsensitiveContains(sender.stringValue) ||
       Self.searchTitle(for: $0).localizedCaseInsensitiveContains(sender.stringValue)
@@ -385,7 +402,8 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   }
 
   func searchFieldDidStartSearching(_ sender: NSSearchField) {
-    guard !isSearching else { return }
+    print(dataSource.kaomoji)
+    guard !isSearching, !dataSource.kaomoji.isEmpty else { return }
     isSearching = true
 
     collectionView.performBatchUpdates {
@@ -400,7 +418,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   }
 
   func searchFieldDidEndSearching(_ sender: NSSearchField) {
-    guard isSearching else { return }
+    guard isSearching, !dataSource.kaomoji.isEmpty else { return }
     isSearching = false
 
     collectionView.performBatchUpdates {
@@ -443,7 +461,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     let item = collectionView.makeItem(withIdentifier: .item, for: indexPath) as! CollectionViewItem
     item.selectionColor = selectionColor
     //item.allowsOnlyOneClick = mode != .settings
-    item.representedObject = isSearching ? searchResults[indexPath.item] : kaomoji[indexPath.section - 1][indexPath.item]
+    item.representedObject = isSearching ? searchResults[indexPath.item] : kaomoji[indexPath.section - 1][orNil: indexPath.item]
     return item
   }
 
@@ -452,7 +470,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     switch kind {
     case NSCollectionView.elementKindSectionHeader:
       if indexPath.section == 0 {
-        let headerView = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .controlsHeader, for: indexPath) as! CollectionViewControlsHeader
+        let headerView = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .controlsHeader, for: indexPath) as! CollectionViewHeader
         headerView.searchField.target = self
         headerView.searchField.action = #selector(search(_:))
         headerView.searchField.delegate = self
@@ -479,17 +497,17 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 //        }
 //        headerView.titleTextField.stringValue = title
 
-        if indexPath.section == 1, !showsSearchField, mode == .pickerPopover {
-          let settingsButton = NSButton()
-          settingsButton.image = .settingsIcon
-          settingsButton.target = NSApp.delegate
-          settingsButton.action = #selector(AppDelegate.showSettingsWindow(_:))
-          settingsButton.isBordered = false
-          settingsButton.refusesFirstResponder = true
-
-          headerView.stackView.addArrangedSubview(NSView())
-          headerView.stackView.addArrangedSubview(settingsButton)
-        }
+//        if indexPath.section == 1, !showsSearchField, mode == .pickerPopover {
+//          let settingsButton = NSButton()
+//          settingsButton.image = .settingsIcon
+//          settingsButton.target = NSApp.delegate
+//          settingsButton.action = #selector(AppDelegate.showSettingsWindow(_:))
+//          settingsButton.isBordered = false
+//          settingsButton.refusesFirstResponder = true
+//
+//          headerView.stackView.addArrangedSubview(NSView())
+//          headerView.stackView.addArrangedSubview(settingsButton)
+//        }
 
         return headerView
       }
@@ -584,9 +602,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 // MARK: -
 
 class CollectionView: NSCollectionView {
-  // override var mouseDownCanMoveWindow: Bool { true }
-
-  /// Move popover by background.
+  /// Move popover by dragging background.
   override func mouseDown(with event: NSEvent) {
     super.mouseDown(with: event)
 

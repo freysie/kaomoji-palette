@@ -2,20 +2,12 @@ import SwiftUI
 import Combine
 import UniformTypeIdentifiers
 
-struct KaomojiItem: Identifiable {
-  let id = UUID()
-  let kaomoji: String
-  let categoryIndex: Int
-}
-
 // TODO: show confirmation dialog before restoring to defaults
-// TODO: make editing categories work on earlier versions of macOS
 struct SettingsView: View {
   @State private var selection = Set<IndexPath>()
-  @State private var isEditKaomojiSheetPresented = false
-  @State private var isEditCategoriesSheetPresented = false
-  @State private var isEditCategoriesSheetPresented_ = false
-  @State private var editedKaomojiItem: KaomojiItem?
+  @State private var editedKaomoji: Kaomoji?
+  @State private var isAddSheetPresented = false
+  @State private var isCategoriesSheetPresented = false
   @State private var isImportSheetPresented = false
   @State private var isExportSheetPresented = false
 
@@ -24,28 +16,18 @@ struct SettingsView: View {
   var body: some View {
     VStack {
       GroupBox {
-        SettingsCollection(selection: $selection, editedKaomojiItem: $editedKaomojiItem)
-          //.onDeleteCommand(perform: deleteSelected)
+        SettingsCollection(selection: $selection, editedKaomoji: $editedKaomoji)
           .frame(minHeight: 178)
           .padding(-5)
           .padding(.bottom, 1)
 
-        HStack(spacing: 0) {
-          Button(action: { isEditKaomojiSheetPresented = true }) {
-            Image(systemName: "plus").frame(width: 24, height: 24)
-          }
-
-          Divider().padding(.bottom, -1)
-
-          Button(action: deleteSelected) {
-            Image(systemName: "minus").frame(width: 24, height: 24)
-          }
-          .disabled(selection.isEmpty)
-
-          Spacer()
-
+        FormToolbar(
+          onAdd: { isAddSheetPresented = true },
+          onRemove: { deleteSelected() },
+          canRemove: !selection.isEmpty
+        ) {
           Menu {
-            Button("Edit Categories…") { isEditCategoriesSheetPresented = true }
+            Button("Edit Categories…") { isCategoriesSheetPresented = true }
             Divider()
             Button("Import…") { isImportSheetPresented = true }
             Button("Export…") { isExportSheetPresented = true }
@@ -56,10 +38,6 @@ struct SettingsView: View {
             Image(systemName: "ellipsis.circle")
           }
         }
-        .overlay(Divider(), alignment: .top)
-        .padding(.horizontal, -5)
-        .frame(height: 15)
-        .buttonStyle(.borderless)
       }
       .overlay(Group {
         if #unavailable(macOS 13) {
@@ -87,9 +65,9 @@ struct SettingsView: View {
       }
     }
     .frame(width: 499)
-    .sheet(item: $editedKaomojiItem) { EditKaomojiView(kaomoji: $0.kaomoji, category: "") }
-    .sheet(isPresented: $isEditKaomojiSheetPresented) { EditKaomojiView(collectionSelection: $selection) }
-    .sheet(isPresented: $isEditCategoriesSheetPresented) { EditCategoriesView() }
+    .sheet(item: $editedKaomoji) { EditKaomojiView(kaomoji: $0.string, category: "") }
+    .sheet(isPresented: $isAddSheetPresented) { EditKaomojiView(collectionSelection: $selection) }
+    .sheet(isPresented: $isCategoriesSheetPresented) { EditCategoriesView() }
     .fileImporter(isPresented: $isImportSheetPresented, allowedContentTypes: [.propertyList]) {
       switch $0 {
       case .success(let url): importKaomojiSet(at: url)
@@ -126,10 +104,10 @@ struct SettingsView: View {
 
 struct SettingsCollection: NSViewControllerRepresentable {
   @Binding var selection: Set<IndexPath>
-  @Binding var editedKaomojiItem: KaomojiItem?
+  @Binding var editedKaomoji: Kaomoji?
 
   func makeNSViewController(context: Context) -> SettingsCollectionViewController {
-    let viewController = SettingsCollectionViewController(editedKaomojiItem: $editedKaomojiItem)
+    let viewController = SettingsCollectionViewController(editedKaomoji: $editedKaomoji)
     viewController.loadView()
     viewController.collectionView.publisher(for: \.selectionIndexPaths)
       .sink { newValue in DispatchQueue.main.async { selection = newValue } }
@@ -155,11 +133,11 @@ class SettingsCollectionViewController: CollectionViewController {
   override var usesUppercaseSectionTitles: Bool { false }
   override var selectionColor: NSColor { .controlAccentColor }
 
-  @Binding private var editedKaomojiItem: KaomojiItem?
+  @Binding private var editedKaomoji: Kaomoji?
   private var indexPathsForDraggedItems = Set<IndexPath>()
 
-  init(editedKaomojiItem: Binding<KaomojiItem?>) {
-    _editedKaomojiItem = editedKaomojiItem
+  init(editedKaomoji: Binding<Kaomoji?>) {
+    _editedKaomoji = editedKaomoji
     super.init(nibName: nil, bundle: nil)
   }
 
@@ -198,18 +176,13 @@ class SettingsCollectionViewController: CollectionViewController {
   }
 
   @objc override func collectionViewItemWasDoubleClicked(_ sender: CollectionViewItem) {
-    print(#function, sender)
-    editedKaomojiItem = KaomojiItem(kaomoji: sender.representedObject as? String ?? "", categoryIndex: 0)
+    guard let indexPath = collectionView.indexPath(for: sender) else { return }
+    collectionView.selectionIndexPaths = [indexPath]
+    editedKaomoji = Kaomoji(string: sender.representedObject as? String ?? "", categoryIndex: 0)
   }
 
-//  override func insertKaomoji(_ sender: NSCollectionViewItem?) {
-//    /// This method intentionally left blank.
-//  }
-
-  // @objc func editKaomoji(_ sender: NSCollectionViewItem) {}
-
   //@objc func deleteSelected() {
-  //  let indexPaths = collectionView.selectionIndexPaths.sorted().reversed()
+  //  let indexPaths = collectionView.selectionIndexPaths.reversed()
   //  indexPaths.forEach(DataSource.shared.removeKaomoji(at:))
   //  collectionView.animator().deleteItems(at: Set(indexPaths))
   //}
@@ -312,13 +285,6 @@ class SettingsCollectionViewSectionHeader: CollectionViewSectionHeader {
 }
 
 // MARK: -
-
-extension Collection {
-  /// Returns the element at the specified index if it is within bounds, otherwise nil.
-  subscript(orNil index: Index) -> Element? {
-    indices.contains(index) ? self[index] : nil
-  }
-}
 
 struct SettingsView_Previews: PreviewProvider {
   static var previews: some View {

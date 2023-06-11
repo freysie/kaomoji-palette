@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 import UniformTypeIdentifiers
 
 class DataSource: ObservableObject {
@@ -7,46 +8,50 @@ class DataSource: ObservableObject {
 
   private let defaults = UserDefaults.standard
 
-  @Published fileprivate(set) var categories = [String]()
+  private(set) var identifiedCategories = [(id: UUID, name: String)]()
+
+  @Published fileprivate(set) var categories = [Category]()
   @Published fileprivate(set) var kaomoji = [[String]]()
   @Published fileprivate(set) var recents = [String]()
 
+  fileprivate(set) var categoryNames: [String] {
+    get { categories.map(\.name) }
+    set { categories = newValue.map(Category.init(name:)) }
+  }
+
+  //let kaomojiOrCategoriesDidChange = PassthroughSubject<Void, Never>()
+
   private init() {
     defaults.register(defaults: [
-      UserDefaultsKey.categories: defaultKaomoji.map { $0.0 },
-      UserDefaultsKey.kaomoji: defaultKaomoji.map { $0.1 }
+      UserDefaultsKey.categories: defaultKaomoji.map(\.0),
+      UserDefaultsKey.kaomoji: defaultKaomoji.map(\.1)
     ])
 
     loadFromDefaults()
   }
 
   private func loadFromDefaults() {
-    categories = defaults.stringArray(forKey: UserDefaultsKey.categories) ?? []
+    categoryNames = defaults.stringArray(forKey: UserDefaultsKey.categories) ?? []
     kaomoji = defaults.array(forKey: UserDefaultsKey.kaomoji) as? [[String]] ?? []
     recents = defaults.stringArray(forKey: UserDefaultsKey.recents) ?? []
     // recents = ["ヽ(°〇°)ﾉ", "(＾▽＾)"] // for screenshots
-  }
-
-  func restoreToDefaults() {
-    defaults.removeObject(forKey: UserDefaultsKey.categories)
-    defaults.removeObject(forKey: UserDefaultsKey.kaomoji)
-    defaults.removeObject(forKey: UserDefaultsKey.recents)
-
-    loadFromDefaults()
+    //kaomojiOrCategoriesDidChange.send()
   }
 
   func index(ofCategory category: String) -> Int {
-    categories.firstIndex(of: category) ?? -1
+    categoryNames.firstIndex(of: category) ?? -1
   }
 
   func addKaomoji(_ string: String, category: String) {
     kaomoji[index(ofCategory: category)].insert(string, at: 0)
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+    //kaomojiOrCategoriesDidChange.send()
   }
 
   func addKaomoji(_ string: String, categoryIndex: Int) {
     kaomoji[categoryIndex].insert(string, at: 0)
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+    //kaomojiOrCategoriesDidChange.send()
   }
 
   //func editKaomij(at indexPath: IndexPath, item: KaomojiItem) {
@@ -58,6 +63,7 @@ class DataSource: ObservableObject {
     // TODO: decide if we should remove from recents too?
     kaomoji[indexPath.section].remove(at: indexPath.item)
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+    //kaomojiOrCategoriesDidChange.send()
   }
 
   func moveKaomoji(at indexPath: IndexPath, to destinationIndexPath: IndexPath) {
@@ -76,12 +82,73 @@ class DataSource: ObservableObject {
     recents = []
     defaults.set(recents, forKey: UserDefaultsKey.recents)
   }
+
+  func restoreToDefaults() {
+    defaults.removeObject(forKey: UserDefaultsKey.categories)
+    defaults.removeObject(forKey: UserDefaultsKey.kaomoji)
+    defaults.removeObject(forKey: UserDefaultsKey.recents)
+
+    loadFromDefaults()
+  }
+
+  func setCategories(_ categories: [String], andKaomoji kaomoji: [[String]]) {
+    self.categoryNames = categories
+    self.kaomoji = kaomoji
+
+    defaults.set(categoryNames, forKey: UserDefaultsKey.categories)
+    defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+  }
+
+//  func editCategories(_ newCategories: [Category]) {
+//    //let deletedCategories = identifiedCategories.filter { a in categories.contains { b in a.id == b.id } }
+//
+//    let insertionsAndRemovals = newCategories.map(\.id).difference(from: categories.map(\.id))
+//    //let insertionsAndRemovals2 = Set(newCategories.map(\.id)).difference(from: Set(categories.map(\.id)))
+//    print(Array(insertionsAndRemovals) as NSArray)
+//    //print(insertionsAndRemovals2)
+//    //print(newCategories.difference(from: categories, by: { $0.id == $1.id }))
+//
+//    for (destinationIndex, category) in newCategories.enumerated().reversed() {
+//      guard let sourceIndex = categories.firstIndex(where: { $0.id == category.id }) else { return }
+//      print((sourceIndex, destinationIndex))
+//      kaomoji.move(fromOffsets: [sourceIndex], toOffset: destinationIndex)
+//    }
+//
+////    for (destinationIndex, (sourceIndex, _)) in categories.enumerated() {
+////      if kaomoji.indices.contains(sourceIndex) {
+////        kaomoji.move(fromOffsets: [sourceIndex], toOffset: destinationIndex)
+////      } else {
+////        kaomoji.insert([], at: sourceIndex)
+////      }
+////    }
+//
+//    //for change in newCategories.difference(from: categories, by: { $0.id == $1.id }) {
+////      switch change {
+////      case .insert(let offset, _, _): kaomoji.insert([], at: offset)
+////      case .remove(let offset, _, _): kaomoji.remove(at: offset)
+////      }
+////    }
+//
+//    categories = newCategories
+//    //kaomojiOrCategoriesDidChange.send()
+//  }
 }
 
 fileprivate enum UserDefaultsKey {
   static let categories = "KPCategories"
   static let kaomoji = "KPKaomoji"
   static let recents = "KPRecents"
+}
+
+struct Category: Identifiable {
+  let id = UUID()
+  var name: String
+}
+
+struct Kaomoji: Identifiable {
+  let id = UUID()
+  var string: String
+  var categoryIndex: Int
 }
 
 struct KaomojiSet: FileDocument, Codable {
@@ -114,8 +181,8 @@ struct KaomojiSet: FileDocument, Codable {
 
 extension DataSource {
   var kaomojiSet: KaomojiSet {
-    get { KaomojiSet(categories: categories, kaomoji: kaomoji) }
-    set { categories = newValue.categories; kaomoji = newValue.kaomoji }
+    get { KaomojiSet(categories: categoryNames, kaomoji: kaomoji) }
+    set { categoryNames = newValue.categories; kaomoji = newValue.kaomoji }
   }
 }
 

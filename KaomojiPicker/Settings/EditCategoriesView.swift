@@ -1,95 +1,79 @@
 import SwiftUI
 import Combine
 
+class EditCategoriesModel: ObservableObject {
+  @Published var kaomoji = DataSource.shared.kaomoji
+  @Published var categories = DataSource.shared.categories
+  @Published var selection = IndexSet()
+
+  let didAdd = PassthroughSubject<Void, Never>()
+  let didRemove = PassthroughSubject<IndexSet, Never>()
+
+  func add() {
+    var name = l("Untitled Category")
+    var counter = 2
+    while categories.map(\.name).contains(name) {
+      name = l("Untitled Category") + " \(counter)"
+      counter += 1
+    }
+
+    categories.append(Category(name: name))
+    didAdd.send()
+  }
+
+  func removeSelected() {
+    selection.sorted().reversed().forEach { categories.remove(at: $0) }
+    didRemove.send(selection)
+    selection = []
+  }
+}
+
 struct EditCategoriesView: View {
-  //@State private var categories = DataSource.shared.categories.map { KaomojiCategory(l($0)) }
-  @State private var categories = DataSource.shared.categories.map { l($0) }
-  //@State private var selection = Set<KaomojiCategory.ID>()
-  @State private var selection = IndexSet()
+  @StateObject var model = EditCategoriesModel()
   @Environment(\.dismiss) private var dismiss
 
   var body: some View {
     if #available(macOS 12, *) {
       Form {
         GroupBox {
-          CategoriesTable(categories: $categories, selection: $selection)
-//          Table($categories, selection: $selection) {
-//            TableColumn("Category") { TextField("", text: $0.name).padding(.horizontal, -5) }
-//          } rows: {
-//            ForEach($categories) { category in
-//              TableRow(category)
-//                .itemProvider { category.itemProvider }
-//            }
-//          }
-//            .onInsert(of: [Channel.draggableType]) { index, providers in
-////              Channel.fromItemProviders(providers) { channels in
-////                document.channels.insert(contentsOf: channels, at: newIndex)
-////              }
-//            }
-//          }
-          //.tableStyle(.bordered(alternatesRowBackgrounds: false))
-//          .tableStyle(.bordered)
-          .frame(height: max(1, CGFloat(categories.count)) * 24)
-          .padding(-4)
-          //.padding(.top, -28)
-          //.padding(.bottom, 1)
-          //.padding(.bottom, -1)
-          //.scrollDisabled(true)
+          CategoriesTable(model: model)
+            .frame(height: max(1, CGFloat(max(model.categories.count, 8))) * 24)
+            .padding(-4)
 
-          HStack(spacing: 0) {
-            Button(action: { categories.append("") }) {
-              Image(systemName: "plus").frame(width: 24, height: 24)
-            }
-
-            Divider().padding(.bottom, -1)
-
-            Button(action: deleteSelected) {
-              Image(systemName: "minus").frame(width: 24, height: 24)
-            }
-            .disabled(selection.isEmpty)
-
-            Spacer()
+          FormToolbar(
+            onAdd: model.add,
+            onRemove: model.removeSelected,
+            canRemove: !model.selection.isEmpty
+          ) {
+            EmptyView()
           }
-          .overlay(Divider(), alignment: .top)
-          .padding(.horizontal, -5)
-          .frame(height: 15)
-          .buttonStyle(.borderless)
-          //.zIndex(2)
         }
       }
       .padding(20)
       .frame(width: 300)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-        ToolbarItem(placement: .confirmationAction) { Button("Done") { submit() } }
+        ToolbarItem(placement: .confirmationAction) { Button("Done") { submit() }.keyboardShortcut(.return) }
       }
     }
   }
 
   func submit() {
-    //DataSource.shared.categories = categories
-    print(categories)
+    DataSource.shared.setCategories(model.categories.map(\.name), andKaomoji: model.kaomoji)
     dismiss()
-  }
-
-  func deleteSelected() {
-    //selection.sorted().reversed().forEach { categories.remove(at: $0) }
-    categories.remove(atOffsets: selection)
-    selection = []
   }
 }
 
 struct CategoriesTable: NSViewControllerRepresentable {
-  @Binding var categories: [String]
-  @Binding var selection: IndexSet
+  @ObservedObject var model: EditCategoriesModel
 
   func makeNSViewController(context: Context) -> CategoriesTableViewController {
-    let viewController = CategoriesTableViewController(categories: $categories)
+    let viewController = CategoriesTableViewController(model: model)
     viewController.loadView()
 
     NotificationCenter.default
       .publisher(for: NSTableView.selectionDidChangeNotification, object: viewController.tableView)
-      .sink { _ in DispatchQueue.main.async { selection = viewController.tableView.selectedRowIndexes } }
+      .sink { _ in DispatchQueue.main.async { model.selection = viewController.tableView.selectedRowIndexes } }
       .store(in: &context.coordinator.subscriptions)
 
     return viewController
@@ -117,13 +101,36 @@ struct CategoriesTable: NSViewControllerRepresentable {
   }
 }
 
-class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
-  //var categories = [KaomojiCategory]()
-  @Binding var categories: [String]
+class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate, NSTextFieldDelegate {
+  @ObservedObject var model: EditCategoriesModel
+  private var subscriptions = Set<AnyCancellable>()
 
-  init(categories: Binding<[String]>) {
-    _categories = categories
+  init(model: EditCategoriesModel) {
+    self.model = model
     super.init(nibName: nil, bundle: nil)
+
+    model.$selection
+      .sink { self.tableView?.selectRowIndexes($0, byExtendingSelection: false) }
+      .store(in: &subscriptions)
+
+    model.didAdd
+      .sink { [self] in
+        let newIndex = tableView.numberOfRows
+        model.kaomoji.insert([], at: newIndex)
+        tableView.insertRows(at: [newIndex], withAnimation: [])
+        tableView.selectRowIndexes([newIndex], byExtendingSelection: false)
+        if let rowView = tableView.view(atColumn: 0, row: newIndex, makeIfNecessary: true) as? CategoriesTableCellView {
+          view.window?.makeFirstResponder(rowView.field)
+        }
+      }
+      .store(in: &subscriptions)
+
+    model.didRemove
+      .sink { [self] in
+        tableView.removeRows(at: $0, withAnimation: [])
+        model.kaomoji.remove(atOffsets: $0)
+      }
+      .store(in: &subscriptions)
   }
 
   required init?(coder: NSCoder) {
@@ -163,21 +170,21 @@ class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NS
   }
 
   func numberOfRows(in tableView: NSTableView) -> Int {
-    categories.count
+    model.categories.count
   }
 
   func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
-    categories[orNil: row]
+    model.categories[orNil: row].map { l($0.name) }
   }
 
-  func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
-    print(object as Any)
-    guard let string = object as? String else { return }
-    categories[row] = string
-  }
+  //  func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
+  //    print(object as Any)
+  //    guard let string = object as? String else { return }
+  //    model.categories[row].1 = string
+  //  }
 
   func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
-    categories[orNil: row] as? NSString
+    model.categories[orNil: row].map { l($0.name) } as NSString?
   }
 
   func tableView(_ tableView: NSTableView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint, forRowIndexes rowIndexes: IndexSet) {
@@ -202,20 +209,20 @@ class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NS
   func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableView.DropOperation) -> Bool {
     let indexes = draggedRowIndexes.sorted().reversed()
 
-    NSAnimationContext.runAnimationGroup { context in
-      context.duration = 0.3
+//    NSAnimationContext.runAnimationGroup { context in
+//      context.duration = 0.3
 
-      tableView.beginUpdates()
+//      tableView.beginUpdates()
       for index in indexes {
         tableView.animator().moveRow(at: index, to: row)
-        //categories.move(fromOffsets: [index], toOffset: row)
       }
-      tableView.endUpdates()
-    }
+//      tableView.endUpdates()
+//    }
 
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in 
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
       for index in indexes {
-        categories.move(fromOffsets: [index], toOffset: row)
+        model.kaomoji.move(fromOffsets: [index], toOffset: row)
+        model.categories.move(fromOffsets: [index], toOffset: row)
       }
     }
 
@@ -229,8 +236,16 @@ class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NS
 
     let view = CategoriesTableCellView()
     view.identifier = .categoriesTableCell
+    view.field.delegate = self
 
     return view
+  }
+
+  func controlTextDidEndEditing(_ notification: Notification) {
+    guard let textField = notification.object as? NSTextField else { return }
+    let rowIndex = tableView.row(for: textField)
+    guard model.categories.indices.contains(rowIndex) else { return }
+    model.categories[rowIndex].name = textField.stringValue
   }
 }
 
@@ -259,6 +274,7 @@ class CategoriesTableCellView: NSTableCellView {
 
     field = NSTextField(string: "")
     field.translatesAutoresizingMaskIntoConstraints = false
+    //field.font = .systemFont(ofSize: NSFont.systemFontSize - 1)
     //field.lineBreakMode = .byTruncatingMiddle
     //field.usesSingleLineMode = true
     field.isBordered = false
@@ -281,67 +297,3 @@ class CategoriesTableCellView: NSTableCellView {
     fatalError("init(coder:) has not been implemented")
   }
 }
-
-
-//extension String: Identifiable {
-//  public var id: Self { self }
-//}
-
-//struct KaomojiCategory: Identifiable, Codable {
-//  let id = UUID()
-//
-//  var name: String
-//
-//  init(_ name: String) {
-//    self.name = name
-//  }
-//}
-
-//extension KaomojiCategory {
-//  static var draggableType = UTType(exportedAs: "com.yourCompany.yourApp.channel")
-//
-//  static func fromItemProviders(_ itemProviders: [NSItemProvider], completion: @escaping ([KaomojiCategory]) -> Void) {
-//    let typeIdentifier = Self.draggableType.identifier
-//    let filteredProviders = itemProviders.filter {
-//      $0.hasItemConformingToTypeIdentifier(typeIdentifier)
-//    }
-//
-//    let group = DispatchGroup()
-//    var result = [Int: KaomojiCategory]()
-//
-//    for (index, provider) in filteredProviders.enumerated() {
-//      group.enter()
-//      provider.loadDataRepresentation(forTypeIdentifier: typeIdentifier) { (data, error) in
-//        defer { group.leave() }
-//        guard let data = data else { return }
-//        let decoder = JSONDecoder()
-//        guard let channel = try? decoder.decode(KaomojiCategory.self, from: data)
-//        else { return }
-//        result[index] = channel
-//      }
-//    }
-//
-//    group.notify(queue: .global(qos: .userInitiated)) {
-//      let channels = result.keys.sorted().compactMap { result[$0] }
-//      DispatchQueue.main.async {
-//        completion(channels)
-//      }
-//    }
-//  }
-//
-//  var itemProvider: NSItemProvider {
-//    let provider = NSItemProvider()
-//    provider.registerDataRepresentation(forTypeIdentifier: Self.draggableType.identifier, visibility: .all) {
-//      let encoder = JSONEncoder()
-//      do {
-//        let data = try encoder.encode(self)
-//        $0(data, nil)
-//      } catch {
-//        $0(nil, error)
-//      }
-//      return nil
-//    }
-//    return provider
-//  }
-//}
-

@@ -8,8 +8,6 @@ class DataSource: ObservableObject {
 
   private let defaults = UserDefaults.standard
 
-  private(set) var identifiedCategories = [(id: UUID, name: String)]()
-
   @Published fileprivate(set) var categories = [Category]()
   @Published fileprivate(set) var kaomoji = [[String]]()
   @Published fileprivate(set) var recents = [String]()
@@ -38,25 +36,16 @@ class DataSource: ObservableObject {
     //kaomojiOrCategoriesDidChange.send()
   }
 
-  func index(ofCategory category: String) -> Int {
-    categoryNames.firstIndex(of: category) ?? -1
-  }
-
-  func addKaomoji(_ string: String, category: String) {
-    kaomoji[index(ofCategory: category)].insert(string, at: 0)
-    defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
-    //kaomojiOrCategoriesDidChange.send()
-  }
-
   func addKaomoji(_ string: String, categoryIndex: Int) {
     kaomoji[categoryIndex].insert(string, at: 0)
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
     //kaomojiOrCategoriesDidChange.send()
   }
 
-  //func editKaomij(at indexPath: IndexPath, item: KaomojiItem) {
-  func editKaomij(at indexPath: IndexPath, kaomoji: String, categoryIndex: Int) {
-    // TODO: …
+  func updateKaomoji(at indexPath: IndexPath, string: String) {
+    kaomoji[indexPath.section][indexPath.item] = string
+    defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+    //kaomojiOrCategoriesDidChange.send()
   }
 
   func removeKaomoji(at indexPath: IndexPath) {
@@ -70,6 +59,7 @@ class DataSource: ObservableObject {
     let element = kaomoji[indexPath.section].remove(at: indexPath.item)
     kaomoji[destinationIndexPath.section].insert(element, at: destinationIndexPath.item)
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+    //kaomojiOrCategoriesDidChange.send()
   }
 
   func addKaomojiToRecents(_ string: String) {
@@ -97,41 +87,8 @@ class DataSource: ObservableObject {
 
     defaults.set(categoryNames, forKey: UserDefaultsKey.categories)
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+    //kaomojiOrCategoriesDidChange.send()
   }
-
-//  func editCategories(_ newCategories: [Category]) {
-//    //let deletedCategories = identifiedCategories.filter { a in categories.contains { b in a.id == b.id } }
-//
-//    let insertionsAndRemovals = newCategories.map(\.id).difference(from: categories.map(\.id))
-//    //let insertionsAndRemovals2 = Set(newCategories.map(\.id)).difference(from: Set(categories.map(\.id)))
-//    print(Array(insertionsAndRemovals) as NSArray)
-//    //print(insertionsAndRemovals2)
-//    //print(newCategories.difference(from: categories, by: { $0.id == $1.id }))
-//
-//    for (destinationIndex, category) in newCategories.enumerated().reversed() {
-//      guard let sourceIndex = categories.firstIndex(where: { $0.id == category.id }) else { return }
-//      print((sourceIndex, destinationIndex))
-//      kaomoji.move(fromOffsets: [sourceIndex], toOffset: destinationIndex)
-//    }
-//
-////    for (destinationIndex, (sourceIndex, _)) in categories.enumerated() {
-////      if kaomoji.indices.contains(sourceIndex) {
-////        kaomoji.move(fromOffsets: [sourceIndex], toOffset: destinationIndex)
-////      } else {
-////        kaomoji.insert([], at: sourceIndex)
-////      }
-////    }
-//
-//    //for change in newCategories.difference(from: categories, by: { $0.id == $1.id }) {
-////      switch change {
-////      case .insert(let offset, _, _): kaomoji.insert([], at: offset)
-////      case .remove(let offset, _, _): kaomoji.remove(at: offset)
-////      }
-////    }
-//
-//    categories = newCategories
-//    //kaomojiOrCategoriesDidChange.send()
-//  }
 }
 
 fileprivate enum UserDefaultsKey {
@@ -148,7 +105,7 @@ struct Category: Identifiable {
 struct Kaomoji: Identifiable {
   let id = UUID()
   var string: String
-  var categoryIndex: Int
+  var indexPath = IndexPath(item: -1, section: 0)
 }
 
 struct KaomojiSet: FileDocument, Codable {

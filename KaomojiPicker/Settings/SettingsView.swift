@@ -10,6 +10,7 @@ struct SettingsView: View {
   @State private var isCategoriesSheetPresented = false
   @State private var isImportSheetPresented = false
   @State private var isExportSheetPresented = false
+  @State private var isRestoreConfirmationDialogPresented = false
 
   private var dataSource: DataSource { .shared }
 
@@ -65,8 +66,24 @@ struct SettingsView: View {
       }
     }
     .frame(width: 499)
-    .sheet(item: $editedKaomoji) { EditKaomojiView(kaomoji: $0.string, category: "") }
-    .sheet(isPresented: $isAddSheetPresented) { EditKaomojiView(collectionSelection: $selection) }
+    .sheet(item: $editedKaomoji) { kaomoji in
+      EditKaomojiView(kaomoji: kaomoji) { newKaomoji in
+        dataSource.updateKaomoji(at: kaomoji.indexPath, string: newKaomoji.string)
+
+        if kaomoji.indexPath.section != newKaomoji.indexPath.section {
+          dataSource.moveKaomoji(at: kaomoji.indexPath, to: IndexPath(item: 0, section: newKaomoji.indexPath.section))
+          selection = [IndexPath(item: 0, section: newKaomoji.indexPath.section + 1)]
+        } else {
+          selection = [IndexPath(item: newKaomoji.indexPath.item, section: newKaomoji.indexPath.section + 1)]
+        }
+      }
+    }
+    .sheet(isPresented: $isAddSheetPresented) {
+      EditKaomojiView() { newKaomoji in
+        dataSource.addKaomoji(newKaomoji.string, categoryIndex: newKaomoji.indexPath.section)
+        selection = [IndexPath(item: 0, section: newKaomoji.indexPath.section + 1)]
+      }
+    }
     .sheet(isPresented: $isCategoriesSheetPresented) { EditCategoriesView() }
     .fileImporter(isPresented: $isImportSheetPresented, allowedContentTypes: [.propertyList]) {
       switch $0 {
@@ -178,7 +195,10 @@ class SettingsCollectionViewController: CollectionViewController {
   @objc override func collectionViewItemWasDoubleClicked(_ sender: CollectionViewItem) {
     guard let indexPath = collectionView.indexPath(for: sender) else { return }
     collectionView.selectionIndexPaths = [indexPath]
-    editedKaomoji = Kaomoji(string: sender.representedObject as? String ?? "", categoryIndex: 0)
+    editedKaomoji = Kaomoji(
+      string: sender.representedObject as? String ?? "",
+      indexPath: IndexPath(item: indexPath.item, section: indexPath.section - 1)
+    )
   }
 
   //@objc func deleteSelected() {

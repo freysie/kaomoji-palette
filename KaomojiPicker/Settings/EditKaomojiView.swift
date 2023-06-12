@@ -1,34 +1,28 @@
 import SwiftUI
 
 struct EditKaomojiView: View {
-  var collectionSelection: Binding<Set<IndexPath>>?
-  @State var kaomoji = ""
-  @State var category = DataSource.shared.categoryNames.first ?? ""
+  @State var kaomoji = Kaomoji(string: "")
+  var onCompletion: (Kaomoji) -> ()
   @Environment(\.dismiss) private var dismiss
-
-//  init(_ item: Binding<Kaomoji>) {
-//    //categories
-//    //kaomoji
-//  }
 
   var body: some View {
     Group {
       if #available(macOS 13, *) {
         Form {
-          TextField("Kaomoji", text: $kaomoji)
-          Picker("Category", selection: $category) {
-            ForEach(DataSource.shared.categoryNames, id: \.self) {
-              Text(LocalizedStringKey($0)).tag($0)
+          TextField("Kaomoji", text: $kaomoji.string)
+          Picker("Category", selection: $kaomoji.indexPath.section) {
+            ForEach(Array(DataSource.shared.categoryNames.enumerated()), id: \.offset) {
+              Text(LocalizedStringKey($0.element))
             }
           }
         }
         .formStyle(.grouped)
       } else {
         Form {
-          TextField("Kaomoji:", text: $kaomoji)
-          Picker("Category:", selection: $category) {
-            ForEach(DataSource.shared.categoryNames, id: \.self) {
-              Text(LocalizedStringKey($0)).tag($0)
+          TextField("Kaomoji:", text: $kaomoji.string)
+          Picker("Category:", selection: $kaomoji.indexPath.section) {
+            ForEach(Array(DataSource.shared.categoryNames.enumerated()), id: \.offset) {
+              Text(LocalizedStringKey($0.element))
             }
           }
         }
@@ -38,20 +32,21 @@ struct EditKaomojiView: View {
     .frame(width: 300)
     .toolbar {
       ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-      ToolbarItem(placement: .confirmationAction) { Button("Add") { submit() } }
+      ToolbarItem(placement: .confirmationAction) { Button(kaomoji.indexPath.item == -1 ? "Add" : "Done") { submit() } }
     }
   }
 
   func submit() {
-    DataSource.shared.addKaomoji(kaomoji, category: category)
+//    DataSource.shared.addKaomoji(string, categoryIndex: categoryIndex)
     //DataSource.shared.editKaomoji(at: indexPath, kaomoji: "", category: "")
-    collectionSelection?.wrappedValue = [IndexPath(item: 0, section: DataSource.shared.index(ofCategory: category) + 1)]
+//    collectionSelection?.wrappedValue = [IndexPath(item: 0, section: categoryIndex + 1)]
+    onCompletion(kaomoji)
     dismiss()
   }
 }
 
 struct EditKaomojiView_Previews: PreviewProvider {
   static var previews: some View {
-    EditKaomojiView()
+    EditKaomojiView() { _ in }
   }
 }

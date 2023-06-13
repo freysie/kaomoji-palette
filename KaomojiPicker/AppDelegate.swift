@@ -121,60 +121,108 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
   // TODO: unless there’s a better way — if text field is empty: insert dummy space, select it, get bounds, then delete space
   // TODO: figure out why Discord is being weird (doesn’t work with Kaomoji Picker unless you inspect Discord once with Accessibility Inspector after every launch)
-  func showPickerAtInsertionPoint() {
-//    var attributeNames: CFArray?
-//    AXUIElementCopyAttributeNames(AXUIElementCreateSystemWide(), &attributeNames)
-//    print(attributeNames as Any)
-//    var parameterizedAttributeNames: CFArray?
-//    AXUIElementCopyParameterizedAttributeNames(AXUIElementCreateSystemWide(), &parameterizedAttributeNames)
-//    print(parameterizedAttributeNames as Any)
+  func showPickerAtInsertionPoint(withFallback: Bool = true) {
+    guard let element = AXUIElement.systemWide.focusedUIElement else { return panel.orderFrontRegardless() }
+    guard var range = element.selectedTextRange else { return }
 
-    var focusedElement: AnyObject?
-    guard AXUIElementCopyAttributeValue(AXUIElementCreateSystemWide(), kAXFocusedUIElementAttribute as CFString, &focusedElement) == .success else {
-      NSLog("failed to get focused element")
-      panel.orderFrontRegardless()
-      return
+    if range.length == 0, element.bounds(for: range)?.size == .zero {
+      range.location = max(0, range.location - 1)
+      range.length = 1
     }
 
-//    var attributeNames: CFArray?
-//    AXUIElementCopyAttributeNames(focusedElement as! AXUIElement, &attributeNames)
-//    print(attributeNames as Any)
-//    var parameterizedAttributeNames: CFArray?
-//    AXUIElementCopyParameterizedAttributeNames(focusedElement as! AXUIElement, &parameterizedAttributeNames)
-//    print(parameterizedAttributeNames as Any)
-
-    var textMarkerRange: AnyObject?
-    if AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, "AXSelectedTextMarkerRange" as CFString, &textMarkerRange) == .success {
-      var boundsValue: AnyObject?
-      guard AXUIElementCopyParameterizedAttributeValue(focusedElement as! AXUIElement, "AXBoundsForTextMarkerRange" as CFString, textMarkerRange!, &boundsValue) == .success else {
-        NSLog("failed to find bounds for selected text marker range")
-        return
-      }
-
-      var bounds = CGRect.null
-      AXValueGetValue(boundsValue as! AXValue, .cgRect, &bounds)
-      bounds.origin.y = (NSScreen.main?.frame.size.height ?? 0) - bounds.origin.y
-
-      return showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
+    if var bounds = element.bounds(for: range), bounds.size != .zero {
+      bounds.origin.y += bounds.size.height
+      showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
+    } else if let frame = element.frame, var frame = NSScreen.convertFromQuartz(frame) {
+      if let searchButton = element.searchButton, let size = searchButton.size { frame.origin.x += size.width }
+      frame.origin.y += frame.size.height
+      showPicker(at: frame.origin, insertionPointHeight: frame.size.height)
     }
 
-    var selectedRangeValue: AnyObject?
-    if AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, kAXSelectedTextRangeAttribute as CFString, &selectedRangeValue) == .success {
-      var range: CFRange?
-      AXValueGetValue(selectedRangeValue as! AXValue, AXValueType(rawValue: kAXValueCFRangeType)!, &range)
 
-      var boundsValue: AnyObject?
-      guard AXUIElementCopyParameterizedAttributeValue(focusedElement as! AXUIElement, kAXBoundsForRangeParameterizedAttribute as CFString, selectedRangeValue!, &boundsValue) == .success else {
-        NSLog("failed to find bounds for selected text range")
-        return
-      }
 
-      var bounds = CGRect.null
-      AXValueGetValue(boundsValue as! AXValue, .cgRect, &bounds)
-      bounds.origin.y = (NSScreen.main?.frame.size.height ?? 0) - bounds.origin.y
+    //print(range)
+//    var wasEmpty = false
+//    if element.bounds(for: range)?.size == .zero {
+//      wasEmpty = true
+//      element.value = " "
+//      element.selectedTextRange = CFRange(location: range.location, length: 1)
+//      if let newRange = element.selectedTextRange { range = newRange }
+//    }
+    //if wasEmpty { element.value = "" }
 
-      return showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
-    }
+    //    print(AXUIElement.systemWide.focusedUIElement as Any)
+    //    print(AXUIElement.systemWide.focusedUIElement?.value as Any)
+    //    print(AXUIElement.systemWide.focusedUIElement?.primaryScreenHeight as Any)
+    //    print(AXUIElement.systemWide.focusedUIElement?.insertionPointLineNumber as Any)
+    //    if let range = AXUIElement.systemWide.focusedUIElement?.selectedTextRange {
+    //      print(range)
+    //      print(AXUIElement.systemWide.focusedUIElement?.attributedString(for: range) as Any)
+    //      return showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
+    //    }
+
+
+//    var focusedElement: AnyObject?
+//    guard AXUIElementCopyAttributeValue(
+//      AXUIElementCreateSystemWide(),
+//      kAXFocusedUIElementAttribute as CFString,
+//      &focusedElement
+//    ) == .success else {
+//      NSLog("failed to get focused element")
+//      panel.orderFrontRegardless()
+//      return
+//    }
+//
+//    var textMarkerRange: AnyObject?
+//    var selectedRangeValue: AnyObject?
+//
+//    if AXUIElementCopyAttributeValue(
+//      focusedElement as! AXUIElement,
+//      "AXSelectedTextMarkerRange" as CFString,
+//      &textMarkerRange
+//    ) == .success {
+//      var boundsValue: AnyObject?
+//      guard AXUIElementCopyParameterizedAttributeValue(
+//        focusedElement as! AXUIElement,
+//        "AXBoundsForTextMarkerRange" as CFString,
+//        textMarkerRange!,
+//        &boundsValue
+//      ) == .success else {
+//        NSLog("failed to find bounds for selected text marker range")
+//        return
+//      }
+//
+//      var bounds = CGRect.null
+//      AXValueGetValue(boundsValue as! AXValue, .cgRect, &bounds)
+//      bounds.origin.y = (NSScreen.main?.frame.size.height ?? 0) - bounds.origin.y
+//
+//      return showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
+//    } else if AXUIElementCopyAttributeValue(
+//      focusedElement as! AXUIElement,
+//      kAXSelectedTextRangeAttribute as CFString,
+//      &selectedRangeValue
+//    ) == .success {
+//      var range: CFRange?
+//      AXValueGetValue(selectedRangeValue as! AXValue, AXValueType(rawValue: kAXValueCFRangeType)!, &range)
+//
+//      var boundsValue: AnyObject?
+//      guard AXUIElementCopyParameterizedAttributeValue(
+//        focusedElement as! AXUIElement,
+//        kAXBoundsForRangeParameterizedAttribute as CFString,
+//        selectedRangeValue!,
+//        &boundsValue
+//      ) == .success else {
+//        NSLog("failed to find bounds for selected text range")
+//        return
+//      }
+//
+//      var bounds = CGRect.null
+//      bounds.origin.y = (NSScreen.main?.frame.size.height ?? 0) - bounds.origin.y
+//
+//      return showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
+//    } else {
+//      NSLog("fallback")
+//    }
   }
 
   // MARK: - Inserting Text

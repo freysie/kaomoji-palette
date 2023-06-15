@@ -1,0 +1,333 @@
+import Cocoa
+import Carbon.HIToolbox
+
+extension KeyboardShortcuts {
+	/**
+	A `NSView` that lets the user record a keyboard shortcut.
+
+	You would usually put this in your settings window.
+
+	It automatically prevents choosing a keyboard shortcut that is already taken by the system or by the app's main menu by showing a user-friendly alert to the user.
+
+	It takes care of storing the keyboard shortcut in `UserDefaults` for you.
+
+	```swift
+	import Cocoa
+	import KeyboardShortcuts
+
+	final class SettingsViewController: NSViewController {
+		override func loadView() {
+			view = NSView()
+
+			let recorder = KeyboardShortcuts.RecorderCocoa(for: .toggleUnicornMode)
+			view.addSubview(recorder)
+		}
+	}
+	```
+	*/
+	public final class RecorderCocoa: NSSearchField, NSSearchFieldDelegate {
+		private let minimumWidth: Double = 130
+		private var eventMonitor: LocalEventMonitor?
+		private let onChange: ((_ shortcut: Shortcut?) -> Void)?
+		private var observer: NSObjectProtocol?
+		private var canBecomeKey = false
+
+		/**
+		The shortcut name for the recorder.
+
+		Can be dynamically changed at any time.
+		*/
+		public var shortcutName: Name {
+			didSet {
+				guard shortcutName != oldValue else {
+					return
+				}
+
+				setStringValue(name: shortcutName)
+
+				// This doesn't seem to be needed anymore, but I cannot test on older OS versions, so keeping it just in case.
+				if #unavailable(macOS 12) {
+					DispatchQueue.main.async { [self] in
+						// Prevents the placeholder from being cut off.
+						blur()
+					}
+				}
+			}
+		}
+
+		/// :nodoc:
+		override public var canBecomeKeyView: Bool { canBecomeKey }
+
+		/// :nodoc:
+		override public var intrinsicContentSize: CGSize {
+			var size = super.intrinsicContentSize
+			size.width = minimumWidth
+			return size
+		}
+
+		private var cancelButton: NSButtonCell?
+
+		private var showsCancelButton: Bool {
+			get { (cell as? NSSearchFieldCell)?.cancelButtonCell != nil }
+			set {
+				(cell as? NSSearchFieldCell)?.cancelButtonCell = newValue ? cancelButton : nil
+			}
+		}
+
+		/**
+		- Parameter name: Strongly-typed keyboard shortcut name.
+		- Parameter onChange: Callback which will be called when the keyboard shortcut is changed/removed by the user. This can be useful when you need more control. For example, when migrating from a different keyboard shortcut solution and you need to store the keyboard shortcut somewhere yourself instead of relying on the built-in storage. However, it's strongly recommended to just rely on the built-in storage when possible.
+		*/
+		public required init(
+			for name: Name,
+			onChange: ((_ shortcut: Shortcut?) -> Void)? = nil
+		) {
+			self.shortcutName = name
+			self.onChange = onChange
+
+			super.init(frame: .zero)
+			self.delegate = self
+			self.placeholderString = "none".localized
+      (cell as? NSSearchFieldCell)?.searchButtonCell = nil
+
+      if #available(macOS 13, *) {
+        focusRingType = .none
+        alignment = .right
+        isBordered = false
+        backgroundColor = .clear
+      }
+
+      bezelStyle = .squareBezel
+      //drawsBackground = false
+      textColor = .secondaryLabelColor
+      font = .systemFont(ofSize: NSFont.systemFontSize)
+
+			self.wantsLayer = true
+			setContentHuggingPriority(.defaultHigh, for: .vertical)
+			setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
+			// Hide the cancel button when not showing the shortcut so the placeholder text is properly centered. Must be last.
+			self.cancelButton = (cell as? NSSearchFieldCell)?.cancelButtonCell
+
+			setStringValue(name: name)
+
+			setUpEvents()
+		}
+
+		@available(*, unavailable)
+		public required init?(coder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+
+		private func setStringValue(name: KeyboardShortcuts.Name) {
+			stringValue = getShortcut(for: shortcutName).map { "\($0)" } ?? ""
+
+			// If `stringValue` is empty, hide the cancel button to let the placeholder center.
+			showsCancelButton = false
+		}
+
+		private func setUpEvents() {
+			observer = NotificationCenter.default.addObserver(forName: .shortcutByNameDidChange, object: nil, queue: nil) { [weak self] notification in
+				guard
+					let self,
+					let nameInNotification = notification.userInfo?["name"] as? KeyboardShortcuts.Name,
+					nameInNotification == self.shortcutName
+				else {
+					return
+				}
+
+				self.setStringValue(name: nameInNotification)
+			}
+		}
+
+		/// :nodoc:
+		public func controlTextDidChange(_ object: Notification) {
+			if stringValue.isEmpty {
+				saveShortcut(nil)
+			}
+
+			showsCancelButton = false
+
+			if stringValue.isEmpty {
+				// Hack to ensure that the placeholder centers after the above `showsCancelButton` setter.
+				focus()
+			}
+		}
+
+		/// :nodoc:
+		public func controlTextDidEndEditing(_ object: Notification) {
+			eventMonitor = nil
+			placeholderString = "none".localized
+      showsCancelButton = false
+            //restoreCaret()
+      KeyboardShortcuts.isPaused = false
+      //drawsBackground = false
+      //backgroundColor = .clear
+      setStringValue(name: shortcutName)
+		}
+
+		/// :nodoc:
+		override public func viewDidMoveToWindow() {
+			guard window != nil else {
+				return
+			}
+
+			// Prevent the control from receiving the initial focus.
+			DispatchQueue.main.async { [self] in
+				canBecomeKey = true
+			}
+		}
+
+//    public override func validateProposedFirstResponder(_ responder: NSResponder, for event: NSEvent?) -> Bool {
+//      event?.clickCount ?? 0 >= 2
+//    }
+
+//    public override func mouseDown(with event: NSEvent) {
+//      if event.clickCount == 2 {
+//        window?.makeFirstResponder(self)
+//      }
+//    }
+
+//    public override func resignFirstResponder() -> Bool {
+////      defer {
+////        if stringValue.isEmpty {
+////          stringValue = previousStringValue
+////        }
+////      }
+//      setStringValue(name: shortcutName)
+//      return super.resignFirstResponder()
+//    }
+
+    //var previousStringValue = ""
+
+		/// :nodoc:
+		override public func becomeFirstResponder() -> Bool {
+			let shouldBecomeFirstResponder = super.becomeFirstResponder()
+
+			guard shouldBecomeFirstResponder else {
+				return shouldBecomeFirstResponder
+			}
+
+      //backgroundColor = .textBackgroundColor
+      //drawsBackground = true
+			placeholderString = ""
+      //previousStringValue = stringValue
+      stringValue = ""
+			showsCancelButton = false
+			//hideCaret()
+			KeyboardShortcuts.isPaused = true // The position here matters.
+
+			eventMonitor = LocalEventMonitor(events: [.keyDown, .leftMouseUp, .rightMouseUp]) { [weak self] event in
+				guard let self else {
+					return nil
+				}
+
+				let clickPoint = self.convert(event.locationInWindow, from: nil)
+				let clickMargin = 3.0
+
+				if
+					event.type == .leftMouseUp || event.type == .rightMouseUp,
+					!self.bounds.insetBy(dx: -clickMargin, dy: -clickMargin).contains(clickPoint)
+				{
+					self.blur()
+          setStringValue(name: shortcutName)
+					return event
+				}
+
+				guard event.isKeyEvent else {
+					return nil
+				}
+
+				if
+					event.modifiers.isEmpty,
+					event.specialKey == .tab
+				{
+					self.blur()
+          setStringValue(name: shortcutName)
+
+					// We intentionally bubble up the event so it can focus the next responder.
+					return event
+				}
+
+				if
+					event.modifiers.isEmpty,
+					event.keyCode == kVK_Escape // TODO: Make this strongly typed.
+				{
+					self.blur()
+          setStringValue(name: shortcutName)
+					return nil
+				}
+
+				if
+					event.modifiers.isEmpty,
+					event.specialKey == .delete
+						|| event.specialKey == .deleteForward
+						|| event.specialKey == .backspace
+				{
+					self.clear()
+					return nil
+				}
+
+				// The “shift” key is not allowed without other modifiers or a function key, since it doesn't actually work.
+				guard
+					!event.modifiers.subtracting(.shift).isEmpty
+						|| event.specialKey?.isFunctionKey == true,
+					let shortcut = Shortcut(event: event)
+				else {
+					NSSound.beep()
+					return nil
+				}
+
+				if shortcut.takenByMainMenu != nil {
+					// TODO: Find a better way to make it possible to dismiss the alert by pressing "Enter". How can we make the input automatically temporarily lose focus while the alert is open?
+					self.blur()
+          setStringValue(name: shortcutName)
+
+//					NSAlert.showModal(
+//						for: self.window,
+//						title: String.localizedStringWithFormat("keyboard_shortcut_used_by_menu_item".localized, menuItem.title)
+//					)
+
+          NSSound.beep()
+
+					self.focus()
+
+					return nil
+				}
+
+				guard !shortcut.isTakenBySystem else {
+					self.blur()
+          setStringValue(name: shortcutName)
+
+//					NSAlert.showModal(
+//						for: self.window,
+//						title: "keyboard_shortcut_used_by_system".localized,
+//						// TODO: Add button to offer to open the relevant system settings pane for the user.
+//						message: "keyboard_shortcuts_can_be_changed".localized
+//					)
+
+          NSSound.beep()
+
+					self.focus()
+
+					return nil
+				}
+
+				self.stringValue = "\(shortcut)"
+				self.showsCancelButton = false
+
+				self.saveShortcut(shortcut)
+				self.blur()
+
+				return nil
+			}.start()
+
+			return shouldBecomeFirstResponder
+		}
+
+		private func saveShortcut(_ shortcut: Shortcut?) {
+			setShortcut(shortcut, for: shortcutName)
+			onChange?(shortcut)
+		}
+	}
+}

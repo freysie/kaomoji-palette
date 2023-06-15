@@ -1,13 +1,17 @@
 "Recently Used" = "Seneste brugte";
 
-"Kaomoji Picker Settings" = "Indstillinger for kaomojis-vælger";
+"Kaomoji Picker Settings" = "Indstillinger for kaomoji-vælger";
 "Edit Categories…" = "Rediger kategorier…";
 "Import…" = "Importer…";
 "Export…" = "Eksporter…";
 "Clear Recently Used Kaomoji" = "Ryd seneste brugte kaomojis";
 "Restore to Defaults" = "Gendan standard";
 "Keyboard Shortcut" = "Tastaturgenvej";
+"Keyboard Shortcut:" = "Tastaturgenvej:";
 "Space" = "Mellemrum";
+
+"Are you sure you want to restore kaomoji to defaults?" = "Er du sikker på, du vil gendanne kaomojis til standard?";
+"Restore" = "Gendan";
 
 "Kaomoji" = "Kaomoji";
 "Kaomoji:" = "Kaomoji:";
@@ -25,6 +29,14 @@
 "Sadness" = "Tristhed";
 "Surprise" = "Overraskelse";
 "Greeting" = "Hilsen";
+
+"Sympathy" = "Sympati";
+"Pain" = "Smerte";
+"Fear" = "Frygt";
+"Indifference" = "Ligeglad";
+"Confusion" = "Forvirring";
+"Winking" = "Blinkende";
+"Hiding" = "Gemmer sig";
 
 "No Kaomoji Found" = "Ingen kaomojis fundet";
 

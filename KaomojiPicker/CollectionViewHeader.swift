@@ -19,7 +19,7 @@ class CategoryButtonCell: NSButtonCell {
   }
 }
 
-class CollectionViewHeader: NSView, NSCollectionViewElement {
+class CollectionViewHeader2: NSView, NSCollectionViewElement {
   private(set) var searchField: NSSearchField!
   private(set) var settingsButton: NSButton!
 
@@ -54,6 +54,20 @@ class CollectionViewHeader: NSView, NSCollectionViewElement {
     //stackView.wantsLayer = true
     //stackView.layer?.borderWidth = 1
     //stackView.layer?.borderColor = NSColor.systemMint.cgColor
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+}
+
+class CollectionViewHeaderSpacer: NSView, NSCollectionViewElement {
+  override init(frame frameRect: NSRect) {
+    super.init(frame: frameRect)
+
+    NSLayoutConstraint.activate([
+      heightAnchor.constraint(equalToConstant: 36),
+    ])
   }
 
   required init?(coder: NSCoder) {

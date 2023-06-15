@@ -1,8 +1,8 @@
 import SwiftUI
 import Combine
 import UniformTypeIdentifiers
+import KeyboardShortcuts
 
-// TODO: show confirmation dialog before restoring to defaults
 struct SettingsView: View {
   @State private var selection = Set<IndexPath>()
   @State private var editedKaomoji: Kaomoji?
@@ -10,7 +10,6 @@ struct SettingsView: View {
   @State private var isCategoriesSheetPresented = false
   @State private var isImportSheetPresented = false
   @State private var isExportSheetPresented = false
-  @State private var isRestoreConfirmationDialogPresented = false
 
   private var dataSource: DataSource { .shared }
 
@@ -34,7 +33,7 @@ struct SettingsView: View {
             Button("Export…") { isExportSheetPresented = true }
             Divider()
             Button("Clear Recently Used Kaomoji") { dataSource.clearRecents() }
-            Button("Restore to Defaults") { dataSource.restoreToDefaults() }
+            Button("Restore to Defaults") { restoreToDefaults() }
           } label: {
             Image(systemName: "ellipsis.circle")
           }
@@ -55,14 +54,29 @@ struct SettingsView: View {
 
       if #available(macOS 13, *) {
         Form {
-          LabeledContent("Keyboard Shortcut") { Text("⌃⌥⌘\(l("Space"))") }
+//          LabeledContent("Keyboard Shortcut") {
+//            //Text("⌃⌥⌘\(l("Space"))")
+//            KeyboardShortcuts.Recorder(for: .showPalette)
+//          }
+          KeyboardShortcuts.Recorder(l("Keyboard Shortcut"), name: .showPalette)
+
           //Toggle("Show Favorites", isOn: .constant(true))
           //Toggle("Show Recently Used", isOn: .constant(true))
         }
         .formStyle(.grouped)
+        .scrollDisabled(true)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.top, -38)
-        .scrollDisabled(true)
+      } else {
+        Form {
+          KeyboardShortcuts.Recorder(l("Keyboard Shortcut:"), name: .showPalette)
+
+          //Toggle("Show Favorites", isOn: .constant(true))
+          //Toggle("Show Recently Used", isOn: .constant(true))
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, -10)
+        .padding(.bottom, 20)
       }
     }
     .frame(width: 499)
@@ -115,6 +129,20 @@ struct SettingsView: View {
       dataSource.kaomojiSet = importedSet
     }
   }
+
+  private func restoreToDefaults() {
+    let alert = NSAlert()
+    alert.alertStyle = .critical
+    alert.messageText = l("Are you sure you want to restore kaomoji to defaults?")
+    //alert.informativeText = l("This action cannot be undone and all your kaomoji will be lost unless you have exported them first.")
+    alert.addButton(withTitle: l("Restore")).hasDestructiveAction = true
+    alert.addButton(withTitle: l("Cancel"))
+    alert.beginSheetModal(for: AppDelegate.shared.settingsWindow) {
+      if $0 == .alertFirstButtonReturn {
+        dataSource.restoreToDefaults()
+      }
+    }
+  }
 }
 
 // MARK: -
@@ -133,7 +161,10 @@ struct SettingsCollection: NSViewControllerRepresentable {
   }
 
   func updateNSViewController(_ viewController: SettingsCollectionViewController, context: Context) {
-    viewController.collectionView.selectItems(at: selection, scrollPosition: .nearestHorizontalEdge)
+    //viewController.collectionView.selectionIndexPaths = selection
+    DispatchQueue.main.async {
+      viewController.collectionView.selectItems(at: selection, scrollPosition: .nearestHorizontalEdge)
+    }
   }
 
   func makeCoordinator() -> Coordinator {
@@ -163,7 +194,7 @@ class SettingsCollectionViewController: CollectionViewController {
   }
 
   override func loadView() {
-    mode = .settings
+    collectionStyle = .settings
     showsSearchField = false
     showsCategoryButtons = false
 
@@ -173,6 +204,7 @@ class SettingsCollectionViewController: CollectionViewController {
     flowLayout.sectionInset = NSEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
     flowLayout.headerReferenceSize = NSSize(width: 80, height: 29)
 
+    collectionView.mouseDownCanMovePopover = false
     collectionView.allowsMultipleSelection = true
     collectionView.backgroundColors = [.textBackgroundColor]
 
@@ -197,21 +229,9 @@ class SettingsCollectionViewController: CollectionViewController {
     collectionView.selectionIndexPaths = [indexPath]
     editedKaomoji = Kaomoji(
       string: sender.representedObject as? String ?? "",
-      indexPath: IndexPath(item: indexPath.item, section: indexPath.section - 1)
+      indexPath: IndexPath(item: indexPath.item, section: indexPath.section)
     )
   }
-
-  //@objc func deleteSelected() {
-  //  let indexPaths = collectionView.selectionIndexPaths.reversed()
-  //  indexPaths.forEach(DataSource.shared.removeKaomoji(at:))
-  //  collectionView.animator().deleteItems(at: Set(indexPaths))
-  //}
-
-  // MARK: - Collection View Delegate
-
-//  override func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
-//    /// This method intentionally left blank.
-//  }
 
   // TODO: use pasteboard for reals
 
@@ -274,9 +294,7 @@ class SettingsCollectionViewSectionHeader: CollectionViewSectionHeader {
 
     //titleTextField.textColor = .labelColor
     titleTextField.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
-
     stackView.edgeInsets = NSEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
-    stackViewTopAnchor.constant = 0
 
     // let topBorder = NSBox()
     // topBorder.translatesAutoresizingMaskIntoConstraints = false
@@ -289,10 +307,10 @@ class SettingsCollectionViewSectionHeader: CollectionViewSectionHeader {
     addSubview(bottomBorder)
 
     NSLayoutConstraint.activate([
+      stackView.topAnchor.constraint(equalTo: topAnchor, constant: 1.5),
       // topBorder.leadingAnchor.constraint(equalTo: leadingAnchor),
       // topBorder.trailingAnchor.constraint(equalTo: trailingAnchor),
       // topBorder.topAnchor.constraint(equalTo: topAnchor),
-
       bottomBorder.leadingAnchor.constraint(equalTo: leadingAnchor),
       bottomBorder.trailingAnchor.constraint(equalTo: trailingAnchor),
       bottomBorder.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -309,5 +327,20 @@ class SettingsCollectionViewSectionHeader: CollectionViewSectionHeader {
 struct SettingsView_Previews: PreviewProvider {
   static var previews: some View {
     SettingsView()
+  }
+}
+
+struct SettingsCollectionViewSectionHeader_Previews: PreviewProvider {
+  static var previews: some View {
+    NSViewPreview {
+      let header = SettingsCollectionViewSectionHeader()
+      header.titleTextField.stringValue = l("Joy")
+      NSLayoutConstraint.activate([
+        header.widthAnchor.constraint(equalToConstant: popoverSize.width),
+        header.heightAnchor.constraint(equalToConstant: 29),
+      ])
+      return header
+    }
+    .previewLayout(.sizeThatFits)
   }
 }

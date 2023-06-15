@@ -49,9 +49,10 @@ class DataSource: ObservableObject {
   }
 
   func removeKaomoji(at indexPath: IndexPath) {
-    // TODO: decide if we should remove from recents too?
-    kaomoji[indexPath.section].remove(at: indexPath.item)
+    let removedKaomoji = kaomoji[indexPath.section].remove(at: indexPath.item)
+    recents.removeAll { $0 == removedKaomoji }
     defaults.set(kaomoji, forKey: UserDefaultsKey.kaomoji)
+    defaults.set(recents, forKey: UserDefaultsKey.recents)
     //kaomojiOrCategoriesDidChange.send()
   }
 
@@ -143,7 +144,7 @@ extension DataSource {
   }
 }
 
-// TODO: add more default kaomoji and categories
+// TODO: maybe move this to a file
 fileprivate let defaultKaomoji = [
   ("Joy", [
     "(* ^ ω ^)",
@@ -311,6 +312,21 @@ fileprivate let defaultKaomoji = [
     "(/▿＼ )",
     "(///￣ ￣///)",
   ]),
+  // TODO: decide if we want these:
+  ("Sympathy", [
+    "(ノ_<。)ヾ(´ ▽ ` )",
+    "｡･ﾟ･(ﾉД`)ヽ(￣ω￣ )",
+    "ρ(- ω -、)ヾ(￣ω￣; )",
+    "ヽ(￣ω￣(。。 )ゝ",
+    "(*´ I `)ﾉﾟ(ﾉД｀ﾟ)ﾟ｡",
+    "ヽ(~_~(・_・ )ゝ",
+    "(ﾉ_；)ヾ(´ ∀ ` )",
+    "(; ω ; )ヾ(´∀`* )",
+    "(*´ー)ﾉ(ノд`)",
+    "(´-ω-`( _ _ )",
+    "(っ´ω`)ﾉ(╥ω╥)",
+    "(ｏ・_・)ノ”(ノ_<、)",
+  ]),
   ("Dissatisfaction", [
     "(＃＞＜)",
     "(；⌣̀_⌣́)",
@@ -413,6 +429,98 @@ fileprivate let defaultKaomoji = [
     "(ಥ﹏ಥ)",
     "(ಡ‸ಡ)",
   ]),
+  // TODO: decide if we want these:
+  ("Pain", [
+    "~(>_<~)",
+    "☆⌒(> _ <)",
+    "☆⌒(>。<)",
+    "(☆_@)",
+    "(×_×)",
+    "(x_x)",
+    "(×_×)⌒☆",
+    "(x_x)⌒☆",
+    "(×﹏×)",
+    "☆(＃××)",
+    "(＋_＋)",
+    "[ ± _ ± ]",
+    "٩(× ×)۶",
+    "_:(´ཀ`」 ∠):_",
+    "(ﾒ﹏ﾒ)",
+  ]),
+  // TODO: decide if we want these:
+  ("Fear", [
+    "(ノωヽ)",
+    "(／。＼)",
+    "(ﾉ_ヽ)",
+    "..・ヾ(。＞＜)シ",
+    "(″ロ゛)",
+    "(;;;*_*)",
+    "(・人・)",
+    "＼(〇_ｏ)／",
+    "(/ω＼)",
+    "(/_＼)",
+    "〜(＞＜)〜",
+    "Σ(°△°|||)︴",
+    "(((＞＜)))",
+    "{{ (>_<) }}",
+    "＼(º □ º l|l)/",
+    "〣( ºΔº )〣",
+    "▓▒░(°◡°)░▒▓",
+  ]),
+  // TODO: decide if we want these:
+  ("Indifference", [
+    "ヽ(ー_ー )ノ",
+    "ヽ(´ー` )┌",
+    "┐(‘～` )┌",
+    "ヽ(　￣д￣)ノ",
+    "┐(￣ヘ￣)┌",
+    "ヽ(￣～￣　)ノ",
+    "╮(￣_￣)╭",
+    "ヽ(ˇヘˇ)ノ",
+    "┐(￣～￣)┌",
+    "┐(︶▽︶)┌",
+    "╮(￣～￣)╭",
+//    "¯\_(ツ)_/¯", // FIXME: “Invalid escape sequence in literal”
+    "┐( ´ д ` )┌",
+    "╮(︶︿︶)╭",
+    "┐(￣∀￣)┌",
+    "┐( ˘ ､ ˘ )┌",
+    "╮(︶▽︶)╭",
+    "╮( ˘ ､ ˘ )╭",
+    "┐( ˘_˘ )┌",
+    "╮( ˘_˘ )╭",
+    "┐(￣ヮ￣)┌",
+    "ᕕ( ᐛ )ᕗ",
+    "┐(シ)┌",
+  ]),
+  // TODO: decide if we want these:
+  ("Confusion", [
+    "(￣ω￣;)",
+    "σ(￣、￣〃)",
+    "(￣～￣;)",
+    "(-_-;)・・・",
+    "┐('～`;)┌",
+    "(・_・ヾ",
+    "(〃￣ω￣〃ゞ",
+    "┐(￣ヘ￣;)┌",
+    "(・_・;)",
+    "(￣_￣)・・・",
+    "╮(￣ω￣;)╭",
+    "(¯ . ¯;)",
+    "(＠_＠)",
+    "(・・;)ゞ",
+    "Σ(￣。￣ﾉ)",
+    "(・・ ) ?",
+    "(•ิ_•ิ)?",
+    "(◎ ◎)ゞ",
+    "(ーー;)",
+    "ლ(ಠ_ಠ ლ)",
+    "ლ(¯ロ¯\"ლ)",
+    "(¯ . ¯٥)",
+    "(¯  ¯٥)",
+  ]),
+//  ("_Doubt", [
+//  ]),
   ("Surprise", [
     "ヽ(°〇°)ﾉ",
     "w(°ｏ°)w",
@@ -458,5 +566,45 @@ fileprivate let defaultKaomoji = [
     "(✧∀✧)/",
     "(o´▽`o)ﾉ",
     "(￣▽￣)/",
-  ])
+  ]),
+//  ("_Hugging", [
+//  ]),
+  // TODO: decide if we want these:
+  ("Winking", [
+    "(^_~)",
+    "( ﾟｏ⌒)",
+    "(^_-)≡☆",
+    "(^ω~)",
+    "(>ω^)",
+    "(~人^)",
+    "(^_-)",
+    "( -_・)",
+    "(^_<)〜☆",
+    "(^人<)〜☆",
+    "☆⌒(≧▽​° )",
+    "☆⌒(ゝ。∂)",
+    "(^_<)",
+    "(^_−)☆",
+    "(･ω<)☆",
+    "(^.~)☆",
+    "(^.~)",
+    "(>ᴗ•)",
+  ]),
+  // TODO: decide if we want these:
+  ("Hiding", [
+    "|･ω･)",
+    "ﾍ(･_|",
+    "|ω･)ﾉ",
+    "ヾ(･|",
+    "|д･)",
+    "|_￣))",
+    "|▽//)",
+    "┬┴┬┴┤(･_├┬┴┬┴",
+    "┬┴┬┴┤･ω･)ﾉ",
+    "┬┴┬┴┤( ͡° ͜ʖ├┬┴┬┴",
+    "┬┴┬┴┤(･_├┬┴┬┴",
+    "|_・)",
+    "|･д･)ﾉ",
+    "|ʘ‿ʘ)╯",
+  ]),
 ]

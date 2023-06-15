@@ -2,8 +2,9 @@ import AppKit
 
 class CollectionViewItem: NSCollectionViewItem {
   private(set) var titleTextField: NSTextField!
-  var selectionColor = NSColor.controlAccentColor { didSet { updateBackgroundColor() } }
 
+  var selectionColor = NSColor.controlAccentColor { didSet { updateBackgroundColor() } }
+  
   override func loadView() {
     titleTextField = CollectionViewItemTextField(labelWithString: "")
     titleTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -53,8 +54,6 @@ class CollectionViewItem: NSCollectionViewItem {
 
   /// Select items immediately on mouse down.
   override func mouseDown(with event: NSEvent) {
-    //(collectionView.delegate as? CollectionViewController)?.isInserting
-
     super.mouseDown(with: event)
 
     guard
@@ -62,18 +61,14 @@ class CollectionViewItem: NSCollectionViewItem {
       let itemsToSelect = collectionView.delegate?.collectionView?(collectionView, shouldSelectItemsAt: [indexPath])
     else { return }
 
-    //if collectionView.allowsMultipleSelection {
-    //  collectionView.selectionIndexPaths.formUnion(itemsToSelect)
-    //} else {
-      collectionView.selectionIndexPaths = itemsToSelect
-    //}
-
+    collectionView.selectionIndexPaths = itemsToSelect
     collectionView.delegate?.collectionView?(collectionView, didSelectItemsAt: collectionView.selectionIndexPaths)
   }
 
   override func mouseUp(with event: NSEvent) {
     super.mouseUp(with: event)
 
+    // TODO: change to just `CollectionViewController.collectionViewItem(_:mouseUp:)`, passing along the event?
     switch event.clickCount {
     case 1:
       NSApp.sendAction(

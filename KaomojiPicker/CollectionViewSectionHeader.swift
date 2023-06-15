@@ -4,6 +4,7 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
   private(set) var stackView: NSStackView!
   private(set) var titleTextField: NSTextField!
   private(set) var stackViewTopAnchor: NSLayoutConstraint!
+  private(set) var stackViewBottomAnchor: NSLayoutConstraint!
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -23,13 +24,10 @@ class CollectionViewSectionHeader: NSVisualEffectView, NSCollectionViewElement {
     stackView.wantsLayer = true
     addSubview(stackView)
 
-    stackViewTopAnchor = stackView.topAnchor.constraint(equalTo: topAnchor, constant: 7.5)
-
     NSLayoutConstraint.activate([
       stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
       stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
-      stackViewTopAnchor,
-      stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
+      stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1.5)
     ])
   }
 

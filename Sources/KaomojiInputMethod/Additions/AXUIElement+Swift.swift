@@ -124,34 +124,34 @@ extension AXUIElement {
 }
 
 extension AXValue {
-  private func get<T>(_ type: AXValueType, initial: T) -> T? {
-    var result = initial
-    return AXValueGetValue(self, type, &result) ? result : nil
-  }
-  var asPoint: CGPoint? { return get(.cgPoint, initial: .zero) }
-  var asSize: CGSize? { return get(.cgSize, initial: .zero) }
-  var asRect: CGRect? { return get(.cgRect, initial: .zero) }
-  var asRange: CFRange? { return get(.cfRange, initial: CFRange()) }
-  var asError: AXError? { return get(.axError, initial: .success) }
-
   private static func create<T>(_ type: AXValueType, _ value: T) -> AXValue {
     var value = value
     return AXValueCreate(type, &value)!
   }
-  static func point(_ v: CGPoint) -> AXValue { return create(.cgPoint, v) }
-  static func size(_ v: CGSize) -> AXValue { return create(.cgSize, v) }
-  static func rect(_ v: CGRect) -> AXValue { return create(.cgRect, v) }
-  static func range(_ v: CFRange) -> AXValue { return create(.cfRange, v) }
-  static func error(_ v: AXError) -> AXValue { return create(.axError, v) }
+
+  static func point(_ v: CGPoint) -> AXValue { create(.cgPoint, v) }
+  static func size(_ v: CGSize) -> AXValue { create(.cgSize, v) }
+  static func rect(_ v: CGRect) -> AXValue { create(.cgRect, v) }
+  static func range(_ v: CFRange) -> AXValue { create(.cfRange, v) }
+  static func error(_ v: AXError) -> AXValue { create(.axError, v) }
+
+  private func get<T>(_ type: AXValueType, initial: T) -> T? {
+    var result = initial
+    return AXValueGetValue(self, type, &result) ? result : nil
+  }
+
+  var asPoint: CGPoint? { `get`(.cgPoint, initial: .zero) }
+  var asSize: CGSize? { `get`(.cgSize, initial: .zero) }
+  var asRect: CGRect? { `get`(.cgRect, initial: .zero) }
+  var asRange: CFRange? { `get`(.cfRange, initial: CFRange()) }
+  var asError: AXError? { `get`(.axError, initial: .success) }
 }
 
 extension NSScreen {
-  static var primary: NSScreen? { screens.first }
-
-  /// Converts the rectangle from Quartz "display space" to Cocoa "screen space".
+  /// Converts the rectangle from Quartz “display space” to Cocoa “screen space”.
   /// <http://stackoverflow.com/a/19887161/23649>
   static func convertFromQuartz(_ rect: CGRect) -> CGRect? {
-    primary.map {
+    screens.first.map {
       var result = rect
       result.origin.y = $0.frame.maxY - result.maxY
       return result

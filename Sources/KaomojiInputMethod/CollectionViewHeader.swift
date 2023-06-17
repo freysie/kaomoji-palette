@@ -1,25 +1,6 @@
 import AppKit
 
-class CategoryButton: NSButton {
-  override class var cellClass: AnyClass? { get { CategoryButtonCell.self } set {} }
-}
-
-class CategoryButtonCell: NSButtonCell {
-  override var attributedTitle: NSAttributedString {
-    get {
-      NSAttributedString(string: title, attributes: [
-        .font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize + 1, weight: .semibold),
-        .foregroundColor: isHighlighted
-        ? NSColor.controlTextColor : state == .on
-        ? NSColor.controlAccentColor.withSystemEffect(.pressed)
-        : NSColor.controlTextColor.withAlphaComponent(0.9)
-      ])
-    }
-    set {}
-  }
-}
-
-class CollectionViewHeader2: NSView, NSCollectionViewElement {
+class CollectionViewHeader: NSView {
   private(set) var searchField: NSSearchField!
   private(set) var settingsButton: NSButton!
 
@@ -50,10 +31,6 @@ class CollectionViewHeader2: NSView, NSCollectionViewElement {
       stackView.topAnchor.constraint(equalTo: topAnchor, constant: 11),
       stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
     ])
-
-    //stackView.wantsLayer = true
-    //stackView.layer?.borderWidth = 1
-    //stackView.layer?.borderColor = NSColor.systemMint.cgColor
   }
 
   required init?(coder: NSCoder) {
@@ -66,7 +43,7 @@ class CollectionViewHeaderSpacer: NSView, NSCollectionViewElement {
     super.init(frame: frameRect)
 
     NSLayoutConstraint.activate([
-      heightAnchor.constraint(equalToConstant: 36),
+      heightAnchor.constraint(equalToConstant: CollectionViewController.searchBarHeight),
     ])
   }
 

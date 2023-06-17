@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 import Combine
 import InputMethodKit
+import Carbon.HIToolbox
 import KeyboardShortcuts
 
 //  ✅   keyboard navigation (arrow keys + return (+ tab & backtab &c.))
@@ -25,9 +26,11 @@ import KeyboardShortcuts
 // 👩‍💻 TODO: input method stuff ~~accessibility element edge cases (e.g. the empty text field thing w/ dummy space)~~
 // 👩‍💻 FIXME: keep search field in view hierarchy even when scrolling waaay down
 // 👩‍💻 FIXME: NSCollectionView keyboard navigation not accounting for section headers
-// 👩‍💻 FIXME: fix any regressions in the settings window (＞﹏＜)??
+// 👩‍💻 FIXME: regressions in the settings window (＞﹏＜)??
+// FIXME: crash when searching and using keyboard navigation
 // TODO: app notarization
 // TODO: add Sparkle or something for automatic updates
+// TODO: figure out exactly how to do automtic updates seeing we’re now an input method
 
 // 1.x
 // TODO: when dragging kaomoji out of the picker, don’t disappear the original collection view item
@@ -35,11 +38,13 @@ import KeyboardShortcuts
 // TODO: persist picker panel position per process à la system’s character palette!
 // TODO: try out variable-width items in the picker view? (ᗒᗣᗕ)՞
 // TODO: add a “Favorites” section and/or let the “Recently Used” be “Frequently Used” instead
+// TODO: consider if we need a Kaomoji Helper that (handles keyboard shortcuts? and) restarts the input method if it crashes
 
 let popoverSize = NSSize(width: 320, height: 358)
 let titlebarHeight = 27.0
 
 func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
+func KPLog(_ message: String) { NSLog("[KaomojiPalette] \(message)") }
 
 // TODO:
 struct PickerState {
@@ -48,7 +53,8 @@ struct PickerState {
   let searchQuery: String = ""
 }
 
-var insertionPointRect = NSRect.zero
+let isRunningForPreviews = ProcessInfo.processInfo.environment["XCODE_IS_RUNNING_FOR_PREVIEWS"] != "1"
+let isRunningAsInputMethod = ProcessInfo.processInfo.arguments[0].contains("/Library/Input Methods")
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
@@ -56,66 +62,38 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
   private(set) var popover: NSPopover?
   private(set) var positioningWindow: NSWindow?
+  private(set) var isInserting = false
 
   private var server: IMKServer!
-  private var candidates: IMKCandidates!
-
   private var perProcessState = [NSRunningApplication: PickerState]()
   private var subscriptions = Set<AnyCancellable>()
 
-  func applicationWillFinishLaunching(_ notification: Notification) {
-    guard ProcessInfo.processInfo.environment["XCODE_IS_RUNNING_FOR_PREVIEWS"] != "1" else { return }
-
-    NSLog("[KaomojiPicker] \(#function) \(ProcessInfo.processInfo.arguments[0])")
-
-    server = IMKServer(name: "local_kaomojipicker_connection", bundleIdentifier: Bundle.main.bundleIdentifier!)
-    //server = IMKServer(name: "Kaomoji Picker", controllerClass: InputController.self, delegateClass: NSObject.self)
-    //candidates = IMKCandidates(server: server, panelType: kIMKSingleRowSteppingCandidatePanel, styleType: kIMKMain)
-
-    //print(server as Any)
-    //print(candidates as Any)
-
-//    do {
-//      let list = TISCreateInputSourceList(
-//        [kTISPropertyInputSourceCategory: kTISCategoryPaletteInputSource] as CFDictionary,
-//        false
-//      )
-//      print(list as Any)
-//    }
-//
-//    do {
-//      let list = TISCreateInputSourceList(
-//        [kTISPropertyInputSourceCategory: kTISCategoryPaletteInputSource] as CFDictionary,
-//        true
-//      )
-//      print(list as Any)
-//    }
-
-    //TISRegisterInputSource(<#T##location: CFURL!##CFURL!#>)
-
-    do {
-      let list = TISCreateInputSourceList([kTISPropertyBundleID: Bundle.main.bundleIdentifier!] as CFDictionary, true)
-      if let source = (list?.takeUnretainedValue() as? [TISInputSource])?.first {
-        print(source)
-        print(TISEnableInputSource(source))
-        print(TISSelectInputSource(source))
-      }
-    }
-  }
-
   func applicationDidFinishLaunching(_ notification: Notification) {
-    guard ProcessInfo.processInfo.environment["XCODE_IS_RUNNING_FOR_PREVIEWS"] != "1" else { return }
+    guard isRunningForPreviews else { return }
 
-    // TODO: do this for all Electron apps when using accessibility backend?
-    if let pid = NSWorkspace.shared.runningApplications.first(where: { $0.localizedName == "Discord" })?.processIdentifier {
-      let axApp = AXUIElementCreateApplication(pid)
-      let result = AXUIElementSetAttributeValue(axApp, "AXManualAccessibility" as CFString, true as CFTypeRef)
-      //print(pid, axApp, result.rawValue)
-      NSLog("setting AXManualAccessibility \(result.rawValue == 0 ? "succeeded" : "failed")")
-    }
+    //KPLog("\(ProcessInfo.processInfo.arguments)")
+    //KPLog("\(ProcessInfo.processInfo.environment.keys)")
 
-    if !AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary) {
-      NSLog("accessibility permissions needed")
+    server = IMKServer(
+      name: Bundle.main.infoDictionary?["InputMethodConnectionName"] as? String,
+      bundleIdentifier: Bundle.main.bundleIdentifier
+    )
+
+    if !isRunningAsInputMethod {
+      if !AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary) {
+        KPLog("accessibility permissions needed")
+      }
+
+      // TODO: do this for all Electron apps when using accessibility backend?
+      if let app = NSWorkspace.shared.runningApplications.first(where: { $0.localizedName == "Discord" }) {
+        let axApp = AXUIElementCreateApplication(app.processIdentifier)
+        AXUIElementSetAttributeValue(axApp, "AXManualAccessibility" as CFString, true as CFTypeRef)
+      }
+    } else {
+      // TODO: don’t rely on accessibility access when running as input method
+      if !CGRequestPostEventAccess() {
+        KPLog("event posting access needed")
+      }
     }
 
 #if DEBUG
@@ -123,47 +101,36 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     //showSettingsWindow(nil)
 #endif
 
-//    NotificationCenter.default.addObserver(forName: nil, object: nil, queue: nil) {
-//      print($0)
-//    }
-
-//    DistributedNotificationCenter.default()
-//      .addObserver(forName: .init("CPKCharacterViewerWindowWillOpenNotification"), object: nil, queue: nil) {
-//        print($0)
-//      }
-
-//    NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [self] event in
-//      guard event.charactersIgnoringModifiers == " ",
-//            event.modifierFlags.contains(.control),
-//            event.modifierFlags.contains(.option),
-//            event.modifierFlags.contains(.command) else { return }
-//
-//      //NSLog("ヽ(°〇°)ﾉ")
-//      showPickerAtInsertionPoint()
-//    }
-
     KeyboardShortcuts.onKeyDown(for: .showPalette) { [self] in
-      if !NSApp.isActive { showPickerAtInsertionPoint() }
+      if isRunningAsInputMethod {
+        TISInputSource.kaomoji?.select()
+      } else if !NSApp.isActive {
+        showPickerAtInsertionPoint()
+      }
     }
 
-    NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [self] event in
+    NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [self] _ in
       if popover?.isDetached != true { popover?.close() }
     }
 
-    NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [self] event in
+    NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [self] _ in
       if popover?.isDetached != true { popover?.close() }
     }
 
-//    NotificationCenter.default.addObserver(
-//      forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: nil
-//    ) { notification in
-//      print(notification)
-//      print(NSWorkspace.shared.frontmostApplication as Any)
-//    }
+    NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: panel, queue: nil) { _ in
+      TISInputSource.kaomoji?.deselect()
+    }
 
-    NSWorkspace.shared.publisher(for: \.frontmostApplication)
-      .sink { print($0 as Any) }
-      .store(in: &subscriptions)
+    // NotificationCenter.default.addObserver(
+    //   forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: nil
+    // ) { notification in
+    //   print(notification)
+    //   print(NSWorkspace.shared.frontmostApplication as Any)
+    // }
+
+    // NSWorkspace.shared.publisher(for: \.frontmostApplication)
+    //   .sink { print($0 as Any) }
+    //   .store(in: &subscriptions)
   }
 
   // MARK: - Showing Picker
@@ -177,7 +144,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     positioningWindow.styleMask = [.borderless, .nonactivatingPanel]
     positioningWindow.contentView = NSView()
     positioningWindow.setContentSize(NSSize(width: 2, height: insertionPointHeight))
-    positioningWindow.setFrameTopLeftPoint(point)
+    positioningWindow.setFrameTopLeftPoint(NSPoint(x: point.x, y: point.y + insertionPointHeight))
     positioningWindow.alphaValue = 0
     positioningWindow.orderFrontRegardless()
 
@@ -209,49 +176,87 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   }
 
   func showPickerAtInsertionPoint(withFallback: Bool = true) {
-    NSLog("[KaomojiPicker] \(#function) \(insertionPointRect)")
+//    KPLog("\(#function) InputController.current?.insertionPointFrame = \(InputController.current?.insertionPointFrame as Any)")
 
-//    var rect = insertionPointRect
-//    rect.origin.y += rect.size.height
-//    showPicker(at: rect.origin, insertionPointHeight: rect.size.height)
-//    return
+    if isRunningAsInputMethod {
+      if let frame = InputController.current?.insertionPointFrame, frame != .zero {
+        showPicker(at: frame.origin, insertionPointHeight: frame.size.height)
+      } else {
+        panel.orderFrontRegardless()
+      }
+    } else {
+      guard let element = AXUIElement.systemWide.focusedUIElement else { return panel.orderFrontRegardless() }
+      guard var range = element.selectedTextRange else { return }
 
-    guard let element = AXUIElement.systemWide.focusedUIElement else { return panel.orderFrontRegardless() }
-    guard var range = element.selectedTextRange else { return }
+      if range.length == 0, element.bounds(for: range)?.size == .zero {
+        range.location = max(0, range.location - 1)
+        range.length = 1
+      }
 
-    if range.length == 0, element.bounds(for: range)?.size == .zero {
-      range.location = max(0, range.location - 1)
-      range.length = 1
-    }
-
-    if var bounds = element.bounds(for: range), bounds.size != .zero {
-      bounds.origin.y += bounds.size.height
-      showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
-    } else if let frame = element.frame, var frame = NSScreen.convertFromQuartz(frame) {
-      if let searchButton = element.searchButton, let size = searchButton.size { frame.origin.x += size.width }
-      frame.origin.y += frame.size.height
-      showPicker(at: frame.origin, insertionPointHeight: frame.size.height)
+      if let bounds = element.bounds(for: range), bounds.size != .zero {
+        showPicker(at: bounds.origin, insertionPointHeight: bounds.size.height)
+      } else if let frame = element.frame, var frame = NSScreen.convertFromQuartz(frame) {
+        if let searchButton = element.searchButton, let size = searchButton.size { frame.origin.x += size.width }
+        showPicker(at: frame.origin, insertionPointHeight: frame.size.height)
+      }
     }
   }
 
   // MARK: - Inserting Text
 
-  func insertText(_ string: String) {
-    let source = CGEventSource(stateID: .privateState)
-    guard let event = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: true) else { return }
+  func insertKaomoji(_ sender: NSCollectionViewItem, withCloseDelay: Bool) {
+    guard let kaomoji = sender.representedObject as? String else { return }
 
-    for chunk in string.chunked(into: 20) {
-      var characters = UniChar()
-      (chunk as NSString).getCharacters(&characters)
-      event.keyboardSetUnicodeString(stringLength: chunk.count, unicodeString: &characters)
-      event.post(tap: .cghidEventTap)
-      event.type = .keyUp
-      event.post(tap: .cghidEventTap)
-      event.type = .keyDown
+    KPLog("\(#function) \(kaomoji) \(InputController.currentSession?.bundleIdentifier() ?? "")")
+
+    isInserting = true
+    DataSource.shared.addKaomojiToRecents(kaomoji)
+
+    if panel.isVisible {
+      if NSApp.currentEvent?.type == .keyDown {
+        NSApp.deactivate()
+      }
+
+      insertText(kaomoji)
+      isInserting = false
+    } else {
+      DispatchQueue.main.asyncAfter(deadline: .now() + (withCloseDelay ? 0.5 : 0)) { [self] in
+        popover?.close()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
+          NSApp.deactivate()
+
+          insertText(kaomoji)
+          isInserting = false
+
+          TISInputSource.kaomoji?.deselect()
+        }
+      }
     }
   }
 
-  func insertBackwardDelete() {
+  private func insertText(_ string: String) {
+    if isRunningAsInputMethod {
+      KPLog("\(#function) \(string) \(InputController.currentSession?.bundleIdentifier() ?? "")")
+      guard let client = InputController.currentSession else { return }
+      client.insertText(string, replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
+    } else {
+      let source = CGEventSource(stateID: .privateState)
+      guard let event = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: true) else { return }
+
+      for chunk in string.chunked(into: 20) {
+        var characters = UniChar()
+        (chunk as NSString).getCharacters(&characters)
+        event.keyboardSetUnicodeString(stringLength: chunk.count, unicodeString: &characters)
+        event.post(tap: .cghidEventTap)
+        event.type = .keyUp
+        event.post(tap: .cghidEventTap)
+        event.type = .keyDown
+      }
+    }
+  }
+
+  private func insertBackwardDelete() {
     let source = CGEventSource(stateID: .privateState)
     guard let event = CGEvent(keyboardEventSource: source, virtualKey: 51, keyDown: true) else { return }
     event.post(tap: .cghidEventTap)
@@ -261,7 +266,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
   // MARK: - Panel
 
-  let panel = {
+  private(set) lazy var panel = {
     let size = NSSize(width: popoverSize.width, height: popoverSize.height + titlebarHeight)
 
     let collectionViewController = CollectionViewController()
@@ -287,9 +292,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
   // MARK: - Settings
 
-  let settingsWindow = {
+  private(set) lazy var settingsWindow = {
     let window = NSPanel(contentViewController: NSHostingController(rootView: SettingsView()))
-    window.title = l("Kaomoji Picker Settings")
+    window.title = l("Kaomoji Palette Settings")
     window.styleMask = [.titled, .utilityWindow, .closable, .resizable, .nonactivatingPanel]
     window.hidesOnDeactivate = false
     // window.level = .modalPanel
@@ -339,6 +344,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
   func popoverDidClose(_ notification: Notification) {
     positioningWindow?.close()
+
+    DispatchQueue.main.async { [self] in
+      if !panel.isVisible, !isInserting {
+        TISInputSource.kaomoji?.deselect()
+      }
+    }
   }
 }
 

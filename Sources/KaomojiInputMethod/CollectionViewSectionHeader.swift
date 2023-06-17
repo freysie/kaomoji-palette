@@ -51,7 +51,7 @@ struct CollectionViewSectionHeader_Previews: PreviewProvider {
       header.titleTextField.stringValue = l("Joy")
       NSLayoutConstraint.activate([
         header.widthAnchor.constraint(equalToConstant: popoverSize.width),
-        header.heightAnchor.constraint(equalToConstant: 26),
+        header.heightAnchor.constraint(equalToConstant: CollectionViewController.sectionHeaderHeight),
       ])
       return header
     }

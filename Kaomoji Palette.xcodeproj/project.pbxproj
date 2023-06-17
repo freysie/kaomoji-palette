@@ -1,0 +1,782 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3B0E490A2A3B4E2800515B39 /* InputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5A66DA2A39F8950082E6E2 /* InputController.swift */; };
+		3B0E490B2A3B4E3200515B39 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B722A065679006442A2 /* CollectionViewController.swift */; };
+		3B0E490C2A3B4E3200515B39 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B702A065679006442A2 /* AppDelegate.swift */; };
+		3B0E490D2A3B4E3200515B39 /* CollectionViewSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */; };
+		3B0E490E2A3B4E3200515B39 /* CollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */; };
+		3B0E490F2A3B4E3200515B39 /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B29D8092A31C8AC007E89AD /* CollectionViewHeader.swift */; };
+		3B0E49102A3B4E3200515B39 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BE92A0A68F0006442A2 /* DataSource.swift */; };
+		3B0E49172A3B4E9100515B39 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B0E48FD2A3B4D1C00515B39 /* ContentView.swift */; };
+		3B0E49192A3B4E9400515B39 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B0E49182A3B4E9300515B39 /* App.swift */; };
+		3B0E491A2A3B4ED300515B39 /* AppKit+Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895B7F2A065699006442A2 /* AppKit+Previews.swift */; };
+		3B0E491B2A3B4ED300515B39 /* Collection+SubscriptOrNil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5332BF2A363ECC00B271EB /* Collection+SubscriptOrNil.swift */; };
+		3B0E491C2A3B4ED300515B39 /* EnvironmentValues+Dismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */; };
+		3B0E491D2A3B4ED300515B39 /* Menu+Highlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */; };
+		3B0E491E2A3B4ED300515B39 /* NSImage+CornerMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */; };
+		3B0E491F2A3B4ED300515B39 /* NSView+SubtreeDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B29D80B2A31E4A5007E89AD /* NSView+SubtreeDescription.swift */; };
+		3B0E49202A3B4ED300515B39 /* AXUIElement+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5332C12A37B45D00B271EB /* AXUIElement+Swift.swift */; };
+		3B0E49212A3B4ED300515B39 /* Collection+Chunked.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */; };
+		3B0E49222A3B4ED300515B39 /* Sequence+Uniqued.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */; };
+		3B0E49232A3B4EF300515B39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B742A06567D006442A2 /* Assets.xcassets */; };
+		3B0E49262A3B4F8900515B39 /* Kaomoji.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3B0E48F92A3B4D1C00515B39 /* Kaomoji.app */; };
+		3B0E49272A3B4FAF00515B39 /* Kaomoji.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 3B206C4B2A39C79000F6F276 /* Kaomoji.pdf */; };
+		3B0E49282A3B4FB300515B39 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B832A068BB5006442A2 /* MainMenu.xib */; };
+		3B0E492A2A3B508100515B39 /* EditKaomojiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */; };
+		3B0E492B2A3B508100515B39 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B895BDD2A082C74006442A2 /* SettingsView.swift */; };
+		3B0E492C2A3B508100515B39 /* EditCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */; };
+		3B0E492E2A3B508100515B39 /* FormToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5332BD2A363E5000B271EB /* FormToolbar.swift */; };
+		3B0E49302A3B50A100515B39 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 3B0E492F2A3B50A100515B39 /* KeyboardShortcuts */; };
+		3B3FE4322A3B2AF60036B43A /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 3B3FE4312A3B2AF60036B43A /* Sparkle */; };
+		3B895B752A06567D006442A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B895B742A06567D006442A2 /* Assets.xcassets */; };
+		3B9C51CE2A3D9F4C009CB158 /* CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B9C51CD2A3D9F4C009CB158 /* CategoryButton.swift */; };
+		3BB924BF2A3B8E0D0093F47B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3BB924B92A3B8E0D0093F47B /* Localizable.strings */; };
+		3BB924C02A3B8E0D0093F47B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3BB924BB2A3B8E0D0093F47B /* InfoPlist.strings */; };
+		3BB924C82A3B8E2C0093F47B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3BB924C22A3B8E2C0093F47B /* Localizable.strings */; };
+		3BB924C92A3B8E2C0093F47B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3BB924C42A3B8E2C0093F47B /* InfoPlist.strings */; };
+		3BFB77512A3B80FE0077000C /* TISInputSource+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BFB77502A3B80FE0077000C /* TISInputSource+Swift.swift */; };
+		3BFB77522A3B85C30077000C /* TISInputSource+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BFB77502A3B80FE0077000C /* TISInputSource+Swift.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3B0E49242A3B4F8300515B39 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3B895B652A065679006442A2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3B0E48F82A3B4D1C00515B39;
+			remoteInfo = "Kaomoji Input Method";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3B92F5EB2A3A0F4B00A87B58 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 12;
+			files = (
+				3B0E49262A3B4F8900515B39 /* Kaomoji.app in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		3B0E48F92A3B4D1C00515B39 /* Kaomoji.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kaomoji.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B0E48FD2A3B4D1C00515B39 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3B0E49112A3B4E3800515B39 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3B0E49182A3B4E9300515B39 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		3B0E49292A3B500400515B39 /* Entitlements.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Entitlements.entitlements; sourceTree = "<group>"; };
+		3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+CornerMask.swift"; sourceTree = "<group>"; };
+		3B206C4B2A39C79000F6F276 /* Kaomoji.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Kaomoji.pdf; sourceTree = "<group>"; };
+		3B29D8092A31C8AC007E89AD /* CollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
+		3B29D80B2A31E4A5007E89AD /* NSView+SubtreeDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+SubtreeDescription.swift"; sourceTree = "<group>"; };
+		3B37B4A92A39D6F70039A56F /* Entitlements.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Entitlements.entitlements; sourceTree = "<group>"; };
+		3B5332B42A34D31100B271EB /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
+		3B5332BD2A363E5000B271EB /* FormToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormToolbar.swift; sourceTree = "<group>"; };
+		3B5332BF2A363ECC00B271EB /* Collection+SubscriptOrNil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+SubscriptOrNil.swift"; sourceTree = "<group>"; };
+		3B5332C12A37B45D00B271EB /* AXUIElement+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AXUIElement+Swift.swift"; sourceTree = "<group>"; };
+		3B5332FA2A38693300B271EB /* KeyboardShortcuts */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = KeyboardShortcuts; sourceTree = "<group>"; };
+		3B5332FE2A39B29000B271EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3B5A66DA2A39F8950082E6E2 /* InputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputController.swift; sourceTree = "<group>"; };
+		3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EnvironmentValues+Dismiss.swift"; sourceTree = "<group>"; };
+		3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Menu+Highlight.swift"; sourceTree = "<group>"; };
+		3B895B6D2A065679006442A2 /* Kaomoji Palette.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kaomoji Palette.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B895B702A065679006442A2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		3B895B722A065679006442A2 /* CollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
+		3B895B742A06567D006442A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3B895B7F2A065699006442A2 /* AppKit+Previews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppKit+Previews.swift"; sourceTree = "<group>"; };
+		3B895B832A068BB5006442A2 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		3B895BB82A06EAA3006442A2 /* Kaomoji Palette.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Kaomoji Palette.png"; sourceTree = "<group>"; };
+		3B895BB92A06EAAB006442A2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewSectionHeader.swift; sourceTree = "<group>"; };
+		3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewItem.swift; sourceTree = "<group>"; };
+		3B895BDD2A082C74006442A2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		3B895BE92A0A68F0006442A2 /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
+		3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Chunked.swift"; sourceTree = "<group>"; };
+		3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Sequence+Uniqued.swift"; sourceTree = "<group>"; };
+		3B9C51CD2A3D9F4C009CB158 /* CategoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryButton.swift; sourceTree = "<group>"; };
+		3BB924BA2A3B8E0D0093F47B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3BB924BC2A3B8E0D0093F47B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3BB924BD2A3B8E0D0093F47B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3BB924BE2A3B8E0D0093F47B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3BB924C32A3B8E2C0093F47B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3BB924C52A3B8E2C0093F47B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3BB924C62A3B8E2C0093F47B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3BB924C72A3B8E2C0093F47B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCategoriesView.swift; sourceTree = "<group>"; };
+		3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditKaomojiView.swift; sourceTree = "<group>"; };
+		3BFB77502A3B80FE0077000C /* TISInputSource+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TISInputSource+Swift.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3B0E48F62A3B4D1C00515B39 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B0E49302A3B50A100515B39 /* KeyboardShortcuts in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B895B6A2A065679006442A2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B3FE4322A3B2AF60036B43A /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3B0E48FA2A3B4D1C00515B39 /* KaomojiInputMethod */ = {
+			isa = PBXGroup;
+			children = (
+				3B37B4A92A39D6F70039A56F /* Entitlements.entitlements */,
+				3B206C4B2A39C79000F6F276 /* Kaomoji.pdf */,
+				3B5332FE2A39B29000B271EB /* Info.plist */,
+				3B895B702A065679006442A2 /* AppDelegate.swift */,
+				3B9C51CD2A3D9F4C009CB158 /* CategoryButton.swift */,
+				3B895B722A065679006442A2 /* CollectionViewController.swift */,
+				3B29D8092A31C8AC007E89AD /* CollectionViewHeader.swift */,
+				3B895BBE2A07B477006442A2 /* CollectionViewItem.swift */,
+				3B895BBC2A07B43E006442A2 /* CollectionViewSectionHeader.swift */,
+				3B895BE92A0A68F0006442A2 /* DataSource.swift */,
+				3B5A66DA2A39F8950082E6E2 /* InputController.swift */,
+				3B895B832A068BB5006442A2 /* MainMenu.xib */,
+				3B895BEB2A0C2CBE006442A2 /* Additions */,
+				3BB924C12A3B8E2C0093F47B /* Localization */,
+				3BDD0FAA2A33914A0000CAA8 /* Settings */,
+			);
+			path = KaomojiInputMethod;
+			sourceTree = "<group>";
+		};
+		3B0E49082A3B4DA600515B39 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				3B5332B42A34D31100B271EB /* BridgingHeader.h */,
+				3BFB77502A3B80FE0077000C /* TISInputSource+Swift.swift */,
+				3B895B742A06567D006442A2 /* Assets.xcassets */,
+				3B0E48FA2A3B4D1C00515B39 /* KaomojiInputMethod */,
+				3B895B6F2A065679006442A2 /* KaomojiPalette */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		3B5332F82A3868F500B271EB /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				3B5332FA2A38693300B271EB /* KeyboardShortcuts */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		3B895B642A065679006442A2 = {
+			isa = PBXGroup;
+			children = (
+				3B895BB92A06EAAB006442A2 /* README.md */,
+				3B895BB82A06EAA3006442A2 /* Kaomoji Palette.png */,
+				3B0E49082A3B4DA600515B39 /* Sources */,
+				3B5332F82A3868F500B271EB /* Packages */,
+				3B895B6E2A065679006442A2 /* Products */,
+				3B92F5E82A3A0A7300A87B58 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		3B895B6E2A065679006442A2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3B895B6D2A065679006442A2 /* Kaomoji Palette.app */,
+				3B0E48F92A3B4D1C00515B39 /* Kaomoji.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3B895B6F2A065679006442A2 /* KaomojiPalette */ = {
+			isa = PBXGroup;
+			children = (
+				3B0E49292A3B500400515B39 /* Entitlements.entitlements */,
+				3B0E49112A3B4E3800515B39 /* Info.plist */,
+				3B0E49182A3B4E9300515B39 /* App.swift */,
+				3B0E48FD2A3B4D1C00515B39 /* ContentView.swift */,
+				3BB924B82A3B8E0D0093F47B /* Localization */,
+			);
+			path = KaomojiPalette;
+			sourceTree = "<group>";
+		};
+		3B895BEB2A0C2CBE006442A2 /* Additions */ = {
+			isa = PBXGroup;
+			children = (
+				3B895B7F2A065699006442A2 /* AppKit+Previews.swift */,
+				3B5332C12A37B45D00B271EB /* AXUIElement+Swift.swift */,
+				3B895BEC2A0C2CCD006442A2 /* Collection+Chunked.swift */,
+				3B5332BF2A363ECC00B271EB /* Collection+SubscriptOrNil.swift */,
+				3B85A75A2A0FDD66006482C8 /* EnvironmentValues+Dismiss.swift */,
+				3B85A75E2A10039A006482C8 /* Menu+Highlight.swift */,
+				3B13E06E2A2FF1E0007FC921 /* NSImage+CornerMask.swift */,
+				3B29D80B2A31E4A5007E89AD /* NSView+SubtreeDescription.swift */,
+				3B895BEE2A0C2CE1006442A2 /* Sequence+Uniqued.swift */,
+			);
+			path = Additions;
+			sourceTree = "<group>";
+		};
+		3B92F5E82A3A0A7300A87B58 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3BB924B82A3B8E0D0093F47B /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				3BB924B92A3B8E0D0093F47B /* Localizable.strings */,
+				3BB924BB2A3B8E0D0093F47B /* InfoPlist.strings */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
+		3BB924C12A3B8E2C0093F47B /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				3BB924C22A3B8E2C0093F47B /* Localizable.strings */,
+				3BB924C42A3B8E2C0093F47B /* InfoPlist.strings */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
+		3BDD0FAA2A33914A0000CAA8 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */,
+				3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */,
+				3B5332BD2A363E5000B271EB /* FormToolbar.swift */,
+				3B895BDD2A082C74006442A2 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3B0E48F82A3B4D1C00515B39 /* Kaomoji Input Method */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B0E49072A3B4D1E00515B39 /* Build configuration list for PBXNativeTarget "Kaomoji Input Method" */;
+			buildPhases = (
+				3B0E48F52A3B4D1C00515B39 /* Sources */,
+				3B0E48F62A3B4D1C00515B39 /* Frameworks */,
+				3B0E48F72A3B4D1C00515B39 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Kaomoji Input Method";
+			packageProductDependencies = (
+				3B0E492F2A3B50A100515B39 /* KeyboardShortcuts */,
+			);
+			productName = Kaomoji;
+			productReference = 3B0E48F92A3B4D1C00515B39 /* Kaomoji.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3B895B6C2A065679006442A2 /* Kaomoji Palette */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B895B7C2A06567D006442A2 /* Build configuration list for PBXNativeTarget "Kaomoji Palette" */;
+			buildPhases = (
+				3B895B692A065679006442A2 /* Sources */,
+				3B895B6A2A065679006442A2 /* Frameworks */,
+				3B895B6B2A065679006442A2 /* Resources */,
+				3B92F5EB2A3A0F4B00A87B58 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3B0E49252A3B4F8300515B39 /* PBXTargetDependency */,
+				3B92F5E72A3A0A4D00A87B58 /* PBXTargetDependency */,
+			);
+			name = "Kaomoji Palette";
+			packageProductDependencies = (
+				3B3FE4312A3B2AF60036B43A /* Sparkle */,
+			);
+			productName = KaomojiPicker;
+			productReference = 3B895B6D2A065679006442A2 /* Kaomoji Palette.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3B895B652A065679006442A2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					3B0E48F82A3B4D1C00515B39 = {
+						CreatedOnToolsVersion = 14.3;
+					};
+					3B895B6C2A065679006442A2 = {
+						CreatedOnToolsVersion = 14.3;
+						LastSwiftMigration = 1430;
+					};
+				};
+			};
+			buildConfigurationList = 3B895B682A065679006442A2 /* Build configuration list for PBXProject "Kaomoji Palette" */;
+			compatibilityVersion = "Xcode 12.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				da,
+			);
+			mainGroup = 3B895B642A065679006442A2;
+			packageReferences = (
+				3B3FE4302A3B2AF60036B43A /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
+			productRefGroup = 3B895B6E2A065679006442A2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3B895B6C2A065679006442A2 /* Kaomoji Palette */,
+				3B0E48F82A3B4D1C00515B39 /* Kaomoji Input Method */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3B0E48F72A3B4D1C00515B39 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B0E49272A3B4FAF00515B39 /* Kaomoji.pdf in Resources */,
+				3BB924C82A3B8E2C0093F47B /* Localizable.strings in Resources */,
+				3B0E49232A3B4EF300515B39 /* Assets.xcassets in Resources */,
+				3B0E49282A3B4FB300515B39 /* MainMenu.xib in Resources */,
+				3BB924C92A3B8E2C0093F47B /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B895B6B2A065679006442A2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B895B752A06567D006442A2 /* Assets.xcassets in Resources */,
+				3BB924C02A3B8E0D0093F47B /* InfoPlist.strings in Resources */,
+				3BB924BF2A3B8E0D0093F47B /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3B0E48F52A3B4D1C00515B39 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B0E490B2A3B4E3200515B39 /* CollectionViewController.swift in Sources */,
+				3B0E491F2A3B4ED300515B39 /* NSView+SubtreeDescription.swift in Sources */,
+				3B0E492C2A3B508100515B39 /* EditCategoriesView.swift in Sources */,
+				3B0E49222A3B4ED300515B39 /* Sequence+Uniqued.swift in Sources */,
+				3B0E492B2A3B508100515B39 /* SettingsView.swift in Sources */,
+				3B0E492A2A3B508100515B39 /* EditKaomojiView.swift in Sources */,
+				3B0E490E2A3B4E3200515B39 /* CollectionViewItem.swift in Sources */,
+				3B9C51CE2A3D9F4C009CB158 /* CategoryButton.swift in Sources */,
+				3B0E491A2A3B4ED300515B39 /* AppKit+Previews.swift in Sources */,
+				3B0E49202A3B4ED300515B39 /* AXUIElement+Swift.swift in Sources */,
+				3B0E491C2A3B4ED300515B39 /* EnvironmentValues+Dismiss.swift in Sources */,
+				3B0E490A2A3B4E2800515B39 /* InputController.swift in Sources */,
+				3B0E491B2A3B4ED300515B39 /* Collection+SubscriptOrNil.swift in Sources */,
+				3B0E49102A3B4E3200515B39 /* DataSource.swift in Sources */,
+				3B0E491D2A3B4ED300515B39 /* Menu+Highlight.swift in Sources */,
+				3B0E490C2A3B4E3200515B39 /* AppDelegate.swift in Sources */,
+				3B0E492E2A3B508100515B39 /* FormToolbar.swift in Sources */,
+				3B0E491E2A3B4ED300515B39 /* NSImage+CornerMask.swift in Sources */,
+				3B0E49212A3B4ED300515B39 /* Collection+Chunked.swift in Sources */,
+				3BFB77522A3B85C30077000C /* TISInputSource+Swift.swift in Sources */,
+				3B0E490F2A3B4E3200515B39 /* CollectionViewHeader.swift in Sources */,
+				3B0E490D2A3B4E3200515B39 /* CollectionViewSectionHeader.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B895B692A065679006442A2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B0E49192A3B4E9400515B39 /* App.swift in Sources */,
+				3BFB77512A3B80FE0077000C /* TISInputSource+Swift.swift in Sources */,
+				3B0E49172A3B4E9100515B39 /* ContentView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3B0E49252A3B4F8300515B39 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3B0E48F82A3B4D1C00515B39 /* Kaomoji Input Method */;
+			targetProxy = 3B0E49242A3B4F8300515B39 /* PBXContainerItemProxy */;
+		};
+		3B92F5E72A3A0A4D00A87B58 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 3B92F5E62A3A0A4D00A87B58 /* KeyboardShortcuts */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		3BB924B92A3B8E0D0093F47B /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3BB924BA2A3B8E0D0093F47B /* en */,
+				3BB924BD2A3B8E0D0093F47B /* da */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		3BB924BB2A3B8E0D0093F47B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3BB924BC2A3B8E0D0093F47B /* en */,
+				3BB924BE2A3B8E0D0093F47B /* da */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		3BB924C22A3B8E2C0093F47B /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3BB924C32A3B8E2C0093F47B /* en */,
+				3BB924C62A3B8E2C0093F47B /* da */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		3BB924C42A3B8E2C0093F47B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3BB924C52A3B8E2C0093F47B /* en */,
+				3BB924C72A3B8E2C0093F47B /* da */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3B0E49052A3B4D1E00515B39 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Sources/KaomojiInputMethod/Entitlements.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/KaomojiInputMethod/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette2.inputmethod.Kaomoji;
+				PRODUCT_MODULE_NAME = KaomojiInputMethod;
+				PRODUCT_NAME = Kaomoji;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3B0E49062A3B4D1E00515B39 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Sources/KaomojiInputMethod/Entitlements.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/KaomojiInputMethod/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette2.inputmethod.Kaomoji;
+				PRODUCT_MODULE_NAME = KaomojiInputMethod;
+				PRODUCT_NAME = Kaomoji;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		3B895B7A2A06567D006442A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_MODULE_NAME = "";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = Sources/BridgingHeader.h;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3B895B7B2A06567D006442A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_MODULE_NAME = "";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = Sources/BridgingHeader.h;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		3B895B7D2A06567D006442A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Sources/KaomojiPalette/Entitlements.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/KaomojiPalette/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-expression-type-checking=250";
+				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette2;
+				PRODUCT_MODULE_NAME = KaomojiPalette;
+				PRODUCT_NAME = "Kaomoji Palette";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3B895B7E2A06567D006442A2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Sources/KaomojiPalette/Entitlements.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KUD8C8Y8Z7;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sources/KaomojiPalette/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2023 Freya Alminde";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-expression-type-checking=250";
+				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette2;
+				PRODUCT_MODULE_NAME = KaomojiPalette;
+				PRODUCT_NAME = "Kaomoji Palette";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3B0E49072A3B4D1E00515B39 /* Build configuration list for PBXNativeTarget "Kaomoji Input Method" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B0E49052A3B4D1E00515B39 /* Debug */,
+				3B0E49062A3B4D1E00515B39 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B895B682A065679006442A2 /* Build configuration list for PBXProject "Kaomoji Palette" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B895B7A2A06567D006442A2 /* Debug */,
+				3B895B7B2A06567D006442A2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B895B7C2A06567D006442A2 /* Build configuration list for PBXNativeTarget "Kaomoji Palette" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B895B7D2A06567D006442A2 /* Debug */,
+				3B895B7E2A06567D006442A2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3B3FE4302A3B2AF60036B43A /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3B0E492F2A3B50A100515B39 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = KeyboardShortcuts;
+		};
+		3B3FE4312A3B2AF60036B43A /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B3FE4302A3B2AF60036B43A /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+		3B92F5E62A3A0A4D00A87B58 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = KeyboardShortcuts;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 3B895B652A065679006442A2 /* Project object */;
+}

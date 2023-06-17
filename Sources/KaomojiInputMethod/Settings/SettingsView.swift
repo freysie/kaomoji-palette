@@ -102,13 +102,13 @@ struct SettingsView: View {
     .fileImporter(isPresented: $isImportSheetPresented, allowedContentTypes: [.propertyList]) {
       switch $0 {
       case .success(let url): importKaomojiSet(at: url)
-      case .failure(let error): NSLog(error.localizedDescription)
+      case .failure(let error): KPLog(error.localizedDescription)
       }
     }
     .fileExporter(isPresented: $isExportSheetPresented, document: dataSource.kaomojiSet, contentType: .propertyList) {
       switch $0 {
-      case .success(let url): NSLog("exported kaomoji set to \(url)")
-      case .failure(let error): NSLog(error.localizedDescription)
+      case .success(let url): KPLog("exported kaomoji set to \(url)")
+      case .failure(let error): KPLog(error.localizedDescription)
       }
     }
   }
@@ -221,7 +221,7 @@ class SettingsCollectionViewController: CollectionViewController {
   // MARK: - Item Click Handling
 
   @objc override func collectionViewItemWasClicked(_ sender: CollectionViewItem) {
-    /// This method intentionally left blank.
+    // This method intentionally left blank.
   }
 
   @objc override func collectionViewItemWasDoubleClicked(_ sender: CollectionViewItem) {
@@ -262,13 +262,13 @@ class SettingsCollectionViewController: CollectionViewController {
       collectionView.animator().moveItem(at: sourceIndexPath, to: indexPath)
     }
 
-    /// idk why `NSAnimationContext` with completion handler doesn’t work; instead we use 0.3 sec delay
+    // idk why NSAnimationContext with completion handler doesn’t work; instead we use 0.3 sec delay
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
       for var sourceIndexPath in indexPaths {
         guard sourceIndexPath.section == indexPath.section else { continue }
         var indexPath = indexPath
-        indexPath.section -= 1 /// to account for hidden controls section
-        sourceIndexPath.section -= 1 /// to account for hidden controls section
+        indexPath.section -= 1 // to account for hidden header section
+        sourceIndexPath.section -= 1 // to account for hidden header section
         DataSource.shared.moveKaomoji(at: sourceIndexPath, to: indexPath)
       }
 

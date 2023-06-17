@@ -101,6 +101,7 @@ struct CategoriesTable: NSViewControllerRepresentable {
   }
 }
 
+// TODO: get rid of this and just use CategoriesTable.Coordinator instead? ┐( ´ д ` )┌
 class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate, NSTextFieldDelegate {
   @ObservedObject var model: EditCategoriesModel
   private var subscriptions = Set<AnyCancellable>()
@@ -153,13 +154,7 @@ class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NS
     tableView.focusRingType = .none
     tableView.headerView = nil
     tableView.registerForDraggedTypes([.string])
-
-    let column = NSTableColumn()
-    let cell = TextFieldCell()
-    cell.focusRingType = .none
-    cell.isEditable = true
-    column.dataCell = cell
-    tableView.addTableColumn(column)
+    tableView.addTableColumn(NSTableColumn())
 
     scrollView = NSScrollView()
     scrollView.documentView = tableView

@@ -1,4 +1,5 @@
 import AppKit
+import Carbon.HIToolbox
 import Combine
 
 // TODO: instead of CollectionStyle, maybe use this:
@@ -11,9 +12,10 @@ import Combine
 class CollectionViewController: NSViewController, NSCollectionViewDataSource, NSCollectionViewDelegate, NSCollectionViewDelegateFlowLayout, NSSearchFieldDelegate, NSControlTextEditingDelegate {
   enum CollectionStyle { case palettePopover, palettePanel, settings }
 
+  static let searchBarHeight = 36.0
+  static let sectionHeaderHeight = 26.0
+
   private static let recentsCategoryTitle = ".:☆*:･" // "。.:☆*:･"?
-  private static let searchBarHeight = 36.0
-  private static let sectionHeaderHeight = 26.0
 
   var collectionStyle = CollectionStyle.palettePopover
 
@@ -34,7 +36,6 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   private(set) var placeholderView: NSTextField!
   private(set) weak var searchField: NSSearchField?
 
-  private var isInserting = false
   private var isSearching = false
   private var searchResults = [String]()
   private var selectionIndexPaths = Set<IndexPath>()
@@ -46,6 +47,8 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
   private var kaomoji: [[String]] { (showsRecents ? [dataSource.recents] : []) + dataSource.kaomoji }
   private var categories: [String] { (showsRecents ? [l("Recently Used")] : []) + dataSource.categoryNames }
+
+  // MARK: - View Lifecycle
 
   override func loadView() {
     // TODO: tweak spacing
@@ -134,7 +137,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     //scrollView.contentView.layer?.borderWidth = 1
 
     if collectionStyle != .settings {
-      let header = CollectionViewHeader2()
+      let header = CollectionViewHeader()
       header.translatesAutoresizingMaskIntoConstraints = false
       header.searchField.target = self
       header.searchField.action = #selector(search(_:))
@@ -257,7 +260,11 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     } else {
       view = stackView
     }
+  }
 
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
     DataSource.shared.$categories
       .sink { _ in self.collectionView.reloadData() }
       .store(in: &subscriptions)
@@ -268,7 +275,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
     DataSource.shared.$recents
       //.delay(for: 1, scheduler: DispatchQueue.main)
-      .sink { [self] _ in if !isSearching, !isInserting { collectionView.reloadData() } }
+      .sink { [self] _ in if !isSearching, !appDelegate.isInserting { collectionView.reloadData() } }
       .store(in: &subscriptions)
 
 //    DataSource.shared.kaomojiOrCategoriesDidChange
@@ -351,7 +358,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   private func insertSelected() {
     guard let path = collectionView.selectionIndexPaths.first, let item = collectionView.item(at: path) else { return }
 
-    insertKaomoji(item, withCloseDelay: false)
+    appDelegate.insertKaomoji(item, withCloseDelay: false)
   }
 
   private func insertSelectedOrSelectFirstOrCloseWindow() -> Bool {
@@ -365,35 +372,6 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     }
 
     return true
-  }
-
-  private func insertKaomoji(_ sender: NSCollectionViewItem, withCloseDelay: Bool) {
-    guard let kaomoji = sender.representedObject as? String else { return }
-
-    isInserting = true
-    dataSource.addKaomojiToRecents(kaomoji)
-
-    if appDelegate.panel.isVisible {
-      if NSApp.currentEvent?.type == .keyDown {
-        NSApp.deactivate()
-      }
-
-      appDelegate.insertText(kaomoji)
-
-      isInserting = false
-    } else {
-      DispatchQueue.main.asyncAfter(deadline: .now() + (withCloseDelay ? 0.5 : 0)) { [self] in
-        appDelegate.popover?.close()
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
-          NSApp.deactivate()
-
-          appDelegate.insertText(kaomoji)
-
-          isInserting = false
-        }
-      }
-    }
   }
 
   // MARK: - Keyboard Navigation
@@ -521,15 +499,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     switch kind {
     case NSCollectionView.elementKindSectionHeader:
       if indexPath.section == 0 {
-        let header = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .headerSpacer, for: indexPath) as! CollectionViewHeaderSpacer
-        //header.searchField.target = self
-        //header.searchField.action = #selector(search(_:))
-        //header.searchField.delegate = self
-        //header.settingsButton.isHidden = collectionStyle == .palettePanel
-        // //searchField = header.searchField
-        //header.alphaValue = 0
-        //header.isHidden = true
-        return header
+        return collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .headerSpacer, for: indexPath)
       } else {
         let header = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .sectionHeader, for: indexPath) as! CollectionViewSectionHeader
 
@@ -586,9 +556,9 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   // MARK: - Item Click Handling
 
   @objc func collectionViewItemWasClicked(_ sender: CollectionViewItem) {
-    guard !isInserting else { return }
+    guard !appDelegate.isInserting else { return }
 
-    insertKaomoji(sender, withCloseDelay: true)
+    appDelegate.insertKaomoji(sender, withCloseDelay: true)
   }
 
   @objc func collectionViewItemWasDoubleClicked(_ sender: CollectionViewItem) {
@@ -598,7 +568,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   // MARK: - Collection View Delegate
 
   func collectionView(_ collectionView: NSCollectionView, pasteboardWriterForItemAt indexPath: IndexPath) -> NSPasteboardWriting? {
-    guard !isInserting else { return nil }
+    guard !appDelegate.isInserting else { return nil }
     return (collectionView.item(at: indexPath) as? CollectionViewItem)?.representedObject as? NSString
     //kaomoji[indexPath.section - 1][indexPath.item] as NSString
 
@@ -624,7 +594,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   }
 
   func collectionView(_ collectionView: NSCollectionView, shouldSelectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath> {
-    isInserting ? selectionIndexPaths : indexPaths
+    appDelegate.isInserting ? selectionIndexPaths : indexPaths
   }
 
   func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
@@ -721,8 +691,8 @@ class CollectionView: NSCollectionView {
 
 extension NSUserInterfaceItemIdentifier {
   static let item = Self("item")
-  static let sectionHeader = Self("sectionHeader")
   static let headerSpacer = Self("headerSpacer")
+  static let sectionHeader = Self("sectionHeader")
   //static let interItemGapIndicator = Self("interItemGapIndicator")
 }
 

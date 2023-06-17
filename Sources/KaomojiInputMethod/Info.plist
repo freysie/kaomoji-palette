@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>InputMethodConnectionName</key>
-	<string>local_kaomojipicker_connection</string>
+	<string>KaomojiPalette_2_connection</string>
 	<key>InputMethodServerControllerClass</key>
 	<string>$(PRODUCT_MODULE_NAME).InputController</string>
 	<key>InputMethodType</key>
@@ -12,13 +12,15 @@
 	<true/>
 	<key>NSSupportsSuddenTermination</key>
 	<true/>
+	<key>TISIconIsTemplate</key>
+	<false/>
 	<key>TISInputSourceID</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>${BUNDLE_IDENTIFIER}</string>
 	<key>tsInputMethodCharacterRepertoireKey</key>
 	<array>
 		<string>Latn</string>
 	</array>
 	<key>tsInputMethodIconFileKey</key>
-	<string>KPIconTemplate</string>
+	<string>Kaomoji.pdf</string>
 </dict>
 </plist>

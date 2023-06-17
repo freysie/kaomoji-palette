@@ -33,6 +33,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   private(set) var closeButton: NSButton?
   private(set) var categoryButtons = [CategoryButton]()
   private(set) var categoryScrollView: NSScrollView!
+  private(set) var categoryStackView: NSStackView!
   private(set) var placeholderView: NSTextField!
   private(set) weak var searchField: NSSearchField?
 
@@ -155,21 +156,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     }
 
     if showsCategoryButtons {
-      for (index, category) in categories.enumerated() {
-        let title = showsRecents && index == 0 ? Self.recentsCategoryTitle : kaomoji[orNil: index]?.first ?? "--"
-        let button = CategoryButton(radioButtonWithTitle: title, target: self, action: #selector(jumpTo(_:)))
-        button.font = .systemFont(ofSize: NSFont.smallSystemFontSize, weight: .bold)
-        button.toolTip = l(category)
-        button.isBordered = false
-        button.imagePosition = .noImage
-        button.focusRingType = .exterior
-        button.tag = index + 1
-        categoryButtons.append(button)
-      }
-
-      categoryButtons.first?.state = .on
-
-      let categoryStackView = NSStackView(views: categoryButtons)
+      categoryStackView = NSStackView(views: [])
       categoryStackView.edgeInsets = NSEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
       categoryStackView.spacing = 7
 
@@ -195,6 +182,8 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
         categoryStackView.bottomAnchor.constraint(equalTo: categoryScrollView.bottomAnchor),
         categoryScrollView.heightAnchor.constraint(equalToConstant: 38),
       ])
+
+      reloadCategoryButtons()
     } else {
       stackView = NSStackView(views: [scrollView])
     }
@@ -266,7 +255,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     super.viewDidLoad()
 
     DataSource.shared.$categories
-      .sink { _ in self.collectionView.reloadData() }
+      .sink { _ in self.collectionView.reloadData(); self.reloadCategoryButtons() }
       .store(in: &subscriptions)
 
     DataSource.shared.$kaomoji
@@ -342,6 +331,29 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
     guard let section = indexPathsForVisibleHeaders.first?.section, section != currentSectionIndex else { return }
     currentSectionIndex = section
+    updateCategoryButtons()
+  }
+
+  private func reloadCategoryButtons() {
+    guard showsCategoryButtons else { return }
+
+    categoryButtons.forEach { $0.removeFromSuperview() }
+    categoryButtons = []
+
+    for (index, category) in categories.enumerated() {
+      let title = showsRecents && index == 0 ? Self.recentsCategoryTitle : kaomoji[orNil: index]?.first ?? "--"
+      let button = CategoryButton(radioButtonWithTitle: title, target: self, action: #selector(jumpTo(_:)))
+      button.translatesAutoresizingMaskIntoConstraints = false
+      button.font = .systemFont(ofSize: NSFont.smallSystemFontSize, weight: .bold)
+      button.toolTip = l(category)
+      button.isBordered = false
+      button.imagePosition = .noImage
+      button.focusRingType = .exterior
+      button.tag = index + 1
+      categoryButtons.append(button)
+    }
+
+    categoryButtons.forEach(categoryStackView.addArrangedSubview(_:))
     updateCategoryButtons()
   }
 

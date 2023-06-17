@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 import Combine
 import InputMethodKit
-import Carbon.HIToolbox
+import Carbon.HIToolbox.TextInputSources
 import KeyboardShortcuts
 
 //  ✅   keyboard navigation (arrow keys + return (+ tab & backtab &c.))
@@ -17,30 +17,35 @@ import KeyboardShortcuts
 //  ❇️   detach popover when moved by any part of window background, including within collection view
 //  ✅   settings: customizable categories
 //  ✅   settings: edit existing kaomoji on double click
-//  ✅   settings: customizable keyboard shortcut (ﾉД`)
-//  ✅   resolve odd issue where setings window will sometimes somehow open the panel and position it off-screen
+//  ✅   settings: customizable keyboardyeet shortcut (ﾉД`)
+//  ✅   resolve odd issue where settings window will sometimes somehow open the panel and position it off-screen
 //  ✅   unless there’s a better way — if text field is empty: insert dummy space, select it, get bounds, then delete space
 //  ✅   figure out why Discord is being weird (doesn’t work unless you inspect Discord once with Accessibility Inspector)
 
 // 1.0
-// 👩‍💻 TODO: input method stuff ~~accessibility element edge cases (e.g. the empty text field thing w/ dummy space)~~
-// 👩‍💻 FIXME: keep search field in view hierarchy even when scrolling waaay down
-// 👩‍💻 FIXME: NSCollectionView keyboard navigation not accounting for section headers
+// ✅ TODO: input method stuff ~~accessibility element edge cases (e.g. the empty text field thing w/ dummy space)~~
+// ✅ FIXME: keep search field in view hierarchy even when scrolling waaay down
+// ✅ FIXME: NSCollectionView keyboard navigation not accounting for section headers
 // 👩‍💻 FIXME: regressions in the settings window (＞﹏＜)??
 // FIXME: crash when searching and using keyboard navigation
 // TODO: app notarization
 // TODO: add Sparkle or something for automatic updates
-// TODO: figure out exactly how to do automtic updates seeing we’re now an input method
+// TODO: figure out exactly how to do automatic updates seeing we’re now an input method
 
 // 1.x
+// TODO: don’t jitter when on `moveUp:` in collection view
+// TODO: try to get rid of the ±1 index path stuff
 // TODO: when dragging kaomoji out of the picker, don’t disappear the original collection view item
 // TODO: collection view item background colors should be grayed out sometimes like in the system symbols palette
 // TODO: persist picker panel position per process à la system’s character palette!
 // TODO: try out variable-width items in the picker view? (ᗒᗣᗕ)՞
 // TODO: add a “Favorites” section and/or let the “Recently Used” be “Frequently Used” instead
 // TODO: consider if we need a Kaomoji Helper that (handles keyboard shortcuts? and) restarts the input method if it crashes
+// TODO: on `moveDown:`, do the thing the system character palette does where it jumps a whole screenful when reaching the edge
+// TODO: actually, just do all the keyboard navigation things that the system character palette does — they got it right!
+// TODO: better coupling, cleaner architecture
 
-let popoverSize = NSSize(width: 320, height: 358)
+let popoverSize = NSSize(width: 320, height: 358 + 11)
 let titlebarHeight = 27.0
 
 func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
@@ -91,9 +96,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       }
     } else {
       // TODO: don’t rely on accessibility access when running as input method
-      if !CGRequestPostEventAccess() {
-        KPLog("event posting access needed")
-      }
+      // if !CGRequestPostEventAccess() {
+      //   KPLog("event posting access needed")
+      // }
     }
 
 #if DEBUG
@@ -295,11 +300,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   private(set) lazy var settingsWindow = {
     let window = NSPanel(contentViewController: NSHostingController(rootView: SettingsView()))
     window.title = l("Kaomoji Palette Settings")
-    window.styleMask = [.titled, .utilityWindow, .closable, .resizable, .nonactivatingPanel]
+    window.styleMask = [.titled, .utilityWindow, .closable, .resizable]
     window.hidesOnDeactivate = false
     // window.level = .modalPanel
     window.isFloatingPanel = true
-    window.becomesKeyOnlyIfNeeded = true
+    // window.becomesKeyOnlyIfNeeded = true
     window.setContentSize(NSSize(width: 499, height: 736))
     return window
   }()
@@ -309,8 +314,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     panel.close()
     // TODO: animate the picker popover into the settings panel?? 🤪
     //settingsWindow.makeMain()
+    NSApp.activate(ignoringOtherApps: true)
     settingsWindow.makeKeyAndOrderFront(nil)
-    //NSApp.activate(ignoringOtherApps: true)
   }
 
   // MARK: - Popover Delegate
@@ -340,16 +345,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
   func popoverWillClose(_ notification: Notification) {
     popover?.animates = true
-  }
-
-  func popoverDidClose(_ notification: Notification) {
-    positioningWindow?.close()
 
     DispatchQueue.main.async { [self] in
       if !panel.isVisible, !isInserting {
         TISInputSource.kaomoji?.deselect()
       }
     }
+  }
+
+  func popoverDidClose(_ notification: Notification) {
+    positioningWindow?.close()
   }
 }
 

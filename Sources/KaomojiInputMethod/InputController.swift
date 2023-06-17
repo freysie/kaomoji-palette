@@ -26,7 +26,6 @@ class InputController: IMKInputController {
       return
     }
 
-    KPLog("\(#function) \(client().bundleIdentifier()!)")
     guard client().bundleIdentifier() != Bundle.main.bundleIdentifier else { return }
 
     currentSession = client()
@@ -35,15 +34,17 @@ class InputController: IMKInputController {
     //DispatchQueue.main.async {
     guard AppDelegate.shared.popover?.isShown != true, !AppDelegate.shared.panel.isVisible else { return }
     
-    Timer.scheduledTimer(withTimeInterval: 0, repeats: false) { _ in
+    Timer.scheduledTimer(withTimeInterval: 0, repeats: false) { [self] _ in
       var rect = NSRect.null
-      _ = self.currentSession?.attributes(forCharacterIndex: 0, lineHeightRectangle: &rect)
+      _ = currentSession?.attributes(forCharacterIndex: 0, lineHeightRectangle: &rect)
+
+      KPLog("\(#function) \(client().bundleIdentifier()!) \(rect)")
 
       //Optional([AnyHashable("NSFont"): ".AppleSystemUIFont 12.00 pt. P [] (0x7fca96b10380) fobj=0x7fca96b10380, spc=3.38", AnyHashable("IMKBaseline"): NSPoint: {0, 1440}, AnyHashable("IMKLineAscent"): 11.60156, AnyHashable("IMKLineHeight"): 15, AnyHashable("IMKTextOrientation"): 1])
 
       //print(rect)
 
-      self.insertionPointFrame = rect
+      insertionPointFrame = rect
 
       AppDelegate.shared.showPickerAtInsertionPoint()
     }

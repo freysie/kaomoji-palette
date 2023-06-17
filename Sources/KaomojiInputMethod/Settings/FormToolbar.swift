@@ -3,7 +3,8 @@ import SwiftUI
 struct FormToolbar<Content: View>: View {
   var onAdd: () -> ()
   var onRemove: () -> ()
-  var canRemove: Bool
+  var canAdd = true
+  var canRemove = true
   @ViewBuilder var content: Content
 
   var body: some View {
@@ -11,6 +12,7 @@ struct FormToolbar<Content: View>: View {
       Button(action: onAdd) {
         Image(systemName: "plus").frame(width: 24, height: 24).offset(x: 1)
       }
+      .disabled(!canAdd)
 
       Divider().padding(.bottom, -1)
 

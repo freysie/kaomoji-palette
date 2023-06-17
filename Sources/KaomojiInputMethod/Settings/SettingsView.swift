@@ -10,8 +10,7 @@ struct SettingsView: View {
   @State private var isCategoriesSheetPresented = false
   @State private var isImportSheetPresented = false
   @State private var isExportSheetPresented = false
-
-  private var dataSource: DataSource { .shared }
+  @ObservedObject private var dataSource = DataSource.shared
 
   var body: some View {
     VStack {
@@ -24,13 +23,14 @@ struct SettingsView: View {
         FormToolbar(
           onAdd: { isAddSheetPresented = true },
           onRemove: { deleteSelected() },
+          canAdd: !dataSource.categories.isEmpty,
           canRemove: !selection.isEmpty
         ) {
           Menu {
             Button("Edit Categories…") { isCategoriesSheetPresented = true }
             Divider()
             Button("Import…") { isImportSheetPresented = true }
-            Button("Export…") { isExportSheetPresented = true }
+            Button("Export…") { isExportSheetPresented = true }.disabled(dataSource.kaomoji.allSatisfy(\.isEmpty))
             Divider()
             Button("Clear Recently Used Kaomoji") { dataSource.clearRecents() }
             Button("Restore to Defaults") { restoreToDefaults() }
@@ -54,10 +54,6 @@ struct SettingsView: View {
 
       if #available(macOS 13, *) {
         Form {
-//          LabeledContent("Keyboard Shortcut") {
-//            //Text("⌃⌥⌘\(l("Space"))")
-//            KeyboardShortcuts.Recorder(for: .showPalette)
-//          }
           KeyboardShortcuts.Recorder(l("Keyboard Shortcut"), name: .showPalette)
 
           //Toggle("Show Favorites", isOn: .constant(true))
@@ -80,6 +76,12 @@ struct SettingsView: View {
       }
     }
     .frame(width: 499)
+    .sheet(isPresented: $isAddSheetPresented) {
+      EditKaomojiView { newKaomoji in
+        dataSource.addKaomoji(newKaomoji.string, categoryIndex: newKaomoji.indexPath.section)
+        selection = [IndexPath(item: 0, section: newKaomoji.indexPath.section + 1)]
+      }
+    }
     .sheet(item: $editedKaomoji) { kaomoji in
       EditKaomojiView(kaomoji: kaomoji) { newKaomoji in
         dataSource.updateKaomoji(at: kaomoji.indexPath, string: newKaomoji.string)
@@ -92,20 +94,26 @@ struct SettingsView: View {
         }
       }
     }
-    .sheet(isPresented: $isAddSheetPresented) {
-      EditKaomojiView() { newKaomoji in
-        dataSource.addKaomoji(newKaomoji.string, categoryIndex: newKaomoji.indexPath.section)
-        selection = [IndexPath(item: 0, section: newKaomoji.indexPath.section + 1)]
+    .sheet(isPresented: $isCategoriesSheetPresented) {
+      EditCategoriesView { newCategories, newKaomoji in
+        dataSource.setCategories(newCategories, andKaomoji: newKaomoji)
       }
     }
-    .sheet(isPresented: $isCategoriesSheetPresented) { EditCategoriesView() }
-    .fileImporter(isPresented: $isImportSheetPresented, allowedContentTypes: [.propertyList]) {
+    .fileImporter(
+      isPresented: $isImportSheetPresented,
+      allowedContentTypes: [.propertyList]
+    ) {
       switch $0 {
       case .success(let url): importKaomojiSet(at: url)
       case .failure(let error): KPLog(error.localizedDescription)
       }
     }
-    .fileExporter(isPresented: $isExportSheetPresented, document: dataSource.kaomojiSet, contentType: .propertyList) {
+    .fileExporter(
+      isPresented: $isExportSheetPresented,
+      document: dataSource.kaomojiSet,
+      contentType: .propertyList,
+      defaultFilename: l("Kaomoji Set")
+    ) {
       switch $0 {
       case .success(let url): KPLog("exported kaomoji set to \(url)")
       case .failure(let error): KPLog(error.localizedDescription)
@@ -117,7 +125,7 @@ struct SettingsView: View {
     // NSApp.sendAction(#selector(SettingsCollectionViewController.deleteSelected), to: nil, from: nil)
 
     for var indexPath in selection.sorted().reversed() {
-      indexPath.section -= 1 /// to account for hidden controls section
+      indexPath.section -= 1 // to account for hidden controls section
       dataSource.removeKaomoji(at: indexPath)
     }
 
@@ -131,6 +139,11 @@ struct SettingsView: View {
   }
 
   private func restoreToDefaults() {
+    guard !dataSource.kaomoji.allSatisfy(\.isEmpty) else {
+      dataSource.restoreToDefaults()
+      return
+    }
+
     let alert = NSAlert()
     alert.alertStyle = .critical
     alert.messageText = l("Are you sure you want to restore kaomoji to defaults?")
@@ -152,27 +165,14 @@ struct SettingsCollection: NSViewControllerRepresentable {
   @Binding var editedKaomoji: Kaomoji?
 
   func makeNSViewController(context: Context) -> SettingsCollectionViewController {
-    let viewController = SettingsCollectionViewController(editedKaomoji: $editedKaomoji)
-    viewController.loadView()
-    viewController.collectionView.publisher(for: \.selectionIndexPaths)
-      .sink { newValue in DispatchQueue.main.async { selection = newValue } }
-      .store(in: &context.coordinator.subscriptions)
-    return viewController
+    SettingsCollectionViewController(selection: $selection, editedKaomoji: $editedKaomoji)
   }
 
   func updateNSViewController(_ viewController: SettingsCollectionViewController, context: Context) {
-    //viewController.collectionView.selectionIndexPaths = selection
     DispatchQueue.main.async {
+      //viewController.collectionView.selectionIndexPaths = selection
       viewController.collectionView.selectItems(at: selection, scrollPosition: .nearestHorizontalEdge)
     }
-  }
-
-  func makeCoordinator() -> Coordinator {
-    Coordinator()
-  }
-
-  class Coordinator: NSObject {
-    var subscriptions = Set<AnyCancellable>()
   }
 }
 
@@ -181,10 +181,12 @@ class SettingsCollectionViewController: CollectionViewController {
   override var usesUppercaseSectionTitles: Bool { false }
   override var selectionColor: NSColor { .controlAccentColor }
 
+  @Binding private var selection: Set<IndexPath>
   @Binding private var editedKaomoji: Kaomoji?
   private var indexPathsForDraggedItems = Set<IndexPath>()
 
-  init(editedKaomoji: Binding<Kaomoji?>) {
+  init(selection: Binding<Set<IndexPath>>, editedKaomoji: Binding<Kaomoji?>) {
+    _selection = selection
     _editedKaomoji = editedKaomoji
     super.init(nibName: nil, bundle: nil)
   }
@@ -226,7 +228,10 @@ class SettingsCollectionViewController: CollectionViewController {
 
   @objc override func collectionViewItemWasDoubleClicked(_ sender: CollectionViewItem) {
     guard let indexPath = collectionView.indexPath(for: sender) else { return }
+
     collectionView.selectionIndexPaths = [indexPath]
+    selection = collectionView.selectionIndexPaths
+
     editedKaomoji = Kaomoji(
       string: sender.representedObject as? String ?? "",
       indexPath: IndexPath(item: indexPath.item, section: indexPath.section)
@@ -278,12 +283,24 @@ class SettingsCollectionViewController: CollectionViewController {
     return true
   }
 
+  override func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+    super.collectionView(collectionView, didSelectItemsAt: indexPaths)
+    selection = collectionView.selectionIndexPaths
+  }
+
+  override func collectionView(_ collectionView: NSCollectionView, didDeselectItemsAt indexPaths: Set<IndexPath>) {
+    super.collectionView(collectionView, didDeselectItemsAt: indexPaths)
+    selection = collectionView.selectionIndexPaths
+  }
+
   // MARK: - Flow Layout Delegate
 
   override func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> NSSize {
     section == 0 ? .zero : NSSize(width: 80, height: 29)
   }
 }
+
+// MARK: -
 
 class SettingsCollectionViewSectionHeader: CollectionViewSectionHeader {
   override init(frame frameRect: NSRect) {

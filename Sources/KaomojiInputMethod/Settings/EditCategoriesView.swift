@@ -1,9 +1,9 @@
 import SwiftUI
 import Combine
 
-class EditCategoriesModel: ObservableObject {
-  @Published var kaomoji = DataSource.shared.kaomoji
+class CategoriesEditingSession: ObservableObject {
   @Published var categories = DataSource.shared.categories
+  @Published var kaomoji = DataSource.shared.kaomoji
   @Published var selection = IndexSet()
 
   let didAdd = PassthroughSubject<Void, Never>()
@@ -28,22 +28,27 @@ class EditCategoriesModel: ObservableObject {
   }
 }
 
+// MARK: -
+
+//struct CategoriesEditView: View {
 struct EditCategoriesView: View {
-  @StateObject var model = EditCategoriesModel()
+  @StateObject var editingSession = CategoriesEditingSession()
+  var onCompletion: ([String], [[String]]) -> ()
+
   @Environment(\.dismiss) private var dismiss
 
   var body: some View {
     if #available(macOS 12, *) {
       Form {
         GroupBox {
-          CategoriesTable(model: model)
-            .frame(height: max(1, CGFloat(max(model.categories.count, 8))) * 24)
+          CategoriesTable(editingSession: editingSession)
+            .frame(height: max(1, CGFloat(max(editingSession.categories.count, 8))) * 24)
             .padding(-4)
 
           FormToolbar(
-            onAdd: model.add,
-            onRemove: model.removeSelected,
-            canRemove: !model.selection.isEmpty
+            onAdd: editingSession.add,
+            onRemove: editingSession.removeSelected,
+            canRemove: !editingSession.selection.isEmpty
           ) {
             EmptyView()
           }
@@ -59,65 +64,40 @@ struct EditCategoriesView: View {
   }
 
   func submit() {
-    DataSource.shared.setCategories(model.categories.map(\.name), andKaomoji: model.kaomoji)
+    onCompletion(editingSession.categories.map(\.name), editingSession.kaomoji)
     dismiss()
   }
 }
 
+// MARK: -
+
 struct CategoriesTable: NSViewControllerRepresentable {
-  @ObservedObject var model: EditCategoriesModel
+  @ObservedObject var editingSession: CategoriesEditingSession
 
   func makeNSViewController(context: Context) -> CategoriesTableViewController {
-    let viewController = CategoriesTableViewController(model: model)
-    viewController.loadView()
-
-    NotificationCenter.default
-      .publisher(for: NSTableView.selectionDidChangeNotification, object: viewController.tableView)
-      .sink { _ in DispatchQueue.main.async { model.selection = viewController.tableView.selectedRowIndexes } }
-      .store(in: &context.coordinator.subscriptions)
-
-    return viewController
+    CategoriesTableViewController(editingSession: editingSession)
   }
 
-  func updateNSViewController(_ viewController: CategoriesTableViewController, context: Context) {
-    //DispatchQueue.main.async {
-      //viewController.tableView.reloadData()
-      //viewController.tableView.selectRowIndexes(selection, byExtendingSelection: false)
-    //}
-  }
-
-  func makeCoordinator() -> Coordinator {
-    // Coordinator(parent: self)
-    Coordinator()
-  }
-
-  class Coordinator: NSObject {
-    var subscriptions = Set<AnyCancellable>()
-
-    // let parent: CategoriesTable
-    // init(parent: CategoriesTable) {
-    //   self.parent = parent
-    // }
-  }
+  func updateNSViewController(_ viewController: CategoriesTableViewController, context: Context) {}
 }
 
 // TODO: get rid of this and just use CategoriesTable.Coordinator instead? ┐( ´ д ` )┌
 class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate, NSTextFieldDelegate {
-  @ObservedObject var model: EditCategoriesModel
+  @ObservedObject var editingSession: CategoriesEditingSession
   private var subscriptions = Set<AnyCancellable>()
 
-  init(model: EditCategoriesModel) {
-    self.model = model
+  init(editingSession: CategoriesEditingSession) {
+    self.editingSession = editingSession
     super.init(nibName: nil, bundle: nil)
 
-    model.$selection
+    editingSession.$selection
       .sink { self.tableView?.selectRowIndexes($0, byExtendingSelection: false) }
       .store(in: &subscriptions)
 
-    model.didAdd
+    editingSession.didAdd
       .sink { [self] in
         let newIndex = tableView.numberOfRows
-        model.kaomoji.insert([], at: newIndex)
+        editingSession.kaomoji.insert([], at: newIndex)
         tableView.insertRows(at: [newIndex], withAnimation: [])
         tableView.selectRowIndexes([newIndex], byExtendingSelection: false)
         if let rowView = tableView.view(atColumn: 0, row: newIndex, makeIfNecessary: true) as? CategoriesTableCellView {
@@ -126,10 +106,10 @@ class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NS
       }
       .store(in: &subscriptions)
 
-    model.didRemove
+    editingSession.didRemove
       .sink { [self] in
         tableView.removeRows(at: $0, withAnimation: [])
-        model.kaomoji.remove(atOffsets: $0)
+        editingSession.kaomoji.remove(atOffsets: $0)
       }
       .store(in: &subscriptions)
   }
@@ -165,21 +145,15 @@ class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NS
   }
 
   func numberOfRows(in tableView: NSTableView) -> Int {
-    model.categories.count
+    editingSession.categories.count
   }
 
   func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
-    model.categories[orNil: row].map { l($0.name) }
+    editingSession.categories[orNil: row].map { l($0.name) }
   }
 
-  //  func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
-  //    print(object as Any)
-  //    guard let string = object as? String else { return }
-  //    model.categories[row].1 = string
-  //  }
-
   func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
-    model.categories[orNil: row].map { l($0.name) } as NSString?
+    editingSession.categories[orNil: row].map { l($0.name) } as NSString?
   }
 
   func tableView(_ tableView: NSTableView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint, forRowIndexes rowIndexes: IndexSet) {
@@ -216,8 +190,8 @@ class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NS
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
       for index in indexes {
-        model.kaomoji.move(fromOffsets: [index], toOffset: row)
-        model.categories.move(fromOffsets: [index], toOffset: row)
+        editingSession.kaomoji.move(fromOffsets: [index], toOffset: row)
+        editingSession.categories.move(fromOffsets: [index], toOffset: row)
       }
     }
 
@@ -225,34 +199,30 @@ class CategoriesTableViewController: NSViewController, NSTableViewDataSource, NS
   }
 
   func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-    if let view = tableView.makeView(withIdentifier: .categoriesTableCell, owner: self) {
+    if let view = tableView.makeView(withIdentifier: .cell, owner: self) {
       return view
     }
 
     let view = CategoriesTableCellView()
-    view.identifier = .categoriesTableCell
+    view.identifier = .cell
     view.field.delegate = self
 
     return view
   }
 
+  func tableViewSelectionDidChange(_ notification: Notification) {
+    editingSession.selection = tableView.selectedRowIndexes
+  }
+
   func controlTextDidEndEditing(_ notification: Notification) {
     guard let textField = notification.object as? NSTextField else { return }
     let rowIndex = tableView.row(for: textField)
-    guard model.categories.indices.contains(rowIndex) else { return }
-    model.categories[rowIndex].name = textField.stringValue
+    guard editingSession.categories.indices.contains(rowIndex) else { return }
+    editingSession.categories[rowIndex].name = textField.stringValue
   }
 }
 
-extension NSUserInterfaceItemIdentifier {
-  static let categoriesTableCell = Self("categoriesTableCell")
-}
-
-struct EditCategoriesView_Previews: PreviewProvider {
-  static var previews: some View {
-    EditCategoriesView()
-  }
-}
+// MARK: -
 
 class CategoriesTableCellView: NSTableCellView {
   var field: NSTextField!
@@ -290,5 +260,19 @@ class CategoriesTableCellView: NSTableCellView {
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+}
+
+// MARK: -
+
+extension NSUserInterfaceItemIdentifier {
+  static let cell = Self("cell")
+}
+
+// MARK: -
+
+struct EditCategoriesView_Previews: PreviewProvider {
+  static var previews: some View {
+    EditCategoriesView { _, _ in }
   }
 }

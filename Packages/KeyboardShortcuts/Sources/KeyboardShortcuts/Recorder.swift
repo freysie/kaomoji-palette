@@ -60,11 +60,12 @@ extension KeyboardShortcuts {
 		public var body: some View {
 			if hasLabel {
 				if #available(macOS 13, *) {
-					LabeledContent {
-						_Recorder(
-							name: name,
-							onChange: onChange
-						)
+          LabeledContent {
+            _Recorder(
+              name: name,
+              onChange: onChange
+            )
+            .padding(.horizontal, -2)
 					} label: {
 						label
 					}

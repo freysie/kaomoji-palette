@@ -264,7 +264,7 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     DataSource.shared.$categories
       .sink { _ in self.collectionView.reloadData() }
       .store(in: &subscriptions)
@@ -274,13 +274,13 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
       .store(in: &subscriptions)
 
     DataSource.shared.$recents
-      //.delay(for: 1, scheduler: DispatchQueue.main)
+      // .delay(for: 1, scheduler: DispatchQueue.main) // FIXME: the collection view selection resets after 1s (ﾉಥ益ಥ)ﾉ
       .sink { [self] _ in if !isSearching, !appDelegate.isInserting { collectionView.reloadData() } }
       .store(in: &subscriptions)
 
-//    DataSource.shared.kaomojiOrCategoriesDidChange
-//      .sink { _ in self.collectionView.reloadData() }
-//      .store(in: &subscriptions)
+    //    DataSource.shared.kaomojiOrCategoriesDidChange
+    //      .sink { _ in self.collectionView.reloadData() }
+    //      .store(in: &subscriptions)
 
     if collectionStyle != .settings {
       NotificationCenter.default.publisher(for: NSView.boundsDidChangeNotification, object: scrollView.contentView)
@@ -598,7 +598,11 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   }
 
   func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
-    selectionIndexPaths = indexPaths
+    selectionIndexPaths = collectionView.selectionIndexPaths
+  }
+
+  func collectionView(_ collectionView: NSCollectionView, didDeselectItemsAt indexPaths: Set<IndexPath>) {
+    selectionIndexPaths = collectionView.selectionIndexPaths
   }
 
   // MARK: - Flow Layout Delegate

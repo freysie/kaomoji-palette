@@ -39,9 +39,25 @@ struct Menu<Content: View, Label: View>: NSViewRepresentable {
     }
 
     let menu = NSMenu()
+    menu.autoenablesItems = false
     if let content = Mirror(reflecting: content()).descendant("value") {
-      for child in Mirror(reflecting: content).children {
-        switch child.value {
+      for var content in Mirror(reflecting: content).children.map(\.value) {
+        var isEnabled = true
+
+        switch content {
+        case let modifiedContent as ModifiedContent<Button<Text>, _EnvironmentKeyTransformModifier<Bool>>:
+          content = modifiedContent.content
+
+          switch modifiedContent.modifier.keyPath {
+          case \EnvironmentValues.isEnabled: modifiedContent.modifier.transform(&isEnabled)
+          default: break
+          }
+
+        default:
+          break
+        }
+
+        switch content {
         case is Divider:
           menu.addItem(.separator())
 
@@ -51,6 +67,7 @@ struct Menu<Content: View, Label: View>: NSViewRepresentable {
           let item = NSMenuItem()
           item.target = context.coordinator
           item.action = #selector(Coordinator.performAction(_:))
+          item.isEnabled = isEnabled
 
           if let text = button.descendant("label") as? Text {
             item.title = text._resolveText(in: context.environment)

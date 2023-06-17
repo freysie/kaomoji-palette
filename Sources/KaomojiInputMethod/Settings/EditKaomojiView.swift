@@ -3,6 +3,7 @@ import SwiftUI
 struct EditKaomojiView: View {
   @State var kaomoji = Kaomoji(string: "")
   var onCompletion: (Kaomoji) -> ()
+
   @Environment(\.dismiss) private var dismiss
 
   var body: some View {

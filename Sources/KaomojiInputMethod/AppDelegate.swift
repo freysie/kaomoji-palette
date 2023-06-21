@@ -26,18 +26,19 @@ import KeyboardShortcuts
 // ✅ TODO: input method stuff ~~accessibility element edge cases (e.g. the empty text field thing w/ dummy space)~~
 // ✅ FIXME: keep search field in view hierarchy even when scrolling waaay down
 // ✅ FIXME: NSCollectionView keyboard navigation not accounting for section headers
-// 👩‍💻 FIXME: regressions in the settings window (＞﹏＜)??
+// ✅ FIXME: regressions in the settings window (＞﹏＜)??
 // FIXME: crash when searching and using keyboard navigation
-// TODO: app notarization
+// TODO: app notarization (＃`Д´)
 // TODO: add Sparkle or something for automatic updates
 // TODO: figure out exactly how to do automatic updates seeing we’re now an input method
 
 // 1.x
-// TODO: don’t jitter when on `moveUp:` in collection view
+// TODO: persist picker panel position per process à la system’s character palette!
+// TODO: don’t jitter on `moveUp:` in collection view
+// TODO: focus last category button correctly, even if the section is too small to fill the whole collection view
 // TODO: try to get rid of the ±1 index path stuff
 // TODO: when dragging kaomoji out of the picker, don’t disappear the original collection view item
 // TODO: collection view item background colors should be grayed out sometimes like in the system symbols palette
-// TODO: persist picker panel position per process à la system’s character palette!
 // TODO: try out variable-width items in the picker view? (ᗒᗣᗕ)՞
 // TODO: add a “Favorites” section and/or let the “Recently Used” be “Frequently Used” instead
 // TODO: consider if we need a Kaomoji Helper that (handles keyboard shortcuts? and) restarts the input method if it crashes
@@ -58,7 +59,7 @@ struct PickerState {
   let searchQuery: String = ""
 }
 
-let isRunningForPreviews = ProcessInfo.processInfo.environment["XCODE_IS_RUNNING_FOR_PREVIEWS"] != "1"
+let isRunningForPreviews = ProcessInfo.processInfo.environment["XCODE_IS_RUNNING_FOR_PREVIEWS"] == "1"
 let isRunningAsInputMethod = ProcessInfo.processInfo.arguments[0].contains("/Library/Input Methods")
 
 @main
@@ -74,7 +75,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   private var subscriptions = Set<AnyCancellable>()
 
   func applicationDidFinishLaunching(_ notification: Notification) {
-    guard isRunningForPreviews else { return }
+    guard !isRunningForPreviews else { return }
 
     //KPLog("\(ProcessInfo.processInfo.arguments)")
     //KPLog("\(ProcessInfo.processInfo.environment.keys)")

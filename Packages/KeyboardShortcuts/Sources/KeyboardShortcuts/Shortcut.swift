@@ -158,7 +158,7 @@ private var keyToCharacterMapping: [KeyboardShortcuts.Key: String] = [
 	.escape: "⎋",
 	.help: "?⃝",
 	.home: "↖",
-  .space: "space".localized,
+  .space: "Space".localized,
 	.tab: "⇥",
 	.pageUp: "⇞",
 	.pageDown: "⇟",

@@ -3,7 +3,6 @@ import PackageDescription
 
 let package = Package(
 	name: "KeyboardShortcuts",
-	defaultLocalization: "en",
 	platforms: [
 		.macOS(.v10_13)
 	],

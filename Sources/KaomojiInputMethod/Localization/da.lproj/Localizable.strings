@@ -8,6 +8,7 @@
 "Restore to Defaults" = "Gendan standard";
 "Keyboard Shortcut" = "Tastaturgenvej";
 "Keyboard Shortcut:" = "Tastaturgenvej:";
+"none" = "ingen";
 "Space" = "Mellemrum";
 
 "Are you sure you want to restore kaomoji to defaults?" = "Er du sikker på, du vil gendanne kaomojis til standard?";

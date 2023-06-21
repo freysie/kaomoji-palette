@@ -1,5 +1,5 @@
 import AppKit
-import Carbon.HIToolbox
+import Carbon.HIToolbox.TextInputSources
 import Combine
 
 // TODO: instead of CollectionStyle, maybe use this:

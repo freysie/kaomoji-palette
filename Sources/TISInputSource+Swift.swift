@@ -1,5 +1,5 @@
 import Foundation
-import Carbon.HIToolbox
+import Carbon.HIToolbox.TextInputSources
 
 extension TISInputSource {
   static var current: TISInputSource? {

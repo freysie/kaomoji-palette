@@ -1,5 +1,5 @@
 import SwiftUI
-import Carbon.HIToolbox
+import Carbon.HIToolbox.TextInputSources
 
 func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
 func KPLog(_ message: String) { NSLog("[KaomojiPalette] \(message)") }

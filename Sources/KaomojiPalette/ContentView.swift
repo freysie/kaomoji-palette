@@ -1,5 +1,5 @@
 import SwiftUI
-import Carbon.HIToolbox
+import Carbon.HIToolbox.TextInputSources
 
 let homeURL = URL(fileURLWithPath: NSHomeDirectory())
 let inputMethodsURL = URL(fileURLWithPath: "Library/Input Methods", relativeTo: homeURL)

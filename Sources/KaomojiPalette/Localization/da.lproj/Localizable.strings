@@ -9,5 +9,7 @@
 "Disable" = "Slå fra";
 "Quit" = "Slut";
 
-"Install" = "Installer";
-"Uninstall" = "Afinstaller";
+//"Install" = "Installer";
+//"Uninstall" = "Afinstaller";
+
+"Update Available" = "Ny opdatering";

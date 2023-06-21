@@ -1,6 +1,12 @@
 import SwiftUI
 import Carbon.HIToolbox.TextInputSources
 
+public extension View {
+  func modify<Content>(@ViewBuilder _ transform: (Self) -> Content) -> Content {
+    transform(self)
+  }
+}
+
 let homeURL = URL(fileURLWithPath: NSHomeDirectory())
 let inputMethodsURL = URL(fileURLWithPath: "Library/Input Methods", relativeTo: homeURL)
 let sourceURL = URL(fileURLWithPath: "Kaomoji.app", relativeTo: Bundle.main.sharedSupportURL)
@@ -26,11 +32,11 @@ var installationState: InstallationState {
 
   if
     let sourceVersion = sourceInfo["CFBundleVersion"] as? String,
+    let sourceShortVersion = sourceInfo["CFBundleShortVersion"] as? String,
     let destinationVersion = destinationInfo["CFBundleVersion"] as? String,
     sourceVersion > destinationVersion
   {
-    print(sourceVersion as Any)
-    print(destinationVersion as Any)
+    print("\(sourceShortVersion) (\(sourceVersion)) is available")
 
     return .updateAvailable
   }
@@ -38,81 +44,114 @@ var installationState: InstallationState {
   return .installed
 }
 
-struct ContentView: View {
-  @State private var state = InstallationState.notInstalled
-  @State private var isEnabled = TISInputSource.current?.isEnabled == true
-  @State private var timer: Timer?
-  @State private var observer: NSObjectProtocol?
-  private var isInstalled: Bool { state != .notInstalled }
-  private var isInstalledAndEnabled: Bool { state != .notInstalled && isEnabled }
-//  private var isEnabled: Bool { state != .notInstalled }
+// TODO: hmm…
+final class Installer: ObservableObject {
+  static let shared = Installer()
+
+  @Published private(set) var isInputMethodInstalled = false
+  @Published private(set) var inputMethodNeedsUpdate = false
+
+  @Published private(set) var isUpdateAvailable = true {
+    didSet { NSApp.dockTile.badgeLabel = isUpdateAvailable ? "1" : nil }
+  }
+}
+
+struct UpdateButton: View {
+  var action: () -> ()
+
+  @Environment(\.controlActiveState) private var controlActiveState
 
   var body: some View {
-    VStack(spacing: 0) {
-      Spacer()
+    Button(action: {}) {
+      Text("Update Available")
+      Text(verbatim: "1")
+        .font(.system(size: NSFont.smallSystemFontSize, weight: .medium))
+        .frame(width: 18, height: 18)
+        .multilineTextAlignment(.center)
+        .foregroundColor(.white)
+        .background(controlActiveState != .inactive ? Color.red : Color.gray)
+        .cornerRadius(18 / 2)
+    }
+    //.modify { if #available(macOS 12, *) { $0.buttonBorderShape(.roundedRectangle) } else { $0 } }
+    .buttonStyle(.plain)
+    // FIXME: make focusable but last in next-key-view chain
+    .focusable(false)
+    .padding()
+  }
+}
 
-      VStack(spacing: 30) {
-        //Image(systemName: "keyboard")
+struct ContentView: View {
+  @State private var state = InstallationState.notInstalled
+  @State private var isEnabled = TISInputSource.kaomoji?.isEnabled == true
+  @State private var observer: NSObjectProtocol?
+  @State private var timer: Timer?
+  private var isInstalled: Bool { state != .notInstalled }
+  private var isInstalledAndEnabled: Bool { state != .notInstalled && isEnabled }
+  @ObservedObject private var installer = Installer.shared
+  //@Namespace private var namespace
+
+  var body: some View {
+    ZStack(alignment: .topTrailing) {
+      VStack(spacing: 0) {
+        Spacer()
+
+        VStack(spacing: 30) {
+          //Image(systemName: "keyboard")
           //.font(.system(size: 52))
-        Image(nsImage: NSApp.applicationIconImage)
-          .font(.system(size: 44))
-          .imageScale(.large)
-          .foregroundColor(.accentColor)
+          Image(nsImage: NSApp.applicationIconImage)
+            //.resizable()
+            //.frame(width: 96, height: 96)
+            .imageScale(.large)
+            .foregroundColor(.accentColor)
 
-        //Text("Indstsillingsassistent til tastatur")
-        //Text("Kaomoji Palette Installation Assistant")
-        Text("Kaomoji Palette")
-          .font(.largeTitle.weight(.semibold))
-          .multilineTextAlignment(.center)
+          Text("Kaomoji Palette")
+            .font(.largeTitle.weight(.semibold))
+            .multilineTextAlignment(.center)
 
-        //Text("Din pqrs.org-enhed kan ikke identificeres og kan ikke bruges, før den er identificeret.\n\nHvis tastaturet fungrere korrekt, og der er sluttet en ekstra USB-indtastningsenhed (ikek et tastatur) til computeren, kan du slutte denne app.")
-
-        //Text("Kaomoji Palette is going to install a new input method.\n\nSystem Settings will open and ask you to confirm the installation.")
-
-        if !isInstalledAndEnabled {
-          Text("To use Kamoji Palette, the kaomoji input method must be enabled.")
-        } else {
-          Text("The kaomoji input method is enabled.")
+          if !isInstalledAndEnabled {
+            Text("To use Kamoji Palette, the kaomoji input method must be enabled.")
+          } else {
+            Text("The kaomoji input method is enabled.")
+          }
         }
-      }
-      .frame(width: 440)
-      .multilineTextAlignment(.center)
+        .frame(width: 440)
+        .multilineTextAlignment(.center)
 
-      Spacer()
-
-      Divider()
-
-      HStack {
         Spacer()
 
-        Button(action: { NSApp.terminate(nil) }) { Text("Quit").frame(width: 99) }
-          .keyboardShortcut(.cancelAction)
+        Divider()
 
-//        if !isInstalled {
-//          Button(action: install) { Text("Enable").frame(width: 99) }
-//            .keyboardShortcut(.defaultAction)
-//        } else {
-//          Button(action: uninstall) { Text("Disable").frame(width: 99) }
-//        }
+        HStack {
+          Spacer()
 
-        Button(action: !isInstalledAndEnabled ? install : uninstall) {
-          Text(!isInstalledAndEnabled ? "Enable" : "Disable").frame(width: 99)
+          Button(action: { NSApp.terminate(nil) }) { Text("Quit").frame(width: 99) }
+            .keyboardShortcut(.cancelAction)
+
+          Button(action: !isInstalledAndEnabled ? install : uninstall) {
+            Text(!isInstalledAndEnabled ? "Enable" : "Disable").frame(width: 99)
+          }
+          .keyboardShortcut(
+            !isInstalledAndEnabled
+            ? .defaultAction
+            : KeyboardShortcut(KeyEquivalent(Character(UnicodeScalar(0))))
+          )
+          //.modify { if #available(macOS 12, *) { $0.prefersDefaultFocus(in: namespace) } else { $0 } }
+
+          Spacer()
         }
-        .keyboardShortcut(
-          !isInstalledAndEnabled
-          ? .defaultAction
-          : KeyboardShortcut(KeyEquivalent(Character(UnicodeScalar(0))))
-        )
-
-        Spacer()
+        .controlSize(.large)
+        .padding()
+        .frame(height: 57)
       }
-      .controlSize(.large)
-      .padding()
-      .frame(height: 57)
+
+      if installer.isUpdateAvailable {
+        UpdateButton(action: {})
+      }
     }
     .navigationTitle("Kaomoji Palette")
     .frame(width: 800 / 1.5, height: 600 / 1.5)
     .onAppear(perform: check)
+    //.modify { if #available(macOS 12, *) { $0.focusScope(namespace) } else { $0 } }
   }
 
   private func check() {
@@ -123,7 +162,7 @@ struct ContentView: View {
     do {
       try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
     } catch {
-      print(error.localizedDescription)
+      KPLog(error.localizedDescription)
     }
 
     TISInputSource.register(destinationURL)
@@ -135,16 +174,27 @@ struct ContentView: View {
 
     inputSource.enable()
 
-    observer = DistributedNotificationCenter.default().addObserver(
-      forName: kTISNotifyEnabledNonKeyboardInputSourcesChanged as NSNotification.Name,
-      object: nil,
-      queue: nil
-    ) { _ in
+    func checkIfEnabled() {
       if inputSource.isEnabled == true {
         inputSource.select()
         isEnabled = true
         NSApp.activate(ignoringOtherApps: true)
         observer.map(DistributedNotificationCenter.default().removeObserver)
+        timer?.invalidate()
+      }
+    }
+
+    if #available(macOS 13, *) {
+      observer = DistributedNotificationCenter.default().addObserver(
+        forName: kTISNotifyEnabledNonKeyboardInputSourcesChanged as NSNotification.Name,
+        object: nil,
+        queue: nil
+      ) { _ in
+        checkIfEnabled()
+      }
+    } else {
+      timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+        checkIfEnabled()
       }
     }
 
@@ -154,6 +204,7 @@ struct ContentView: View {
   private func uninstall() {
     isEnabled = false
     observer.map(DistributedNotificationCenter.default().removeObserver)
+    timer?.invalidate()
 
     guard let inputSource = TISInputSource.kaomoji else {
       KPLog("input source not found")
@@ -165,7 +216,7 @@ struct ContentView: View {
     do {
       try FileManager.default.removeItem(at: destinationURL)
     } catch {
-      print(error.localizedDescription)
+      KPLog(error.localizedDescription)
     }
 
     //print(TISInputSource.palettes(includeAllInstalled: true) as NSArray)

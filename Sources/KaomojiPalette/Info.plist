@@ -4,5 +4,9 @@
 <dict>
 	<key>LSHasLocalizedDisplayName</key>
 	<true/>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUAllowsAutomaticUpdates</key>
+	<false/>
 </dict>
 </plist>

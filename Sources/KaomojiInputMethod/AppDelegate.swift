@@ -26,7 +26,7 @@ import KeyboardShortcuts
 // ✅ TODO: input method stuff ~~accessibility element edge cases (e.g. the empty text field thing w/ dummy space)~~
 // ✅ FIXME: keep search field in view hierarchy even when scrolling waaay down
 // ✅ FIXME: NSCollectionView keyboard navigation not accounting for section headers
-// ✅ FIXME: regressions in the settings window (＞﹏＜)??
+// FIXME: regressions in the settings window (＞﹏＜)??
 // FIXME: crash when searching and using keyboard navigation
 // TODO: app notarization (＃`Д´)
 // TODO: add Sparkle or something for automatic updates
@@ -46,7 +46,7 @@ import KeyboardShortcuts
 // TODO: actually, just do all the keyboard navigation things that the system character palette does — they got it right!
 // TODO: better coupling, cleaner architecture
 
-let popoverSize = NSSize(width: 320, height: 358 + 11)
+let popoverSize = NSSize(width: 320, height: 358)
 let titlebarHeight = 27.0
 
 func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
@@ -366,5 +366,5 @@ class PalettePanel: NSPanel {
 }
 
 extension KeyboardShortcuts.Name {
-  static let showPalette = Self("KPShortcut", default: Shortcut(.space, modifiers: [.control, .option, .command]))
+  static let showPalette = Self("KPShortcut", default: Shortcut(.space, modifiers: [.shift, .command]))
 }

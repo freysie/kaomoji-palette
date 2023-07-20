@@ -7,13 +7,12 @@
 
 - Quickly insert kaomoji (^０^)ノ
 - Customizable list of kaomoji (⌒‿⌒)
-- Available in Danish and English (>ᴗ•)
+- Available in Danish and English ヽ(°〇°)ﾉ
 
 
 ## Usage
 
-- Move _Kaomoji Palette.app_ to your Applications folder
-- Open it and select Enable
-- Accept the prompt in System Settings
-- Press Control-Option-Command-Space to show the Kaomoji Palette
+- Open _Kaomoji Palette.app_ and select Enable
+- Accept the prompt that appears in System Settings
+- Press Shift-Command-Space to show the Kaomoji Palette
 

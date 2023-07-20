@@ -51,7 +51,7 @@ final class Installer: ObservableObject {
   @Published private(set) var isInputMethodInstalled = false
   @Published private(set) var inputMethodNeedsUpdate = false
 
-  @Published private(set) var isUpdateAvailable = true {
+  @Published private(set) var isUpdateAvailable = false {
     didSet { NSApp.dockTile.badgeLabel = isUpdateAvailable ? "1" : nil }
   }
 }

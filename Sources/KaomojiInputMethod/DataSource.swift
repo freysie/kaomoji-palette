@@ -32,7 +32,7 @@ class DataSource: ObservableObject {
     categoryNames = defaults.stringArray(forKey: UserDefaultsKey.categories) ?? []
     kaomoji = defaults.array(forKey: UserDefaultsKey.kaomoji) as? [[String]] ?? []
     recents = defaults.stringArray(forKey: UserDefaultsKey.recents) ?? []
-    // recents = ["ヽ(°〇°)ﾉ", "(＾▽＾)"] // for screenshots
+    //recents = ["＼(＾▽＾)／", "(⌒▽⌒)♡", "(×_×)⌒☆"] // for screenshots
     //kaomojiOrCategoriesDidChange.send()
   }
 

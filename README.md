@@ -1,6 +1,10 @@
 # Kaomoji Palette for macOS
 
-<img src="/Kaomoji Palette.png" width="392">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="Kaomoji%20Palette.png?raw=true 2x">
+  <source media="(prefers-color-scheme: light)" srcset="Kaomoji%20Palette~light.png?raw=true 2x">
+  <img alt="" src="Kaomoji%20Palette.png?raw=true" width="392">
+</picture>
 
 
 ## Features

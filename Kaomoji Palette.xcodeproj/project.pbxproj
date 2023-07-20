@@ -113,6 +113,7 @@
 		3BB924C72A3B8E2C0093F47B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3BDD0FAB2A33A7410000CAA8 /* EditCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCategoriesView.swift; sourceTree = "<group>"; };
 		3BDD0FAD2A33A7470000CAA8 /* EditKaomojiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditKaomojiView.swift; sourceTree = "<group>"; };
+		3BF9B3472A694BFA00CC095F /* Kaomoji Palette~light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Kaomoji Palette~light.png"; sourceTree = "<group>"; };
 		3BFB77502A3B80FE0077000C /* TISInputSource+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TISInputSource+Swift.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -183,6 +184,7 @@
 			children = (
 				3B895BB92A06EAAB006442A2 /* README.md */,
 				3B895BB82A06EAA3006442A2 /* Kaomoji Palette.png */,
+				3BF9B3472A694BFA00CC095F /* Kaomoji Palette~light.png */,
 				3B0E49082A3B4DA600515B39 /* Sources */,
 				3B5332F82A3868F500B271EB /* Packages */,
 				3B895B6E2A065679006442A2 /* Products */,

@@ -17,7 +17,7 @@ import KeyboardShortcuts
 //  ❇️   detach popover when moved by any part of window background, including within collection view
 //  ✅   settings: customizable categories
 //  ✅   settings: edit existing kaomoji on double click
-//  ✅   settings: customizable keyboardyeet shortcut (ﾉД`)
+//  ✅   settings: customizable keyboard shortcut (ﾉД`)
 //  ✅   resolve odd issue where settings window will sometimes somehow open the panel and position it off-screen
 //  ✅   unless there’s a better way — if text field is empty: insert dummy space, select it, get bounds, then delete space
 //  ✅   figure out why Discord is being weird (doesn’t work unless you inspect Discord once with Accessibility Inspector)
@@ -28,6 +28,7 @@ import KeyboardShortcuts
 // ✅ FIXME: NSCollectionView keyboard navigation not accounting for section headers
 // FIXME: regressions in the settings window (＞﹏＜)??
 // FIXME: crash when searching and using keyboard navigation
+// TODO: restore scroll position when reopening the palette popover
 // TODO: app notarization (＃`Д´)
 // TODO: add Sparkle or something for automatic updates
 // TODO: figure out exactly how to do automatic updates seeing we’re now an input method

@@ -21,12 +21,17 @@ import KeyboardShortcuts
 //  ✅   resolve odd issue where settings window will sometimes somehow open the panel and position it off-screen
 //  ✅   unless there’s a better way — if text field is empty: insert dummy space, select it, get bounds, then delete space
 //  ✅   figure out why Discord is being weird (doesn’t work unless you inspect Discord once with Accessibility Inspector)
+//  ✅   exclude popover from Exposé
 
 // 1.0
+// FIXME: Tahoe regression in detecting whether the input method has been installed (seems related to “Couldn't write values for keys (AppleEnabledThirdPartyInputSources)” error)
+// FIXME: Tahoe regression in activating the input method after installation
+// FIXME: relaunch on reboot
+// TODO: add option for inserting kaomoji with narrow no-break spaces
 // ✅ TODO: input method stuff ~~accessibility element edge cases (e.g. the empty text field thing w/ dummy space)~~
 // ✅ FIXME: keep search field in view hierarchy even when scrolling waaay down
 // ✅ FIXME: NSCollectionView keyboard navigation not accounting for section headers
-// FIXME: regressions in the settings window (＞﹏＜)??
+// FIXME: regressions in the settings window (＞﹏＜)?? (category index off by one when editing)
 // FIXME: crash when searching and using keyboard navigation
 // TODO: restore scroll position when reopening the palette popover
 // TODO: app notarization (＃`Д´)
@@ -47,8 +52,17 @@ import KeyboardShortcuts
 // TODO: actually, just do all the keyboard navigation things that the system character palette does — they got it right!
 // TODO: better coupling, cleaner architecture
 
-let popoverSize = NSSize(width: 320, height: 358)
-let titlebarHeight = 27.0
+let popoverHeight = if #available(macOS 26, *) { 444 } else { 358 }
+let popoverSize = NSSize(width: 320, height: popoverHeight)
+
+let titlebarHeight = if #available(macOS 26, *) { 27.0 + 12.0 } else { 27.0 }
+
+// Don’t ask about this, please.
+let panelHeight = if #available(macOS 26, *) {
+  popoverSize.height + titlebarHeight - 2.0
+} else {
+  popoverSize.height + titlebarHeight
+}
 
 func l(_ key: String) -> String { NSLocalizedString(key, comment: "") }
 func KPLog(_ message: String) { NSLog("[KaomojiPalette] \(message)") }
@@ -120,8 +134,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       if popover?.isDetached != true { popover?.close() }
     }
 
-    NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [self] _ in
-      if popover?.isDetached != true { popover?.close() }
+    if #available(macOS 26, *) {
+      // In previous versions, we’d close the popover on scroll, but the system doesn’t do that anymore, so we won’t either.
+    } else {
+      NSEvent.addGlobalMonitorForEvents(matching: .scrollWheel) { [self] _ in
+        if popover?.isDetached != true { popover?.close() }
+      }
     }
 
     NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: panel, queue: nil) { _ in
@@ -149,6 +167,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     let positioningWindow = NSPanel()
     positioningWindow.styleMask = [.borderless, .nonactivatingPanel]
+    positioningWindow.collectionBehavior = [.transient]
     positioningWindow.contentView = NSView()
     positioningWindow.setContentSize(NSSize(width: 2, height: insertionPointHeight))
     positioningWindow.setFrameTopLeftPoint(NSPoint(x: point.x, y: point.y + insertionPointHeight))
@@ -156,6 +175,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     positioningWindow.orderFrontRegardless()
 
     let collectionViewController = CollectionViewController()
+    //collectionViewController.usesMaterialBackground = true
     collectionViewController.preferredContentSize = popoverSize
 
     let popover = NSPopover()
@@ -173,12 +193,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     if let popoverWindow = popover.value(forKey: "_popoverWindow") as? NSPanel {
       tryBlock { popoverWindow.setValue(true, forKey: "forceMainAppearance") }
-
-      // TODO: exclude from exposé
-      //print(popoverWindow.collectionBehavior, popoverWindow.collectionBehavior.rawValue)
-      //popoverWindow.collectionBehavior = [.managed, .ignoresCycle, .fullScreenAuxiliary, .canJoinAllSpaces]
-      //popoverWindow.isExcludedFromWindowsMenu = true
-      //popoverWindow.styleMask.insert(.hudWindow)
     }
   }
 
@@ -227,10 +241,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
       insertText(kaomoji)
       isInserting = false
     } else {
+      let innerCloseDelay = if #available(macOS 26, *) { 0.0 } else { 0.3 }
+
       DispatchQueue.main.asyncAfter(deadline: .now() + (withCloseDelay ? 0.5 : 0)) { [self] in
         popover?.close()
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + innerCloseDelay) { [self] in
           NSApp.deactivate()
 
           insertText(kaomoji)
@@ -274,7 +290,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   // MARK: - Panel
 
   private(set) lazy var panel = {
-    let size = NSSize(width: popoverSize.width, height: popoverSize.height + titlebarHeight)
+    let size = NSSize(width: popoverSize.width, height: panelHeight)
 
     let collectionViewController = CollectionViewController()
     collectionViewController.collectionStyle = .palettePanel
@@ -290,7 +306,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     if #available(macOS 13.0, *) { window.collectionBehavior = .auxiliary }
     window.animationBehavior = .utilityWindow
     window.isFloatingPanel = true
-    window.becomesKeyOnlyIfNeeded = true
+    window.becomesKeyOnlyIfNeeded = if #available(macOS 26, *) { false } else { true }
     tryBlock { window.setValue(true, forKey: "forceMainAppearance") }
     window.setContentSize(size)
 

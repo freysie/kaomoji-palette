@@ -10,7 +10,8 @@ extension Mirror {
   }
 }
 
-struct Menu<Content: View, Label: View>: NSViewRepresentable {
+// FIXME: make this work in Tahoe
+struct _Menu<Content: View, Label: View>: NSViewRepresentable {
   @ViewBuilder var content: () -> Content
   @ViewBuilder var label: () -> Label
 
@@ -134,7 +135,7 @@ struct HighlightingMenu_Previews: PreviewProvider {
       }
 
       LabeledContent("  `AppKit.NSSegmentedControl`:") {
-        Menu {
+        _Menu {
           Button {} label: {
             Text("Restore to Defaults")
           }

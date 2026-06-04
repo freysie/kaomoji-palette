@@ -15,7 +15,7 @@ class CollectionViewItem: NSCollectionViewItem {
 
     view = NSView()
     view.wantsLayer = true
-    view.layer?.cornerRadius = 5
+    view.layer?.cornerRadius = if #available(macOS 26, *) { 12 } else { 5 }
     view.addSubview(titleTextField)
 
     NSLayoutConstraint.activate([

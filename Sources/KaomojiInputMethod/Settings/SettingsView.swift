@@ -197,7 +197,7 @@ class SettingsCollectionViewController: CollectionViewController {
 
   override func loadView() {
     collectionStyle = .settings
-    showsSearchField = false
+    showsSearchFieldInline = false
     showsCategoryButtons = false
 
     super.loadView()
@@ -208,13 +208,21 @@ class SettingsCollectionViewController: CollectionViewController {
 
     collectionView.mouseDownCanMovePopover = false
     collectionView.allowsMultipleSelection = true
-    collectionView.backgroundColors = [.textBackgroundColor]
+    collectionView.backgroundColors = if #available(macOS 26, *) { [.quinarySystemFill] } else { [.textBackgroundColor] }
 
-    collectionView.register(
-      SettingsCollectionViewSectionHeader.self,
-      forSupplementaryViewOfKind: NSCollectionView.elementKindSectionHeader,
-      withIdentifier: .sectionHeader
-    )
+    if #available(macOS 26, *) {
+      collectionView.register(
+        TahoeSettingsCollectionViewSectionHeader.self,
+        forSupplementaryViewOfKind: NSCollectionView.elementKindSectionHeader,
+        withIdentifier: .sectionHeader
+      )
+    } else {
+      collectionView.register(
+        LegacySettingsCollectionViewSectionHeader.self,
+        forSupplementaryViewOfKind: NSCollectionView.elementKindSectionHeader,
+        withIdentifier: .sectionHeader
+      )
+    }
 
     collectionView.setDraggingSourceOperationMask([], forLocal: false)
     collectionView.setDraggingSourceOperationMask(.move, forLocal: true)
@@ -302,7 +310,7 @@ class SettingsCollectionViewController: CollectionViewController {
 
 // MARK: -
 
-class SettingsCollectionViewSectionHeader: CollectionViewSectionHeader {
+class LegacySettingsCollectionViewSectionHeader: LegacyCollectionViewSectionHeader {
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
 
@@ -339,6 +347,69 @@ class SettingsCollectionViewSectionHeader: CollectionViewSectionHeader {
   }
 }
 
+//class TahoeSettingsCollectionViewSectionHeader: TahoeCollectionViewSectionHeader {
+//  override init(frame frameRect: NSRect) {
+//    super.init(frame: frameRect)
+//
+//    //titleTextField.textColor = .labelColor
+//    titleTextField.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+//    stackView.edgeInsets = NSEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+//
+//    NSLayoutConstraint.activate([
+//      //heightAnchor.constraint(equalToConstant: 29),
+//      //stackView.topAnchor.constraint(equalTo: topAnchor, constant: 1.5),
+//    ])
+//  }
+//
+//  required init?(coder: NSCoder) {
+//    fatalError("init(coder:) has not been implemented")
+//  }
+//}
+
+class TahoeSettingsCollectionViewSectionHeader: NSView, NSCollectionViewElement, CollectionViewSectionHeader {
+  private(set) var stackView: NSStackView!
+  private(set) var titleTextField: NSTextField!
+  private(set) var stackViewTopAnchor: NSLayoutConstraint!
+  private(set) var stackViewBottomAnchor: NSLayoutConstraint!
+
+  override init(frame frameRect: NSRect) {
+    super.init(frame: frameRect)
+
+    titleTextField = NSTextField(labelWithString: "")
+    titleTextField.wantsLayer = true
+    titleTextField.translatesAutoresizingMaskIntoConstraints = false
+    titleTextField.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+    titleTextField.textColor = .secondaryLabelColor
+//    titleTextField.layer!.borderWidth = 1
+//    titleTextField.layer!.borderColor = NSColor.magenta.cgColor
+
+    stackView = NSStackView(views: [titleTextField])
+    stackView.edgeInsets = NSEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+    stackView.wantsLayer = true
+//    stackView.layer!.borderWidth = 1
+//    stackView.layer!.borderColor = NSColor.red.cgColor
+    addSubview(stackView)
+
+    NSLayoutConstraint.activate([
+      stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+      stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
+      titleTextField.topAnchor.constraint(equalTo: topAnchor, constant: 7),
+      titleTextField.heightAnchor.constraint(equalToConstant: 20),
+    ])
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    stackView.arrangedSubviews.forEach(stackView.removeView)
+    stackView.addArrangedSubview(titleTextField)
+  }
+}
+
+
 // MARK: -
 
 struct SettingsView_Previews: PreviewProvider {
@@ -350,7 +421,7 @@ struct SettingsView_Previews: PreviewProvider {
 struct SettingsCollectionViewSectionHeader_Previews: PreviewProvider {
   static var previews: some View {
     NSViewPreview {
-      let header = SettingsCollectionViewSectionHeader()
+      let header = TahoeSettingsCollectionViewSectionHeader()
       header.titleTextField.stringValue = l("Joy")
       NSLayoutConstraint.activate([
         header.widthAnchor.constraint(equalToConstant: popoverSize.width),

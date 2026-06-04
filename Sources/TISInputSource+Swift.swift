@@ -7,7 +7,7 @@ extension TISInputSource {
   }
 
   static var kaomoji: TISInputSource? {
-    let bundleID = "local.kaomojipalette2.inputmethod.Kaomoji"
+    let bundleID = "local.kaomojipalette.inputmethod.Kaomoji"
     let list = TISCreateInputSourceList([kTISPropertyBundleID: bundleID] as CFDictionary, true)
     return (list?.takeUnretainedValue() as? [Self])?.first
   }

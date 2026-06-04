@@ -19,4 +19,10 @@
 - Open _Kaomoji Palette.app_ and select Enable
 - Accept the prompt that appears in System Settings
 - Press Shift-Command-Space to show the Kaomoji Palette
+- Or, until a fix is found for a Tahoe regression, turn on _System Settings → Keyboard → Input Sources → Edit… → Show Input menu in menu bar_, click the menu bar item, and select _Show Kaomoji_
+
+
+## Building from Source
+
+Before building, change the bundle identifier to your own and select your Apple Development team under _Signing & Capabilities_ in Xcode. This helps macOS consistently identify the app when granting permissions.
 

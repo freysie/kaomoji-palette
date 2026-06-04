@@ -19,4 +19,6 @@
 - Open _Kaomoji Palette.app_ and select Enable
 - Accept the prompt that appears in System Settings
 - Press Shift-Command-Space to show the Kaomoji Palette
-
+<!--
+- Or turn on _System Settings → Keyboard → Input Sources → Edit… → Show Input menu in menu bar_, click the menu bar item, and select _Show Kaomoji_
+-->

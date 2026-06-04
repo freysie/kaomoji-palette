@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>InputMethodConnectionName</key>
-	<string>KaomojiPalette_2_connection</string>
+	<string>KaomojiPalette_connection</string>
 	<key>InputMethodServerControllerClass</key>
 	<string>$(PRODUCT_MODULE_NAME).InputController</string>
 	<key>InputMethodType</key>

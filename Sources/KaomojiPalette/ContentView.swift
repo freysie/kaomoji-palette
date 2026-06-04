@@ -175,6 +175,7 @@ struct ContentView: View {
     inputSource.enable()
 
     func checkIfEnabled() {
+      // FIXME: this seems to have broken on Tahoe (-_-)
       if inputSource.isEnabled == true {
         inputSource.select()
         isEnabled = true

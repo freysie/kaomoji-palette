@@ -493,7 +493,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette2.inputmethod.Kaomoji;
+				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette.inputmethod.Kaomoji;
 				PRODUCT_MODULE_NAME = KaomojiInputMethod;
 				PRODUCT_NAME = Kaomoji;
 				SKIP_INSTALL = YES;
@@ -524,7 +524,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette2.inputmethod.Kaomoji;
+				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette.inputmethod.Kaomoji;
 				PRODUCT_MODULE_NAME = KaomojiInputMethod;
 				PRODUCT_NAME = Kaomoji;
 				SKIP_INSTALL = YES;
@@ -679,7 +679,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-expression-type-checking=250";
-				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette2;
+				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette;
 				PRODUCT_MODULE_NAME = KaomojiPalette;
 				PRODUCT_NAME = "Kaomoji Palette";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -712,7 +712,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-expression-type-checking=250";
-				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette2;
+				PRODUCT_BUNDLE_IDENTIFIER = local.kaomojipalette;
 				PRODUCT_MODULE_NAME = KaomojiPalette;
 				PRODUCT_NAME = "Kaomoji Palette";
 				PROVISIONING_PROFILE_SPECIFIER = "";

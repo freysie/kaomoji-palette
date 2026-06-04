@@ -12,7 +12,7 @@ import Combine
 class CollectionViewController: NSViewController, NSCollectionViewDataSource, NSCollectionViewDelegate, NSCollectionViewDelegateFlowLayout, NSSearchFieldDelegate, NSControlTextEditingDelegate {
   enum CollectionStyle { case palettePopover, palettePanel, settings }
 
-  static let searchBarHeight = 36.0
+  static let searchBarHeight = if #available(macOS 26, *) { 48.0 } else { 36.0 }
   static let sectionHeaderHeight = 26.0
 
   private static let recentsCategoryTitle = ".:☆*:･" // "。.:☆*:･"?
@@ -20,16 +20,26 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   var collectionStyle = CollectionStyle.palettePopover
 
   var showsRecents: Bool { !dataSource.recents.isEmpty }
-  var showsSearchField = true
+  var showsSearchFieldInline = { if #available(macOS 26, *) { false } else { true } }()
+  var showsSectionTitles = false
   var showsCategoryButtons = true
   var usesMaterialBackground = false
   var usesUppercaseSectionTitles: Bool { true }
-  var selectionColor: NSColor { .controlAccentColor.withAlphaComponent(0.25) }
+
+  var selectionColor: NSColor {
+    if #available(macOS 26, *) {
+      .systemGray.withAlphaComponent(0.25)
+    } else {
+      .controlAccentColor.withAlphaComponent(0.25)
+    }
+  }
 
   private(set) var flowLayout: NSCollectionViewFlowLayout!
   private(set) var collectionView: CollectionView!
   private(set) var scrollView: NSScrollView!
   private(set) var stackView: NSStackView!
+  private(set) var titlebarStackView: NSStackView?
+  private(set) var header: CollectionViewHeader?
   private(set) var closeButton: NSButton?
   private(set) var categoryButtons = [CategoryButton]()
   private(set) var categoryScrollView: NSScrollView!
@@ -76,11 +86,19 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
       forItemWithIdentifier: .item
     )
 
-    collectionView.register(
-      CollectionViewSectionHeader.self,
-      forSupplementaryViewOfKind: NSCollectionView.elementKindSectionHeader,
-      withIdentifier: .sectionHeader
-    )
+    if #available(macOS 26, *) {
+      collectionView.register(
+        TahoeCollectionViewSectionHeader.self,
+        forSupplementaryViewOfKind: NSCollectionView.elementKindSectionHeader,
+        withIdentifier: .sectionHeader
+      )
+    } else {
+      collectionView.register(
+        LegacyCollectionViewSectionHeader.self,
+        forSupplementaryViewOfKind: NSCollectionView.elementKindSectionHeader,
+        withIdentifier: .sectionHeader
+      )
+    }
 
     collectionView.register(
       CollectionViewHeaderSpacer.self,
@@ -138,6 +156,16 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     //scrollView.contentView.layer?.borderWidth = 1
 
     if collectionStyle != .settings {
+      if #available(macOS 26.1, *) {
+        if collectionStyle == .palettePanel {
+          scrollView.additionalSafeAreaInsets = NSEdgeInsets(top: 88, left: 0, bottom: 0, right: 0)
+        } else {
+          scrollView.additionalSafeAreaInsets = NSEdgeInsets(top: 44, left: 0, bottom: 0, right: 0)
+        }
+
+        scrollView.setScrollPocketStyle(.soft, on: .top)
+      }
+
       let header = CollectionViewHeader()
       header.translatesAutoresizingMaskIntoConstraints = false
       header.searchField.target = self
@@ -145,14 +173,20 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
       header.searchField.delegate = self
       header.settingsButton.isHidden = collectionStyle == .palettePanel
       searchField = header.searchField
-      collectionView.addSubview(header)
+      self.header = header
 
-      NSLayoutConstraint.activate([
-        //header.widthAnchor.constraint(equalToConstant: popoverSize.width),
-        header.leadingAnchor.constraint(equalTo: scrollView.contentView.leadingAnchor),
-        header.trailingAnchor.constraint(equalTo: scrollView.contentView.trailingAnchor),
-        header.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
-      ])
+      if #available(macOS 26, *) {
+        // See constraints below
+      } else {
+        collectionView.addSubview(header)
+
+        NSLayoutConstraint.activate([
+          //header.widthAnchor.constraint(equalToConstant: popoverSize.width),
+          header.leadingAnchor.constraint(equalTo: scrollView.contentView.leadingAnchor),
+          header.trailingAnchor.constraint(equalTo: scrollView.contentView.trailingAnchor),
+          header.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
+        ])
+      }
     }
 
     if showsCategoryButtons {
@@ -207,8 +241,13 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
       settingsButton.refusesFirstResponder = true
 
       let titlebarStackView = NSStackView(views: [closeButton, NSView(), settingsButton])
-      //titlebarStackView.edgeInsets = NSEdgeInsets(top: 0, left: 7, bottom: 0, right: 11)
-      titlebarStackView.edgeInsets = NSEdgeInsets(top: 0, left: 7, bottom: 0, right: 7)
+      if #available(macOS 26, *) {
+        titlebarStackView.edgeInsets = NSEdgeInsets(top: 4, left: 13, bottom: 0, right: 13)
+      } else {
+        //titlebarStackView.edgeInsets = NSEdgeInsets(top: 0, left: 7, bottom: 0, right: 11)
+        titlebarStackView.edgeInsets = NSEdgeInsets(top: 0, left: 7, bottom: 0, right: 7)
+      }
+      self.titlebarStackView = titlebarStackView
 
       NSLayoutConstraint.activate([
         closeButton.widthAnchor.constraint(equalToConstant: 14),
@@ -218,7 +257,11 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
         titlebarStackView.heightAnchor.constraint(equalToConstant: titlebarHeight),
       ])
 
-      stackView.insertArrangedSubview(titlebarStackView, at: 0)
+      if #available(macOS 26, *) {
+        // Inserted later
+      } else {
+        stackView.insertArrangedSubview(titlebarStackView, at: 0)
+      }
     }
 
     placeholderView = NSTextField(labelWithString: l("No Kaomoji Found"))
@@ -237,12 +280,43 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
     stackView.orientation = .vertical
     stackView.spacing = 0
 
+    if #available(macOS 26, *), collectionStyle != .settings {
+      let overlayStackView = OverlayStackView(views: [])
+      overlayStackView.orientation = .vertical
+      overlayStackView.spacing = -2
+      stackView.addSubview(overlayStackView)
+
+      NSLayoutConstraint.activate([
+        overlayStackView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+        overlayStackView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
+        overlayStackView.topAnchor.constraint(equalTo: stackView.topAnchor),
+        //overlayStackView.heightAnchor.constraint(equalToConstant: 48),
+      ])
+
+      if let titlebarStackView {
+        overlayStackView.addArrangedSubview(titlebarStackView)
+      }
+
+      if let header {
+        overlayStackView.addArrangedSubview(header)
+
+        NSLayoutConstraint.activate([
+          header.leadingAnchor.constraint(equalTo: overlayStackView.leadingAnchor),
+          header.trailingAnchor.constraint(equalTo: overlayStackView.trailingAnchor),
+          //header.heightAnchor.constraint(equalToConstant: 48),
+        ])
+      }
+
+      scrollView.registerPocketContainer(overlayStackView, on: .top)
+    }
+
     if usesMaterialBackground {
-      let effectView = NSVisualEffectView()
+      let effectView = VisualEffectView()
       effectView.autoresizingMask = [.width, .height]
       effectView.blendingMode = .behindWindow
       effectView.material = .popover
-      effectView.maskImage = .cornerMask(radius: 11)
+      //effectView.isEmphasized = true
+      effectView.maskImage = if #available(macOS 26, *) { .cornerMask(radius: 20) } else { .cornerMask(radius: 11) }
       effectView.addSubview(stackView)
 
       view = effectView
@@ -513,38 +587,44 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
       if indexPath.section == 0 {
         return collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .headerSpacer, for: indexPath)
       } else {
-        let header = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .sectionHeader, for: indexPath) as! CollectionViewSectionHeader
-
-        header.titleTextField.stringValue = usesUppercaseSectionTitles
-        ? l(categories[indexPath.section - 1]).localizedUppercase
-        : l(categories[indexPath.section - 1])
-
-//        headerView.titleTextField.stringValue = l(categories[indexPath.section - 1])
-//        if usesUppercaseSectionTitles {
-//          headerView.titleTextField.stringValue = headerView.titleTextField.stringValue.localizedUppercase
-//        }
-//
-//        let title: String
-//        if usesUppercaseSectionTitles {
-//          title = l(categories[indexPath.section - 1]).localizedUppercase
+//        if #available(macOS 26, *), collectionStyle != .settings {
+//          // FIXME: actually remove headers instead
+//          return collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .headerSpacer, for: indexPath)
 //        } else {
-//          title = l(categories[indexPath.section - 1])
-//        }
-//        headerView.titleTextField.stringValue = title
+          let header = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: .sectionHeader, for: indexPath) as! CollectionViewSectionHeader
 
-//        if indexPath.section == 1, !showsSearchField, collectionStyle == .palettePopover {
-//          let settingsButton = NSButton()
-//          settingsButton.image = .settingsIcon
-//          settingsButton.target = NSApp.delegate
-//          settingsButton.action = #selector(AppDelegate.showSettingsWindow(_:))
-//          settingsButton.isBordered = false
-//          settingsButton.refusesFirstResponder = true
+          header.titleTextField.stringValue = usesUppercaseSectionTitles
+          ? l(categories[indexPath.section - 1]).localizedUppercase
+          : l(categories[indexPath.section - 1])
+
+//          headerView.titleTextField.stringValue = l(categories[indexPath.section - 1])
+//          if usesUppercaseSectionTitles {
+//            headerView.titleTextField.stringValue = headerView.titleTextField.stringValue.localizedUppercase
+//          }
 //
-//          headerView.stackView.addArrangedSubview(NSView())
-//          headerView.stackView.addArrangedSubview(settingsButton)
-//        }
+//          let title: String
+//          if usesUppercaseSectionTitles {
+//            title = l(categories[indexPath.section - 1]).localizedUppercase
+//          } else {
+//            title = l(categories[indexPath.section - 1])
+//          }
+//          headerView.titleTextField.stringValue = title
+//
+//          if indexPath.section == 1, !showsSearchFieldInline, collectionStyle == .palettePopover {
+//            let settingsButton = NSButton()
+//            settingsButton.image = .settingsIcon
+//            settingsButton.target = NSApp.delegate
+//            settingsButton.action = #selector(AppDelegate.showSettingsWindow(_:))
+//            settingsButton.isBordered = false
+//            settingsButton.refusesFirstResponder = true
+//
+//            headerView.stackView.addArrangedSubview(NSView())
+//            headerView.stackView.addArrangedSubview(settingsButton)
+//          }
 
-        return header
+
+          return header
+//        }
       }
 
     case NSCollectionView.elementKindInterItemGapIndicator:
@@ -570,7 +650,11 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
   @objc func collectionViewItemWasClicked(_ sender: CollectionViewItem) {
     guard !appDelegate.isInserting else { return }
 
-    appDelegate.insertKaomoji(sender, withCloseDelay: true)
+    if #available(macOS 26, *) {
+      appDelegate.insertKaomoji(sender, withCloseDelay: false)
+    } else {
+      appDelegate.insertKaomoji(sender, withCloseDelay: true)
+    }
   }
 
   @objc func collectionViewItemWasDoubleClicked(_ sender: CollectionViewItem) {
@@ -632,8 +716,9 @@ class CollectionViewController: NSViewController, NSCollectionViewDataSource, NS
 
   func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> NSSize {
     section == 0
-    ? NSSize(width: popoverSize.width, height: showsSearchField ? Self.searchBarHeight : 0)
+    ? NSSize(width: popoverSize.width, height: showsSearchFieldInline ? Self.searchBarHeight : 0)
     : NSSize(width: popoverSize.width, height: isSearching ? 0 : Self.sectionHeaderHeight)
+//    : NSSize(width: popoverSize.width, height: isSearching || !showsSectionTitles ? 0 : Self.sectionHeaderHeight)
   }
 }
 
@@ -721,6 +806,7 @@ extension NSImage {
 
 #if DEBUG
 import SwiftUI
+@available(macOS 26.0, *)
 struct CollectionViewController_Previews: PreviewProvider {
   static var previews: some View {
     NSViewControllerPreview<CollectionViewController>()
@@ -752,3 +838,11 @@ struct CollectionViewController_Previews: PreviewProvider {
 //    }
 //  }
 //}
+
+class OverlayStackView: NSStackView {
+  override var mouseDownCanMoveWindow: Bool { true }
+}
+
+class VisualEffectView: NSVisualEffectView {
+  override var mouseDownCanMoveWindow: Bool { true }
+}
